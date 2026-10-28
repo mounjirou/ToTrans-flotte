@@ -1,0 +1,1399 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1f3864">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ToTrans Flotte">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>ToTrans Flotte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: barre latérale de navigation (bureau) / barre d'onglets défilante (téléphone), contenu en tableaux + fiches */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --surface-2:#eaeef3; --line:#d5dce5; --ink:#15212e; --ink-2:#4b5a6b; --ink-3:#7a8796;
+  --navy:#1f3864; --navy-ink:#ffffff; --accent:#e0a100; --accent-ink:#1a1400; --focus:#2f6fd6;
+  --ok:#17663a; --ok-bg:#dcf1e3; --warn:#8a4b00; --warn-bg:#ffe7c2; --bad:#9c1020; --bad-bg:#ffd9dd;
+  --crit:#ffffff; --crit-bg:#b00020; --acc:#5b2c6f; --acc-bg:#ece3f2; --hs:#ffffff; --hs-bg:#262b33;
+  --info:#1f4f9a; --info-bg:#dde9fb; --mute:#5a6675; --mute-bg:#e7ebf0; --amber-bg:#fff6d6;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif; --f-body:"Barlow","Segoe UI",Arial,sans-serif; --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:6px; --shadow:0 1px 2px rgba(20,33,46,.06),0 4px 14px rgba(20,33,46,.06);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f151c; --surface:#161e28; --surface-2:#1d2733; --line:#2b3746; --ink:#e6ecf2; --ink-2:#a9b6c4; --ink-3:#7d8b9a;
+  --navy:#2c4f8a; --navy-ink:#ffffff; --accent:#f0b429; --accent-ink:#1a1400; --focus:#6aa2ff;
+  --ok:#7fdca0; --ok-bg:#163826; --warn:#ffc27a; --warn-bg:#3d2a0e; --bad:#ff9aa5; --bad-bg:#43161c;
+  --crit:#ffffff; --crit-bg:#c2182f; --acc:#d6b8ea; --acc-bg:#33223f; --hs:#0f151c; --hs-bg:#c9d1db;
+  --info:#9cc2ff; --info-bg:#182d4d; --mute:#a9b6c4; --mute-bg:#24303d; --amber-bg:#3a2f0c;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f151c; --surface:#161e28; --surface-2:#1d2733; --line:#2b3746; --ink:#e6ecf2; --ink-2:#a9b6c4; --ink-3:#7d8b9a;
+  --navy:#2c4f8a; --navy-ink:#ffffff; --accent:#f0b429; --accent-ink:#1a1400; --focus:#6aa2ff;
+  --ok:#7fdca0; --ok-bg:#163826; --warn:#ffc27a; --warn-bg:#3d2a0e; --bad:#ff9aa5; --bad-bg:#43161c;
+  --crit:#ffffff; --crit-bg:#c2182f; --acc:#d6b8ea; --acc-bg:#33223f; --hs:#0f151c; --hs-bg:#c9d1db;
+  --info:#9cc2ff; --info-bg:#182d4d; --mute:#a9b6c4; --mute-bg:#24303d; --amber-bg:#3a2f0c;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25); color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.app{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100%;background:linear-gradient(to right,var(--navy) 232px,transparent 232px)}
+.side{background:var(--navy);color:var(--navy-ink);padding:18px 12px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:10px;padding:2px 8px 18px}
+.brand svg{flex:none}
+.brand b{font-family:var(--f-display);font-size:22px;letter-spacing:.02em;line-height:1}
+.brand small{display:block;font-size:11px;opacity:.75;letter-spacing:.08em;text-transform:uppercase;margin-top:3px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav .grp{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.6;padding:14px 10px 4px}
+.nav a{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px;border-radius:5px;color:inherit;text-decoration:none;font-weight:500}
+.nav a:hover{background:rgba(255,255,255,.08)}
+.nav a.on{background:rgba(255,255,255,.16);box-shadow:inset 3px 0 0 var(--accent)}
+.nav .cnt{font-family:var(--f-mono);font-size:11.5px;background:var(--crit-bg);color:#fff;border-radius:9px;padding:0 6px;min-width:20px;text-align:center}
+.main{min-width:0;padding-block:22px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.banner{border:1px solid var(--line);background:var(--amber-bg);border-radius:var(--r);padding:10px 14px;font-size:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.banner[data-kind="info"]{background:var(--info-bg)}
+.ph{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ph h1{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.05;margin:0;letter-spacing:.01em;text-wrap:balance}
+.ph p{margin:4px 0 0;color:var(--ink-2);max-width:72ch;font-size:14px}
+.ph .acts{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:5px;padding:7px 13px;cursor:pointer;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{border-color:var(--ink-3)}
+.btn.pri{background:var(--navy);border-color:var(--navy);color:var(--navy-ink)}
+.btn.amb{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.dng{color:var(--bad);border-color:var(--bad)}
+.btn.sm{padding:4px 9px;font-size:13px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.tb{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tb input[type=search],.tb select{border:1px solid var(--line);background:var(--surface);border-radius:5px;padding:7px 10px;min-width:0}
+.tb input[type=search]{flex:1 1 220px;max-width:360px}
+.tb .meta{margin-left:auto;color:var(--ink-3);font-size:13px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+.sec-t{font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2);margin:6px 0 -6px;display:flex;align-items:center;gap:10px}
+.sec-t::after{content:"";flex:1;height:1px;background:var(--line)}
+/* tuiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:2px;position:relative;overflow:hidden;text-align:left;cursor:pointer}
+.tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--tc,var(--navy))}
+.tile .l{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2);font-weight:600}
+.tile .v{font-family:var(--f-display);font-size:38px;font-weight:700;line-height:1.05;font-variant-numeric:tabular-nums}
+.tile .s{font-size:12.5px;color:var(--ink-3)}
+.tile.small .v{font-size:28px}
+/* tableaux */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table.t{border-collapse:collapse;width:100%;font-size:13.5px}
+.t th{position:sticky;top:0;background:var(--surface-2);text-align:left;font-weight:600;font-size:12px;letter-spacing:.03em;color:var(--ink-2);padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+.t td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.t tbody tr{cursor:pointer}
+.t tbody tr:hover td{background:var(--surface-2)}
+.t tfoot td{font-weight:700;background:var(--amber-bg);border-top:2px solid var(--line)}
+.t .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.t .d{white-space:nowrap;font-variant-numeric:tabular-nums}
+.t .w{min-width:200px}
+.empty{padding:28px;text-align:center;color:var(--ink-3)}
+.plate{font-family:var(--f-mono);font-weight:600;font-size:12.5px;letter-spacing:.03em;border:1.5px solid var(--ink);border-radius:3px;padding:0 5px;background:var(--surface);white-space:nowrap;display:inline-block;line-height:1.5}
+.pill{display:inline-block;border-radius:3px;padding:1px 7px;font-size:12px;font-weight:600;white-space:nowrap;background:var(--mute-bg);color:var(--mute)}
+.pill.ok{background:var(--ok-bg);color:var(--ok)} .pill.warn{background:var(--warn-bg);color:var(--warn)} .pill.bad{background:var(--bad-bg);color:var(--bad)}
+.pill.crit{background:var(--crit-bg);color:var(--crit)} .pill.acc{background:var(--acc-bg);color:var(--acc)} .pill.hs{background:var(--hs-bg);color:var(--hs)}
+.pill.info{background:var(--info-bg);color:var(--info)} .pill.amb{background:var(--amber-bg);color:var(--warn)}
+.anom{color:var(--bad);font-size:12.5px}
+.muted{color:var(--ink-3)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:0}
+/* grilles du tableau de bord */
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;min-width:0}
+.panel h3{margin:0 0 10px;font-size:14px;font-weight:700;letter-spacing:.02em}
+.bars{display:flex;flex-direction:column;gap:6px}
+.bar{display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:8px;align-items:center;font-size:13px}
+.bar .tr{position:relative;height:20px;background:var(--surface-2);border-radius:3px;overflow:hidden}
+.bar .fl{position:absolute;left:0;top:0;bottom:0;background:var(--c,var(--navy));border-radius:3px}
+.bar .lb{position:absolute;left:8px;top:0;bottom:0;display:flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;right:6px;font-size:12.5px}
+.bar .nv{font-family:var(--f-mono);font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums}
+.donut{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.legend{display:flex;flex-direction:column;gap:4px;font-size:12.5px;min-width:0}
+.legend b{font-family:var(--f-mono);font-weight:600;margin-left:4px}
+.stack{display:flex;height:26px;border-radius:4px;overflow:hidden;background:var(--surface-2)}
+.stack span{display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;min-width:0}
+.al-list{display:flex;flex-direction:column}
+.al-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 2px;border-bottom:1px solid var(--line);font-size:13.5px;cursor:pointer;background:none;border-left:0;border-right:0;border-top:0;text-align:left;width:100%}
+.al-row:last-child{border-bottom:0}
+.al-row .c{font-family:var(--f-mono);font-weight:600;min-width:30px;text-align:center;border-radius:4px;padding:1px 6px}
+.kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;font-size:13.5px}
+.kv dt{color:var(--ink-2)} .kv dd{margin:0;text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+/* alertes */
+.ablk{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.ablk>header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 14px;color:#fff;font-weight:700;font-size:14px}
+.ablk>header.u{background:var(--crit-bg)} .ablk>header.o{background:#c46a10}
+.ablk .act{font-size:13px;color:var(--ink-2);padding:8px 14px;border-bottom:1px solid var(--line);font-style:italic}
+.ablk .tw{border:0;border-radius:0}
+.ok-note{padding:10px 14px;color:var(--ok);font-size:13.5px;font-weight:600}
+/* fiche */
+.fiche-h{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.fiche-h .plate{font-size:20px;padding:2px 10px;border-width:2px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 18px}
+.fields div{display:flex;flex-direction:column;border-bottom:1px dashed var(--line);padding-bottom:5px;min-width:0}
+.fields span{font-size:11.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.fields b{font-weight:600;overflow-wrap:anywhere}
+/* modal */
+.ov{position:fixed;inset:0;background:rgba(10,16,24,.55);z-index:50;display:flex;align-items:flex-start;justify-content:center;padding:max(24px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 24px max(12px,env(safe-area-inset-left,0px));overflow-y:auto}
+.mod{background:var(--surface);border-radius:8px;width:min(860px,100%);box-shadow:0 20px 60px rgba(0,0,0,.35);display:flex;flex-direction:column}
+.mod>header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.mod>header h2{margin:0;font-family:var(--f-display);font-size:24px;font-weight:700}
+.mod .bd{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.mod>footer{display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--line);background:var(--surface-2);border-radius:0 0 8px 8px}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 14px}
+.fg .full{grid-column:1/-1}
+.fsec{grid-column:1/-1;font-family:var(--f-display);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px;color:var(--ink-2);border-bottom:1px solid var(--line);padding-bottom:3px;margin-top:6px}
+.f{display:flex;flex-direction:column;gap:3px;min-width:0}
+.f label{font-size:12.5px;font-weight:600;color:var(--ink-2)}
+.f label i{color:var(--bad);font-style:normal}
+.f input,.f select,.f textarea{border:1px solid var(--line);background:var(--bg);border-radius:5px;padding:7px 9px;width:100%;min-width:0}
+.f textarea{min-height:64px;resize:vertical}
+.f .hint{font-size:11.5px;color:var(--ink-3)}
+.f.err input,.f.err select{border-color:var(--bad);background:var(--bad-bg)}
+.f .em{font-size:12px;color:var(--bad);font-weight:600}
+.calc{background:var(--surface-2);border-radius:5px;padding:10px 12px}
+.calc h4{margin:0 0 6px;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13.5px;color:var(--bad);font-weight:600}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:6px;font-weight:600;z-index:60;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+/* paramètres */
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{display:inline-flex;align-items:center;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:4px;padding:2px 4px 2px 8px;font-size:13px}
+.chip button{border:0;background:none;cursor:pointer;color:var(--ink-3);font-size:15px;line-height:1;padding:0 3px}
+.addrow{display:flex;gap:6px;margin-top:8px}
+.addrow input{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:5px;padding:5px 8px;min-width:0}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.lock{font-size:11.5px;color:var(--ink-3)}
+.mini{width:100%;border-collapse:collapse;font-size:13px}
+.mini td,.mini th{padding:4px 6px;border-bottom:1px solid var(--line);text-align:left}
+.mini input{width:90px;border:1px solid var(--line);background:var(--bg);border-radius:4px;padding:3px 6px}
+@media (max-width:900px){
+  .app{grid-template-columns:minmax(0,1fr);background:none}
+  .side{position:sticky;top:env(safe-area-inset-top,0px);height:auto;z-index:20;padding:8px 0 0;overflow:visible}
+  .brand{padding:2px max(16px,env(safe-area-inset-left,0px)) 6px}
+  .brand small{display:none}
+  .nav{flex-direction:row;overflow-x:auto;gap:2px;padding:0 max(12px,env(safe-area-inset-left,0px)) 6px;scrollbar-width:none}
+  .nav .grp{display:none}
+  .nav a{white-space:nowrap;padding:6px 10px}
+  .nav a.on{box-shadow:inset 0 -3px 0 var(--accent)}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--navy)}
+}
+@media (max-width:700px){
+  .ph h1{font-size:25px}
+  .tile .v{font-size:30px}
+  .rt thead{display:none}
+  .rt,.rt tbody,.rt tr,.rt td,.rt tfoot{display:block;width:100%}
+  .rt tr{border-bottom:1px solid var(--line);padding:8px 10px}
+  .rt td{border:0;padding:2px 0;display:flex;justify-content:space-between;gap:12px;text-align:right}
+  .rt td::before{content:attr(data-l);color:var(--ink-3);font-size:12px;text-align:left;flex:none;max-width:45%}
+  .rt td.w{min-width:0}
+  .rt td:empty{display:none}
+  .rt tfoot tr{padding:8px 10px}
+  .tw{overflow-x:visible}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* --- application installable : connexion, synchronisation, utilisateurs --- */
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0} img{max-width:100%} [hidden]{display:none!important}
+body.authmode .side{display:none} body.authmode .app{grid-template-columns:minmax(0,1fr);background:none}
+.authwrap{min-height:80vh;display:flex;align-items:center;justify-content:center}
+.authbox{width:min(420px,100%);display:flex;flex-direction:column;gap:12px;padding:22px}
+.authbox h2{margin:0;font-family:var(--f-display);font-size:26px}
+.authbrand{color:var(--navy);padding:0 0 6px}
+.syncbox{margin-top:18px;padding:12px 8px 0;border-top:1px solid rgba(255,255,255,.15);display:flex;flex-direction:column;gap:8px;font-size:13px}
+.syncst{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border:0;color:inherit;border-radius:5px;padding:6px 9px;cursor:pointer;text-align:left;font-size:13px}
+.sdot{width:9px;height:9px;border-radius:50%;background:#8a96a4;flex:none}
+.syncst.ok .sdot{background:#46c27a}.syncst.off .sdot{background:#f0b429}.syncst.err .sdot{background:#ff5c6c}.syncst.run .sdot{background:#9cc2ff}
+.who{display:flex;flex-direction:column;padding:0 2px}.who small{opacity:.7}
+.btn.ghost{background:transparent;color:inherit;border-color:rgba(255,255,255,.3)}
+.ucards{display:flex;flex-direction:column;gap:12px}
+.ucard{display:flex;flex-direction:column;gap:12px}.ucard.waiting{border-color:var(--accent);background:var(--amber-bg)}
+.ucard header{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.uflags{display:flex;gap:14px;flex-wrap:wrap;font-size:14px}.uflags label{display:flex;gap:6px;align-items:center}
+.ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px 12px}
+.ugrid select{border:1px solid var(--line);background:var(--bg);border-radius:5px;padding:5px 7px}
+.ucard footer{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+@media (max-width:900px){.syncbox{flex-direction:row;flex-wrap:wrap;align-items:center;margin:0;padding:6px max(12px,env(safe-area-inset-left,0px)) 8px;border-top:1px solid rgba(255,255,255,.15)}.who{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect x="1" y="9" width="20" height="14" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M21 13h6l4 5v5h-10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="8" cy="25" r="3" fill="var(--accent)"/><circle cx="26" cy="25" r="3" fill="var(--accent)"/></svg>
+      <div><b>ToTrans Flotte</b><small>Gestion de flotte</small></div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="syncbox" id="syncbox"></div>
+  </aside>
+  <main class="main"><div class="wrap" id="view"></div></main>
+</div>
+<div id="modal"></div>
+<div id="toast" class="toast" hidden></div>
+<input type="file" id="fileIn" accept=".xlsx,.xlsm" hidden>
+
+<script src="config.js"></script>
+<script src="supabase.js"></script>
+<script src="xlsx.full.min.js"></script>
+<script>
+"use strict";
+/* ======================================================================
+   CONSTANTES MÉTIER (identiques au classeur Gestion_Flotte_v2)
+   ====================================================================== */
+const ST_OK="OPÉRATIONNEL", ST_PG="EN PANNE – IMMOBILISÉ", ST_SS="PANNE SANS SOLUTION", ST_MA="EN MAINTENANCE", ST_AR="ACCIDENTÉ – RÉPARABLE", ST_HS="ACCIDENTÉ – IRRÉPARABLE / HS";
+const STATUTS=[ST_OK,ST_PG,ST_SS,ST_MA,ST_AR,ST_HS];
+const SITUATIONS=["Disponible","En attente de mission","En attente de chargement","En mission","En attente de déchargement","En retour","Au garage","Immobilisé","Accidenté","Hors service"];
+const PT_MIN="MINEURE – CAMION OPÉRATIONNEL", PT_GR="GRAVE – CAMION IMMOBILISÉ";
+const AC_R="ACCIDENT – VÉHICULE RÉPARABLE", AC_HS="ACCIDENT – VÉHICULE IRRÉPARABLE / HS";
+const LOCK={
+  phases:["En attente de chargement","En mission","En attente de déchargement","En retour"],
+  statutsMission:["PLANIFIÉE","EN COURS","TERMINÉE","ANNULÉE"],
+  typesPanne:[PT_MIN,PT_GR],
+  statutsPanne:["SIGNALÉE","EN DIAGNOSTIC","EN RÉPARATION","EN ATTENTE DE PIÈCE","PANNE SANS SOLUTION","RÉPARÉE"],
+  statutsMaint:["PLANIFIÉE","EN COURS","TERMINÉE"],
+  catAccident:[AC_R,AC_HS],
+  sitConteneur:["Sans conteneur","Conteneur chargé","Conteneur vide","Conteneur débarqué du plateau","En attente de chargement","En attente de déchargement","Autre"],
+  chargeVide:["CHARGÉ","VIDE"],
+};
+const DEFAULT_PARAMS={
+  seuils:{permisJours:60,docSurveiller:60,docProche:30,entretienKm:1000,entretienJours:15,devise:"GNF"},
+  listes:{
+    activites:["Transport de conteneurs","Transport de marchandises longue distance"],
+    localisations:["Kidal","Parc Kountiyah","Sanoyah","Petit Bateau","Garage Chez Maître Chinois","Garage Mamadou Tolier","Garage Maître Amadou","Dépôt Central"],
+    typesVehicule:["Tracteur + porte-conteneur 20'","Tracteur + porte-conteneur 40'","Camion plateau longue distance","Camion bâché longue distance","Camion citerne","Camion frigorifique"],
+    proprietaires:["Société (parc propre)","Location","Sous-traitant"],
+    garages:["Garage Chez Maître Chinois","Garage Mamadou Tolier","Garage Maître Amadou"],
+    classifPanne:["Boîte de vitesses","Pont","Moteur","Pompe","Embrayage","Système de freinage","Système électrique","Système hydraulique","Transmission","Pneumatique","Suspension","Électrique mineur","Éclairage","Petite fuite","Accessoire","Carrosserie","Autre – à préciser"],
+    motifsSS:["Pièce introuvable","Pièce indisponible","Pièce incompatible","Pièce trop coûteuse","Diagnostic non finalisé","Expertise nécessaire","Autre"],
+    dispoPiece:["DISPONIBLE","INDISPONIBLE","À COMMANDER","NON NÉCESSAIRE"],
+    decisions:["EN ATTENTE DE DÉCISION","RÉPARER","ACHETER LA PIÈCE","CANNIBALISATION","REMPLACER LE VÉHICULE"],
+    origines:["PRÉVENTIVE","SUITE À PANNE","SUITE À ACCIDENT"],
+    typesMaintenance:["Vidange","Filtres","Freins","Pneus","Batterie","Suspension","Graissage","Moteur","Boîte de vitesses","Embrayage","Électricité","Carrosserie","Autre"],
+    gravite:["Léger","Moyen","Grave","Très grave"],
+    responsabilite:["Chauffeur","Tiers","Partagée","Indéterminée"],
+    statutsDossier:["OUVERT","EN COURS (ASSURANCE)","CLÔTURÉ"],
+    reforme:["EN ATTENTE","RÉFORME DÉCIDÉE","RÉFORME REFUSÉE"],
+    remplacement:["À ÉTUDIER","REMPLACEMENT DÉCIDÉ","PAS DE REMPLACEMENT"],
+    typesConteneur:["20' DRY","40' DRY","40' HC","20' REEFER","40' REEFER","OPEN TOP","FLAT RACK"],
+    etatsConteneur:["BON ÉTAT","À INSPECTER","ENDOMMAGÉ"],
+    statutsChauffeur:["ACTIF","EN CONGÉ","SUSPENDU","INACTIF"],
+    permis:["B","C","C1","CE","D"],
+    cargaisons:["Conteneur 20'","Conteneur 40'","Marchandises générales","Vivres / denrées","Ciment","Matériaux de construction","Hydrocarbures","Produits frigorifiques"],
+  },
+  entretiens:[{type:"Vidange",km:10000,jours:180},{type:"Filtres",km:20000,jours:365},{type:"Freins",km:30000,jours:null},{type:"Pneus",km:60000,jours:null},{type:"Batterie",km:null,jours:730},{type:"Suspension",km:50000,jours:365},{type:"Graissage",km:5000,jours:30},{type:"Autre entretien",km:null,jours:null}],
+  documents:[{nom:"Assurance",obligatoire:true},{nom:"Vignette",obligatoire:true},{nom:"Carte grise",obligatoire:true},{nom:"Carte bleue / autorisation de transport",obligatoire:true},{nom:"Visite technique",obligatoire:true},{nom:"Autre autorisation",obligatoire:false}],
+};
+const LIST_LABELS={activites:"Types de missions (activités)",localisations:"Localisations",typesVehicule:"Types de véhicules",proprietaires:"Propriétaires",garages:"Garages",classifPanne:"Classification des pannes",motifsSS:"Motifs « sans solution »",dispoPiece:"Disponibilité de la pièce",decisions:"Décisions de la Direction",origines:"Origines de maintenance",typesMaintenance:"Types de maintenance",gravite:"Gravité des accidents",responsabilite:"Responsabilité",statutsDossier:"Statuts dossier accident",reforme:"Décision de réforme",remplacement:"Décision de remplacement",typesConteneur:"Types de conteneur",etatsConteneur:"États du conteneur",statutsChauffeur:"Statuts chauffeur",permis:"Types de permis",cargaisons:"Types de cargaison"};
+const LOCK_LABELS={phases:"Phases de mission",statutsMission:"Statuts de mission",typesPanne:"Gravité des pannes",statutsPanne:"Statuts de panne",statutsMaint:"Statuts de maintenance",catAccident:"Catégories d'accident",sitConteneur:"Situations du conteneur",chargeVide:"Chargé / vide"};
+
+/* ======================================================================
+   SCHÉMA DES DONNÉES : champs saisis (formulaires) — même découpage que les feuilles Excel
+   t: text|num|date|dt|time|sel|free|area   o: source de liste
+   ====================================================================== */
+const ENT={
+ vehicules:{nom:"Flotte",un:"camion",sheet:"FLOTTE",key:"immat",fields:[
+  {s:"Identification"},
+  {k:"immat",l:"Immatriculation",t:"text",req:1,uniq:1,lockEdit:1},{k:"camion",l:"N° Camion",t:"text",req:1},
+  {k:"type",l:"Type de véhicule",t:"sel",o:"typesVehicule",req:1},{k:"proprio",l:"Propriétaire",t:"sel",o:"proprietaires",req:1},
+  {s:"Affectation et position"},
+  {k:"chauffeur",l:"Chauffeur affecté",t:"sel",o:"@chauffeurs",req:1},{k:"loc",l:"Localisation actuelle",t:"sel",o:"localisations",req:1},
+  {k:"km",l:"Kilométrage",t:"num",req:1},{k:"maj",l:"Dernière mise à jour",t:"date",req:1,def:"today"},
+  {k:"obs",l:"Observations",t:"area"}]},
+ missions:{nom:"Missions",un:"mission",sheet:"MISSIONS & MOUVEMENTS",key:"num",fields:[
+  {s:"Mission"},
+  {k:"num",l:"N° mission",t:"text",req:1,uniq:1,lockEdit:1,def:"nextMission"},{k:"activite",l:"Type d'activité",t:"sel",o:"activites"},
+  {k:"veh",l:"Véhicule",t:"sel",o:"@vehicules",req:1},{k:"chauffeur",l:"Chauffeur",t:"sel",o:"@chauffeurs"},
+  {k:"client",l:"Client",t:"text"},{k:"cargo",l:"Type de cargaison",t:"free",o:"cargaisons"},
+  {k:"charg",l:"Lieu de chargement",t:"text"},{k:"dest",l:"Destination",t:"text"},{k:"poids",l:"Poids / volume (t ou m³)",t:"num"},
+  {s:"Dates et avancement"},
+  {k:"dep",l:"Date de départ",t:"date"},{k:"prev",l:"Date prévue de retour",t:"date",after:"dep"},{k:"reel",l:"Date réelle de retour",t:"date",after:"dep"},
+  {k:"statut",l:"Statut de la mission",t:"sel",o:"!statutsMission",def:"PLANIFIÉE"},
+  {k:"phase",l:"Phase (si EN COURS)",t:"sel",o:"!phases",hint:"Indique où en est le camion : il apparaît ainsi dans la situation de la flotte."}]},
+ conteneurs:{nom:"Conteneurs",un:"conteneur",sheet:"CONTENEURS",key:"num",fields:[
+  {k:"num",l:"N° conteneur",t:"text",req:1},{k:"tcont",l:"Type de conteneur",t:"sel",o:"typesConteneur"},
+  {k:"veh",l:"Camion (immatriculation)",t:"sel",o:"@vehicules",req:1},{k:"mission",l:"N° mission",t:"free",o:"@missions",hint:"Client, chargement et destination sont repris de la mission."},
+  {k:"chv",l:"Chargé / vide",t:"sel",o:"!chargeVide"},{k:"sit",l:"Situation du conteneur",t:"sel",o:"!sitConteneur"},
+  {k:"dchg",l:"Date et heure de chargement",t:"dt"},{k:"ddeb",l:"Date et heure de débarquement",t:"dt",hint:"Saisir le débarquement libère le camion."},
+  {k:"etat",l:"État du conteneur",t:"sel",o:"etatsConteneur"},{k:"obs",l:"Observations",t:"area"}]},
+ chauffeurs:{nom:"Chauffeurs",un:"chauffeur",sheet:"CHAUFFEURS",key:"nom",fields:[
+  {k:"nom",l:"Nom et prénom",t:"text",req:1,uniq:1,lockEdit:1},{k:"mat",l:"Matricule",t:"text"},{k:"tel",l:"Téléphone",t:"text"},
+  {k:"statut",l:"Statut du chauffeur",t:"sel",o:"statutsChauffeur",def:"ACTIF"},
+  {s:"Permis de conduire"},
+  {k:"permis",l:"Type de permis",t:"sel",o:"permis"},{k:"npermis",l:"N° du permis",t:"text"},
+  {k:"demi",l:"Date d'émission",t:"date"},{k:"exp",l:"Date d'expiration",t:"date"},{k:"obs",l:"Observations",t:"area"}]},
+ pannes:{nom:"Pannes",un:"panne",sheet:"PANNES",key:"veh",fields:[
+  {s:"Déclaration"},
+  {k:"veh",l:"Véhicule",t:"sel",o:"@vehicules",req:1},{k:"date",l:"Date de panne",t:"date",req:1,def:"today"},{k:"heure",l:"Heure",t:"time"},
+  {k:"lieu",l:"Lieu / localisation",t:"free",o:"localisations"},
+  {k:"type",l:"Niveau de gravité",t:"sel",o:"!typesPanne",req:1,hint:"GRAVE : le camion passe automatiquement EN PANNE – IMMOBILISÉ jusqu'au statut RÉPARÉE."},
+  {k:"classif",l:"Classification / organe",t:"sel",o:"classifPanne"},{k:"nature",l:"Nature de la panne",t:"text"},{k:"diag",l:"Diagnostic",t:"text"},
+  {s:"Réparation"},
+  {k:"garage",l:"Garage",t:"sel",o:"garages"},{k:"piece",l:"Pièce nécessaire",t:"text"},{k:"dispo",l:"Pièce disponible ?",t:"sel",o:"dispoPiece"},
+  {k:"cout",l:"Coût estimatif",t:"num",money:1},{k:"dprev",l:"Date prévue de réparation",t:"date"},{k:"dreel",l:"Date réelle de réparation",t:"date"},
+  {k:"statut",l:"Statut de la panne",t:"sel",o:"!statutsPanne",req:1,def:"SIGNALÉE"},
+  {k:"motif",l:"Motif de l'absence de solution",t:"sel",o:"motifsSS"},{k:"decision",l:"Décision de la Direction",t:"sel",o:"decisions"},
+  {k:"obs",l:"Observations",t:"area"}]},
+ maintenances:{nom:"Maintenance",un:"intervention",sheet:"MAINTENANCE",key:"veh",fields:[
+  {k:"veh",l:"Véhicule",t:"sel",o:"@vehicules",req:1},{k:"origine",l:"Origine",t:"sel",o:"origines"},{k:"type",l:"Type d'intervention",t:"sel",o:"typesMaintenance"},
+  {k:"garage",l:"Garage",t:"sel",o:"garages"},{k:"entree",l:"Date d'entrée au garage",t:"date",def:"today"},
+  {k:"statut",l:"Statut",t:"sel",o:"!statutsMaint",req:1,def:"EN COURS",hint:"EN COURS : le camion passe EN MAINTENANCE."},
+  {k:"travaux",l:"Travaux à effectuer",t:"text",full:1},{k:"pieces",l:"Pièces utilisées",t:"text"},
+  {s:"Coûts et sortie"},
+  {k:"cp",l:"Coût des pièces",t:"num",money:1},{k:"cmo",l:"Coût main-d'œuvre",t:"num",money:1},
+  {k:"sprev",l:"Date prévue de sortie",t:"date"},{k:"sreel",l:"Date réelle de sortie",t:"date"},{k:"obs",l:"Observations",t:"area"}]},
+ accidents:{nom:"Accidents",un:"accident",sheet:"ACCIDENTS",key:"veh",fields:[
+  {s:"Accident"},
+  {k:"veh",l:"Véhicule",t:"sel",o:"@vehicules",req:1},{k:"cat",l:"Catégorie",t:"sel",o:"!catAccident",req:1},
+  {k:"date",l:"Date",t:"date",req:1,def:"today"},{k:"heure",l:"Heure",t:"time"},{k:"lieu",l:"Lieu",t:"text"},{k:"chauffeur",l:"Chauffeur",t:"sel",o:"@chauffeurs"},
+  {k:"desc",l:"Description",t:"text",full:1},{k:"grav",l:"Gravité",t:"sel",o:"gravite"},{k:"domm",l:"Dommages",t:"text"},
+  {s:"Assurance et réparation"},
+  {k:"estim",l:"Estimation des réparations",t:"num",money:1},{k:"assur",l:"Assurance",t:"text"},{k:"dossier",l:"N° dossier assurance",t:"text"},
+  {k:"garage",l:"Garage",t:"sel",o:"garages"},{k:"entree",l:"Date d'entrée au garage",t:"date"},{k:"rprev",l:"Remise en service prévue",t:"date"},
+  {k:"reel",l:"Remise en service réelle",t:"date",hint:"Pour un véhicule réparable : le camion redevient opérationnel à cette date."},
+  {k:"cout",l:"Coût de réparation",t:"num",money:1},{k:"resp",l:"Responsabilité",t:"sel",o:"responsabilite"},{k:"statut",l:"Statut du dossier",t:"sel",o:"statutsDossier",def:"OUVERT"},
+  {s:"Décisions de la Direction (si irréparable / HS)"},
+  {k:"reforme",l:"Décision de réforme",t:"sel",o:"reforme"},{k:"rempl",l:"Décision de remplacement",t:"sel",o:"remplacement"},
+  {k:"valeur",l:"Valeur estimative du véhicule",t:"num",money:1},{k:"obsdir",l:"Observations de la Direction",t:"area"},{k:"obs",l:"Observations",t:"area"}]},
+ documents:{nom:"Documents",un:"document",sheet:"DOCUMENTS ADMINISTRATIFS",key:"veh",fields:[
+  {k:"veh",l:"Véhicule",t:"sel",o:"@vehicules",req:1},{k:"doc",l:"Document",t:"sel",o:"@docs",req:1},{k:"ndoc",l:"N° document",t:"text"},
+  {k:"demi",l:"Date d'émission",t:"date"},{k:"dexp",l:"Date d'expiration",t:"date",hint:"Laisser vide pour un document sans échéance (carte grise)."},{k:"obs",l:"Observations",t:"area"}]},
+ depenses:{nom:"Carburant & dépenses",un:"dépense",sheet:"CARBURANT & DÉPENSES",key:"veh",fields:[
+  {k:"date",l:"Date",t:"date",req:1,def:"today"},{k:"veh",l:"Véhicule",t:"sel",o:"@vehicules",req:1},{k:"mission",l:"Mission",t:"free",o:"@missions"},
+  {k:"km",l:"Kilométrage",t:"num",hint:"S'il dépasse celui de la flotte, le kilométrage du camion est mis à jour."},
+  {s:"Montants"},
+  {k:"qte",l:"Quantité de carburant (L)",t:"num"},{k:"pu",l:"Prix unitaire",t:"num",money:1},{k:"peage",l:"Péage",t:"num",money:1},
+  {k:"frais",l:"Frais de route",t:"num",money:1},{k:"repar",l:"Réparation en route",t:"num",money:1},{k:"autres",l:"Autres dépenses",t:"num",money:1},
+  {k:"obs",l:"Observations",t:"area"}]},
+ entretiens:{nom:"Entretien préventif",un:"entretien",sheet:"ENTRETIEN PRÉVENTIF",key:"veh",fields:[
+  {k:"veh",l:"Véhicule",t:"sel",o:"@vehicules",req:1},{k:"type",l:"Entretien",t:"sel",o:"@entretiens",req:1},
+  {k:"dder",l:"Date du dernier entretien",t:"date"},{k:"kder",l:"Km au dernier entretien",t:"num"},{k:"obs",l:"Observations",t:"area"}]},
+};
+const COLS=Object.keys(ENT);
+
+/* ======================================================================
+   OUTILS
+   ====================================================================== */
+const $=(s,el=document)=>el.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad=n=>String(n).padStart(2,"0");
+const nowD=new Date();
+const TODAY=`${nowD.getFullYear()}-${pad(nowD.getMonth()+1)}-${pad(nowD.getDate())}`;
+const dnum=s=>{if(!s)return null;const[y,m,d]=String(s).slice(0,10).split("-").map(Number);if(!y||!m||!d)return null;return Math.round(Date.UTC(y,m-1,d)/864e5)};
+const dtnum=s=>{const d=dnum(s);if(d==null)return null;const t=String(s).length>10?String(s).slice(11,16).split(":").map(Number):[0,0];return d+((t[0]||0)*60+(t[1]||0))/1440};
+const T=dnum(TODAY), NOW=T+(nowD.getHours()*60+nowD.getMinutes())/1440;
+const isoOf=n=>{const d=new Date(n*864e5);return `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}`};
+const fD=s=>{if(!s)return"";const p=String(s).slice(0,10).split("-");return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(s)};
+const fDT=s=>s?fD(s)+(String(s).length>10?" "+String(s).slice(11,16):""):"";
+const num=v=>{const n=typeof v==="number"?v:parseFloat(String(v??"").replace(/\s/g,"").replace(",","."));return isFinite(n)?n:0};
+const has=v=>v!==undefined&&v!==null&&v!=="";
+const fN=(v,dec=0)=>has(v)&&v!==""?Number(v).toLocaleString("fr-FR",{maximumFractionDigits:dec,minimumFractionDigits:dec}):"";
+const fM=v=>has(v)?Math.round(Number(v)).toLocaleString("fr-FR"):"";
+const plate=s=>s?`<span class="plate">${esc(s)}</span>`:"";
+const pill=(v,tone)=>v?`<span class="pill ${tone||toneOf(v)}">${esc(v)}</span>`:"";
+const sum=(arr,f)=>arr.reduce((a,x)=>a+num(f(x)),0);
+function toneOf(v){
+  const s=String(v);
+  if(s===ST_OK||s==="Disponible"||/^🟢|VALIDE$|^Permis valide|À jour|TERMINÉE|RÉPARÉE|CLÔTURÉ|ACTIF$|BON ÉTAT/.test(s))return"ok";
+  if(s===ST_SS||s==="PANNE SANS SOLUTION")return"crit";
+  if(s===ST_PG||s==="Immobilisé"||/^🔴|EXPIRÉ|GRAVE –|ENDOMMAGÉ|SUSPENDU/.test(s))return"bad";
+  if(s===ST_MA||s==="Au garage"||/^🟠|PROCHE|EN RÉPARATION|EN ATTENTE DE PIÈCE|EN DIAGNOSTIC|SIGNALÉE|À INSPECTER|EN CONGÉ/.test(s))return"warn";
+  if(s===ST_AR||s==="Accidenté"||s===AC_R)return"acc";
+  if(s===ST_HS||s==="Hors service"||s===AC_HS||/^⚫|MANQUANT/.test(s))return"hs";
+  if(/^🟡|SURVEILLER/.test(s))return"amb";
+  if(/^En |EN COURS|PLANIFIÉE|Conteneur chargé/.test(s))return"info";
+  return"";
+}
+const TONE_COL={ok:"var(--ok)",warn:"#d97a00",bad:"#d23142",crit:"#8e0016",acc:"#8e5bb0",hs:"#3a414c",info:"#2f6fd6",amb:"#e0a100",mute:"#8a96a4"};
+function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,2600)}
+
+/* ======================================================================
+   STOCKAGE : copie locale sur l'appareil (hors connexion) + synchronisation Supabase
+   ====================================================================== */
+const S=Object.fromEntries(COLS.map(c=>[c,[]]));
+let P=structuredClone(DEFAULT_PARAMS);
+let SB=null, SESSION=null, ME=null, PROFILES={}, OUTBOX=[], LASTSYNC=null, SYNC={state:"idle",at:null,err:""}, SYNCING=false, READY=false, AUTHVIEW=null;
+const MODE="app", LOADED={has:()=>READY};
+function mergeParams(p){const d=structuredClone(DEFAULT_PARAMS);if(!p)return d;
+  return{seuils:{...d.seuils,...(p.seuils||{})},listes:{...d.listes,...(p.listes||{})},entretiens:Array.isArray(p.entretiens)?p.entretiens:d.entretiens,documents:Array.isArray(p.documents)?p.documents:d.documents}}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+async function pool(items,n,fn,onProg){let i=0,done=0;const run=async()=>{while(i<items.length){const it=items[i++];await fn(it);done++;onProg&&onProg(done,items.length)}};await Promise.all(Array.from({length:n},run))}
+
+/* Droits : "w" = saisie, "r" = lecture, absent = aucun accès */
+const canR=col=>!!(ME&&ME.actif&&(ME.admin||col==="config"||["r","w"].includes((ME.droits||{})[col])));
+const canW=col=>!!(ME&&ME.actif&&(ME.admin||(col!=="config"&&(ME.droits||{})[col]==="w")));
+const isAdmin=()=>!!(ME&&ME.actif&&ME.admin);
+let CANWRITE=false; // vrai si l'utilisateur peut saisir dans au moins une rubrique
+function refreshRights(){CANWRITE=!!ME&&COLS.some(canW)}
+
+/* Petite base IndexedDB clé → valeur */
+const IDB=(()=>{let dbp=null;const open=()=>dbp||(dbp=new Promise((res,rej)=>{const r=indexedDB.open("totrans-flotte",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
+  const tx=async(mode,fn)=>{const db=await open();return new Promise((res,rej)=>{const t=db.transaction("kv",mode);const st=t.objectStore("kv");const out=fn(st);t.oncomplete=()=>res(out&&out.result);t.onerror=()=>rej(t.error)})};
+  return{get:k=>tx("readonly",s=>s.get(k)),set:(k,v)=>tx("readwrite",s=>s.put(v,k)),clear:()=>tx("readwrite",s=>s.clear())}})();
+let persistT=null;
+function persist(){clearTimeout(persistT);persistT=setTimeout(()=>{IDB.set("etat",{S,P,OUTBOX,LASTSYNC,ME,PROFILES,uid:SESSION&&SESSION.user.id}).catch(e=>console.warn("sauvegarde locale",e))},150)}
+async function loadLocal(uid){try{const e=await IDB.get("etat");if(!e||e.uid!==uid)return false;
+  COLS.forEach(c=>S[c]=(e.S&&e.S[c])||[]);P=mergeParams(e.P);OUTBOX=e.OUTBOX||[];LASTSYNC=e.LASTSYNC||null;ME=e.ME||null;PROFILES=e.PROFILES||{};return true}catch(e){return false}}
+
+function applyLocal(col,id,data,deleted){
+  if(col==="config"){if(!deleted)P=mergeParams(data);return}
+  const i=S[col].findIndex(r=>r.id===id);
+  if(deleted){if(i>=0)S[col].splice(i,1);return}
+  const row={id,...data};if(i>=0)S[col][i]=row;else S[col].push(row);
+}
+function queue(col,id,data,deleted){
+  OUTBOX=OUTBOX.filter(o=>!(o.col===col&&o.id===id));OUTBOX.push({col,id,data:data||{},deleted:!!deleted});
+  persist();schedule();sync();
+}
+async function putDoc(col,id,data){
+  if(!canW(col))throw{code:"invalid_argument"};
+  data={...data};delete data._maj;delete data._par;
+  applyLocal(col,id,{...data,_maj:new Date().toISOString(),_par:ME&&ME.id},false);queue(col,id,data,false);
+}
+async function delDoc(col,id){if(!canW(col))throw{code:"invalid_argument"};applyLocal(col,id,null,true);queue(col,id,null,true)}
+async function saveParams(p){if(!isAdmin())throw{code:"invalid_argument"};P=mergeParams(p);queue("config","parametres",P,false)}
+
+function setSync(state,err){SYNC={state,at:state==="ok"?new Date():SYNC.at,err:err||""};renderSync()}
+async function sync(full){
+  if(!SB||!SESSION||SYNCING)return;
+  if(!navigator.onLine){setSync("offline");return}
+  SYNCING=true;setSync("sync");
+  try{
+    // 1. envoyer les saisies faites sur cet appareil
+    let refused=0;
+    while(OUTBOX.length){
+      const batch=OUTBOX.slice(0,100);
+      const rows=batch.map(o=>({id:o.col+":"+o.id,col:o.col,data:o.data,deleted:o.deleted}));
+      const{error}=await SB.from("records").upsert(rows);
+      if(error){
+        if(error.code==="42501"||/row-level security/i.test(error.message||"")){
+          // droits insuffisants : on envoie une par une et on écarte celles refusées
+          for(const o of batch){const{error:e2}=await SB.from("records").upsert({id:o.col+":"+o.id,col:o.col,data:o.data,deleted:o.deleted});if(e2)refused++}
+          full=true;
+        }else throw error;
+      }
+      const sent=new Set(batch);OUTBOX=OUTBOX.filter(o=>!sent.has(o));persist();
+    }
+    if(refused)toast(`${refused} modification(s) refusée(s) : vos droits ne permettent pas cette saisie.`);
+    // 2. récupérer les changements faits par les autres
+    let since=(!full&&LASTSYNC)?new Date(Date.parse(LASTSYNC)-120000).toISOString():"1970-01-01T00:00:00Z";
+    if(full||!LASTSYNC){COLS.forEach(c=>S[c]=[])}
+    for(let guard=0;guard<500;guard++){
+      const{data,error}=await SB.from("records").select("id,col,data,deleted,updated_at,updated_by").gte("updated_at",since).order("updated_at").limit(1000);
+      if(error)throw error;
+      for(const r of data){const rid=r.id.slice(r.col.length+1);
+        if(OUTBOX.some(o=>o.col===r.col&&o.id===rid))continue;
+        if(r.col!=="config"&&!S[r.col])continue;
+        applyLocal(r.col,rid,{...r.data,_maj:r.updated_at,_par:r.updated_by},r.deleted)}
+      if(data.length){const last=data[data.length-1].updated_at;if(!LASTSYNC||last>LASTSYNC)LASTSYNC=last}
+      if(data.length<1000)break;
+      if(data[data.length-1].updated_at===since)break;
+      since=data[data.length-1].updated_at;
+    }
+    // 3. profil et noms des utilisateurs
+    await loadProfile();
+    READY=true;persist();setSync(OUTBOX.length?"pending":"ok");
+  }catch(e){console.warn("synchronisation",e);
+    const offline=!navigator.onLine||/fetch|network/i.test(String(e&&(e.message||e)));
+    setSync(offline?"offline":"err",offline?"":(e.message||String(e)));
+  }finally{SYNCING=false;schedule()}
+  if(OUTBOX.length&&navigator.onLine)setTimeout(()=>sync(),3000);
+}
+async function loadProfile(){
+  const{data:me,error}=await SB.from("profiles").select("*").eq("id",SESSION.user.id).maybeSingle();
+  if(error)throw error;
+  const was=JSON.stringify(ME&&[ME.actif,ME.admin,ME.droits]);ME=me;refreshRights();
+  if(ME&&ME.actif){const{data:all}=await SB.from("profiles").select("id,nom,email,role,droits,admin,actif,created_at").order("created_at");PROFILES=Object.fromEntries((all||[]).map(p=>[p.id,p]))}
+  if(was!==JSON.stringify(ME&&[ME.actif,ME.admin,ME.droits]))schedule(true);
+}
+const nameOf=id=>(PROFILES[id]&&(PROFILES[id].nom||PROFILES[id].email))||"";
+
+async function init(){
+  route();
+  window.addEventListener("online",()=>sync());
+  window.addEventListener("offline",()=>setSync("offline"));
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)sync()});
+  setInterval(()=>{if(!document.hidden)sync()},30000);
+  const cfg=window.TOTRANS_CONFIG||{};
+  if(!window.supabase||!cfg.supabaseUrl||/VOTRE/.test(cfg.supabaseUrl)){AUTHVIEW="config";schedule(true);return}
+  SB=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true}});
+  // session mémorisée : fonctionne aussi hors connexion
+  try{const{data}=await SB.auth.getSession();SESSION=data.session}catch(e){}
+  if(!SESSION){try{const raw=Object.keys(localStorage).find(k=>/^sb-.*-auth-token$/.test(k));if(raw)SESSION=JSON.parse(localStorage.getItem(raw))}catch(e){}}
+  SB.auth.onAuthStateChange((ev,s)=>{if(ev==="SIGNED_OUT"){SESSION=null;ME=null;AUTHVIEW="login";schedule(true)}else if(s){SESSION=s}});
+  if(!SESSION||!SESSION.user){AUTHVIEW="login";schedule(true);return}
+  await startSession();
+}
+async function startSession(){
+  AUTHVIEW=null;
+  const had=await loadLocal(SESSION.user.id);
+  if(had){READY=true;refreshRights()}
+  schedule(true);
+  await sync(!had);
+}
+async function signOut(){
+  if(OUTBOX.length&&!confirmOut){confirmOut=true;toast(`${OUTBOX.length} modification(s) pas encore envoyée(s). Reconnectez-vous à Internet, ou cliquez à nouveau pour vous déconnecter quand même.`);return}
+  try{await SB.auth.signOut()}catch(e){}
+  try{await IDB.clear()}catch(e){}
+  COLS.forEach(c=>S[c]=[]);OUTBOX=[];LASTSYNC=null;ME=null;SESSION=null;READY=false;AUTHVIEW="login";confirmOut=false;schedule(true);
+}
+let confirmOut=false;
+
+/* ======================================================================
+   CONNEXION, COMPTES ET DROITS
+   ====================================================================== */
+const MODULES=[["vehicules","Flotte"],["missions","Missions"],["conteneurs","Conteneurs"],["chauffeurs","Chauffeurs"],["pannes","Pannes"],["maintenances","Maintenance"],["accidents","Accidents"],["entretiens","Entretien préventif"],["documents","Documents"],["depenses","Carburant & dépenses"]];
+const allRights=v=>Object.fromEntries(MODULES.map(([k])=>[k,v]));
+const PRESETS={
+  "Gestionnaire de flotte":{admin:false,droits:allRights("w")},
+  "Exploitation":{admin:false,droits:{...allRights("r"),missions:"w",conteneurs:"w",chauffeurs:"w",depenses:"w"}},
+  "Technique / garage":{admin:false,droits:{...allRights("r"),pannes:"w",maintenances:"w",accidents:"w",entretiens:"w"}},
+  "Administratif":{admin:false,droits:{...allRights("r"),documents:"w",chauffeurs:"w",depenses:"w"}},
+  "Consultation":{admin:false,droits:allRights("r")},
+  "Administrateur":{admin:true,droits:allRights("w")},
+};
+function vAuth(){
+  const box=inner=>`<div class="authwrap"><div class="panel authbox"><div class="brand authbrand"><svg width="40" height="40" viewBox="0 0 34 34" aria-hidden="true"><rect x="1" y="9" width="20" height="14" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M21 13h6l4 5v5h-10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="8" cy="25" r="3" fill="var(--accent)"/><circle cx="26" cy="25" r="3" fill="var(--accent)"/></svg><div><b>ToTrans Flotte</b><small>Gestion de flotte</small></div></div>${inner}</div></div>`;
+  if(AUTHVIEW==="config")return box(`<h2>Installation à terminer</h2><p class="muted">L'adresse de la base Supabase n'est pas encore renseignée dans <b>config.js</b>. Suivez le guide d'installation, étape 3.</p>`);
+  if(AUTHVIEW==="signup")return box(`<h2>Créer un compte</h2><form id="authF" class="fg" style="grid-template-columns:1fr" novalidate>
+    <div class="f"><label for="a_nom">Nom et prénom</label><input id="a_nom" autocomplete="name" required></div>
+    <div class="f"><label for="a_mail">Adresse e-mail</label><input id="a_mail" type="email" autocomplete="email" required></div>
+    <div class="f"><label for="a_pw">Mot de passe (8 caractères minimum)</label><input id="a_pw" type="password" autocomplete="new-password" minlength="8" required></div>
+    <p class="anom" id="authErr" hidden></p><button class="btn pri" type="submit">Créer mon compte</button></form>
+    <p class="muted" style="font-size:13px">Après la création, un administrateur doit activer votre compte et vous attribuer des droits.</p>
+    <button class="btn" data-auth="login">J'ai déjà un compte</button>`);
+  if(AUTHVIEW==="sent")return box(`<h2>Compte créé</h2><p>Si un e-mail de confirmation vous a été envoyé, cliquez sur le lien qu'il contient. Ensuite, un administrateur doit activer votre compte.</p><button class="btn pri" data-auth="login">Se connecter</button>`);
+  return box(`<h2>Connexion</h2><form id="authF" class="fg" style="grid-template-columns:1fr" novalidate>
+    <div class="f"><label for="a_mail">Adresse e-mail</label><input id="a_mail" type="email" autocomplete="email" required></div>
+    <div class="f"><label for="a_pw">Mot de passe</label><input id="a_pw" type="password" autocomplete="current-password" required></div>
+    <p class="anom" id="authErr" hidden></p><button class="btn pri" type="submit">Se connecter</button></form>
+    ${navigator.onLine?"":`<p class="anom">Pas de connexion Internet : la première connexion sur un appareil demande Internet. Ensuite, l'application fonctionne hors connexion.</p>`}
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-auth="signup">Créer un compte</button><button class="btn" data-auth="reset">Mot de passe oublié</button></div>`);
+}
+function vPending(){
+  return`<div class="authwrap"><div class="panel authbox"><h2>Compte en attente d'activation</h2>
+    <p>Bonjour ${esc(ME?ME.nom||ME.email:"")}. Votre compte est créé mais un administrateur doit encore l'activer et vous attribuer des droits.</p>
+    <div style="display:flex;gap:8px"><button class="btn pri" id="pendRefresh">Vérifier à nouveau</button><button class="btn" id="logoutB2">Se déconnecter</button></div></div></div>`;
+}
+document.addEventListener("submit",async e=>{
+  if(e.target.id!=="authF")return;e.preventDefault();
+  const err=$("#authErr");const show=m=>{err.textContent=m;err.hidden=false};err.hidden=true;
+  const mail=$("#a_mail").value.trim(),pw=$("#a_pw").value;
+  if(!mail||!pw){show("Renseignez l'e-mail et le mot de passe.");return}
+  const btn=e.target.querySelector("button[type=submit]");btn.disabled=true;
+  try{
+    if(AUTHVIEW==="signup"){
+      const nom=$("#a_nom").value.trim();if(!nom){show("Indiquez votre nom.");btn.disabled=false;return}
+      if(pw.length<8){show("Le mot de passe doit faire au moins 8 caractères.");btn.disabled=false;return}
+      const{data,error}=await SB.auth.signUp({email:mail,password:pw,options:{data:{nom}}});
+      if(error)throw error;
+      if(data.session){SESSION=data.session;await startSession()}else{AUTHVIEW="sent";schedule(true)}
+    }else{
+      const{data,error}=await SB.auth.signInWithPassword({email:mail,password:pw});
+      if(error)throw error;SESSION=data.session;await startSession();
+    }
+  }catch(x){btn.disabled=false;const m=String(x.message||x);
+    show(/Invalid login/i.test(m)?"E-mail ou mot de passe incorrect.":/confirm/i.test(m)?"Confirmez d'abord votre adresse avec le lien reçu par e-mail.":/registered/i.test(m)?"Un compte existe déjà avec cette adresse.":/fetch|network/i.test(m)?"Pas de connexion Internet.":m)}
+});
+document.addEventListener("click",async e=>{
+  const a=e.target.closest("[data-auth]");
+  if(a){if(a.dataset.auth==="reset"){const m=$("#a_mail")&&$("#a_mail").value.trim();if(!m){const er=$("#authErr");er.textContent="Saisissez d'abord votre e-mail, puis cliquez sur « Mot de passe oublié ».";er.hidden=false;return}
+      try{await SB.auth.resetPasswordForEmail(m,{redirectTo:location.origin+location.pathname});toast("E-mail de réinitialisation envoyé")}catch(x){toast("Envoi impossible")}return}
+    AUTHVIEW=a.dataset.auth;schedule(true);return}
+  if(e.target.closest("#logoutB,#logoutB2")){signOut();return}
+  if(e.target.closest("#pendRefresh")){sync(true);return}
+  if(e.target.closest("#syncB")){sync();return}
+});
+
+function renderSync(){
+  const el=$("#syncbox");if(!el)return;
+  if(!ME){el.innerHTML="";return}
+  const n=OUTBOX.length;const t=SYNC.at?SYNC.at.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}):"";
+  const st=!navigator.onLine||SYNC.state==="offline"?["off",`Hors connexion${n?` · ${n} en attente`:""}`]:SYNC.state==="sync"?["run","Synchronisation…"]:SYNC.state==="err"?["err","Erreur de synchronisation"]:n?["off",`${n} modification(s) en attente`]:["ok",`Synchronisé${t?" à "+t:""}`];
+  el.innerHTML=`<button class="syncst ${st[0]}" id="syncB" title="${esc(SYNC.err||"Synchroniser maintenant")}"><span class="sdot"></span>${esc(st[1])}</button>
+    <div class="who"><span>${esc(ME.nom||ME.email)}</span><small>${esc(ME.admin?"Administrateur":ME.role||"")}</small></div><button class="btn sm ghost" id="logoutB">Se déconnecter</button>`;
+}
+
+/* Page Utilisateurs (administrateurs) */
+let UDRAFT={};
+function vUsers(){
+  if(!isAdmin())return`<div class="ph"><div><h1>Utilisateurs</h1><p>Réservé aux administrateurs.</p></div></div>`;
+  const list=Object.values(PROFILES).sort((a,b)=>(a.actif===b.actif?0:a.actif?1:-1)||String(a.nom).localeCompare(String(b.nom)));
+  const waiting=list.filter(p=>!p.actif).length;
+  return`<div class="ph"><div><h1>Utilisateurs et droits</h1><p>Chaque personne crée son compte depuis l'écran de connexion (« Créer un compte »). Vous l'activez ici et choisissez ses droits : un profil type, puis ajustez rubrique par rubrique. <b>Saisie</b> = consulter et modifier, <b>Lecture</b> = consulter seulement, <b>Aucun</b> = rubrique masquée.</p></div>
+    <div class="acts"><button class="btn" id="usrRefresh">Actualiser la liste</button></div></div>
+  ${!navigator.onLine?`<div class="banner"><span>La gestion des utilisateurs demande une connexion Internet.</span></div>`:""}
+  ${waiting?`<div class="banner"><span><b>${waiting} compte(s) en attente</b> d'activation.</span></div>`:""}
+  <div class="ucards">${list.map(p=>userCard(p)).join("")||`<div class="card empty">Aucun utilisateur.</div>`}</div>`;
+}
+function userCard(p){
+  const d=UDRAFT[p.id]||(UDRAFT[p.id]={actif:p.actif,admin:p.admin,role:p.role,droits:{...(p.droits||{})}});
+  const self=p.id===ME.id;
+  const sel=(k,v)=>`<select data-u="${p.id}" data-m="${k}" ${d.admin?"disabled":""} aria-label="Droits ${esc(k)}"><option value=""${!v?" selected":""}>Aucun</option><option value="r"${v==="r"?" selected":""}>Lecture</option><option value="w"${v==="w"?" selected":""}>Saisie</option></select>`;
+  return`<section class="panel ucard${p.actif?"":" waiting"}" data-card="${p.id}">
+    <header><div><b>${esc(p.nom||p.email)}</b>${self?' <span class="pill info">vous</span>':""}<br><span class="muted">${esc(p.email||"")}</span></div>
+      <div class="uflags"><label><input type="checkbox" data-u="${p.id}" data-flag="actif" ${d.actif?"checked":""} ${self?"disabled":""}> Compte actif</label>
+      <label><input type="checkbox" data-u="${p.id}" data-flag="admin" ${d.admin?"checked":""} ${self?"disabled":""}> Administrateur</label></div></header>
+    <div class="f" style="max-width:320px"><label for="pr_${p.id}">Profil type</label><select id="pr_${p.id}" data-u="${p.id}" data-preset ${self?"disabled":""}><option value="">Personnalisé</option>${Object.keys(PRESETS).map(k=>`<option${d.role===k?" selected":""}>${esc(k)}</option>`).join("")}</select></div>
+    <div class="ugrid">${MODULES.map(([k,l])=>`<div class="f"><label>${esc(l)}</label>${d.admin?`<span class="pill ok">Saisie (admin)</span>`:sel(k,d.droits[k])}</div>`).join("")}</div>
+    <footer>${self?`<span class="muted">Vous ne pouvez pas retirer vos propres droits d'administrateur.</span>`:`<button class="btn pri" data-usave="${p.id}">Enregistrer</button>${p.actif?"":` <button class="btn dng" data-udel="${p.id}">Refuser et supprimer</button>`}`}<span class="muted" data-umsg="${p.id}"></span></footer></section>`;
+}
+document.addEventListener("change",e=>{
+  const t=e.target;if(!t.dataset||!t.dataset.u||R!=="utilisateurs")return;const d=UDRAFT[t.dataset.u];if(!d)return;
+  if(t.dataset.flag){d[t.dataset.flag]=t.checked;if(t.dataset.flag==="admin"){d.role=t.checked?"Administrateur":"Personnalisé"}}
+  else if(t.dataset.preset!==undefined){const pr=PRESETS[t.value];if(pr){d.admin=pr.admin;d.droits={...pr.droits};d.role=t.value;if(!d.actif)d.actif=true}else d.role="Personnalisé"}
+  else if(t.dataset.m){if(t.value)d.droits[t.dataset.m]=t.value;else delete d.droits[t.dataset.m];d.role="Personnalisé"}
+  const card=document.querySelector(`[data-card="${t.dataset.u}"]`);if(card)card.outerHTML=userCard(PROFILES[t.dataset.u]);
+});
+document.addEventListener("click",async e=>{
+  if(R!=="utilisateurs")return;
+  if(e.target.closest("#usrRefresh")){UDRAFT={};await loadProfile().catch(()=>{});schedule(true);return}
+  const s=e.target.closest("[data-usave]");
+  if(s){const id=s.dataset.usave,d=UDRAFT[id];const msg=document.querySelector(`[data-umsg="${id}"]`);s.disabled=true;
+    const role=d.admin?"Administrateur":(d.role||"Personnalisé");
+    const{error}=await SB.from("profiles").update({actif:d.actif,admin:d.admin,role,droits:d.droits}).eq("id",id);
+    s.disabled=false;if(error){msg.textContent=" Enregistrement impossible : "+(navigator.onLine?error.message:"pas de connexion Internet");return}
+    PROFILES[id]={...PROFILES[id],actif:d.actif,admin:d.admin,role,droits:d.droits};delete UDRAFT[id];toast("Droits enregistrés");schedule(true);return}
+  const x=e.target.closest("[data-udel]");
+  if(x){const id=x.dataset.udel;const foot=x.parentElement;
+    foot.innerHTML=`<span class="confirm">Supprimer ce compte en attente ? <button class="btn dng sm" data-udelY="${id}">Oui</button><button class="btn sm" data-udelN>Non</button></span>`;return}
+  const y=e.target.closest("[data-udelY]");
+  if(y){const id=y.dataset.udelY;const{error}=await SB.from("profiles").delete().eq("id",id);if(error){toast("Suppression impossible");return}
+    delete PROFILES[id];delete UDRAFT[id];toast("Compte refusé");schedule(true);return}
+  if(e.target.closest("[data-udelN]")){schedule(true)}
+});
+
+/* ======================================================================
+   CALCULS (même logique que les formules du classeur)
+   ====================================================================== */
+let C={};
+function compute(){
+  const sv=P.seuils;
+  const V=S.vehicules, M=S.missions, CO=S.conteneurs, CH=S.chauffeurs, PN=S.pannes, MA=S.maintenances, AC=S.accidents, DO=S.documents, DE=S.depenses, EN=S.entretiens;
+  const c={veh:{},mis:{},co:{},ch:{},pn:{},ma:{},ac:{},do:{},de:{},en:{}};
+  const vByImmat={};V.forEach(v=>{if(v.immat&&!vByImmat[v.immat])vByImmat[v.immat]=v});
+  const chByNom={};CH.forEach(x=>{if(x.nom&&!chByNom[x.nom])chByNom[x.nom]=x});
+  const misByNum={};M.forEach(m=>{if(m.num&&!misByNum[m.num])misByNum[m.num]=m});
+  c.vByImmat=vByImmat;c.chByNom=chByNom;c.misByNum=misByNum;
+  // Missions (1re passe)
+  M.forEach(m=>{const x={};
+    x.fin=(!m.veh||!m.dep||m.statut==="ANNULÉE")?0:(m.reel?dnum(m.reel):Math.max(dnum(m.prev)||0,T));
+    x.duree=(!m.dep||m.statut==="ANNULÉE"||dnum(m.dep)>T)?"":(m.reel?dnum(m.reel):T)-dnum(m.dep);
+    x.retard=(m.statut==="EN COURS"&&m.prev&&T>dnum(m.prev))?T-dnum(m.prev):"";
+    x.nbcont=m.num?CO.filter(k=>k.mission===m.num).length:0;
+    c.mis[m.id]=x});
+  M.forEach(m=>{const x=c.mis[m.id];x.conflit=false;if(!x.fin)return;const d0=dnum(m.dep);
+    x.conflit=M.some(n=>{if(n===m)return false;const y=c.mis[n.id];if(!y.fin)return false;
+      const same=(n.veh===m.veh)||(m.chauffeur&&n.chauffeur===m.chauffeur);return same&&dnum(n.dep)<x.fin&&y.fin>d0})});
+  const missionAt=(veh,date)=>{const d=dnum(date);if(d==null)return"—";const m=M.find(m=>m.veh===veh&&dnum(m.dep)!=null&&dnum(m.dep)<=d&&c.mis[m.id].fin>=d);return m?m.num:"—"};
+  // Conteneurs
+  CO.forEach(k=>{const x={};const m=misByNum[k.mission];x.client=m?m.client||"":"";x.charg=m?m.charg||"":"";x.dest=m?m.dest||"":"";
+    x.actif=!!(k.veh&&!k.ddeb&&k.sit!=="Conteneur débarqué du plateau");
+    x.duree=k.dchg?((k.ddeb?dtnum(k.ddeb):NOW)-dtnum(k.dchg)):"";
+    c.co[k.id]=x});
+  CO.forEach(k=>{const x=c.co[k.id];const a=[];if(!k.veh)a.push("Camion non renseigné");
+    if(x.actif&&CO.some(o=>o!==k&&o.num===k.num&&c.co[o.id].actif))a.push("Conteneur actif sur 2 camions");
+    if((k.sit==="Conteneur chargé"&&k.chv==="VIDE")||(k.sit==="Conteneur vide"&&k.chv==="CHARGÉ"))a.push("Incohérence chargé / vide");
+    if(k.ddeb&&k.dchg&&dtnum(k.ddeb)<dtnum(k.dchg))a.push("Débarquement avant chargement");x.ctrl=a});
+  // Documents
+  DO.forEach(d=>{const x={};x.jours=(d.veh&&d.dexp)?dnum(d.dexp)-T:"";
+    x.niv=!d.veh?"":(!d.ndoc&&!d.dexp)?4:!d.dexp?0:x.jours<0?3:x.jours<num(sv.docProche)?2:x.jours<=num(sv.docSurveiller)?1:0;
+    x.statut=x.niv===""?"":["VALIDE","ÉCHÉANCE À SURVEILLER","ÉCHÉANCE PROCHE","EXPIRÉ","DOCUMENT MANQUANT"][x.niv];c.do[d.id]=x});
+  // Chauffeurs
+  CH.forEach(h=>{const x={};const v=V.find(v=>v.chauffeur===h.nom);x.veh=v?v.immat:"Non affecté";
+    x.nbveh=V.filter(v=>v.chauffeur===h.nom).length;x.nbmis=M.filter(m=>m.chauffeur===h.nom).length;x.nbacc=AC.filter(a=>a.chauffeur===h.nom).length;
+    x.jours=h.exp?dnum(h.exp)-T:"";
+    x.alerte=(!h.exp||!h.npermis)?"⚫ Permis non renseigné":x.jours<0?"🔴 Permis expiré":x.jours<=num(sv.permisJours)?"🟠 Expire prochainement":"🟢 Permis valide";
+    x.expire=(!h.exp||!h.npermis||x.jours<0);x.bientot=(h.exp&&h.npermis&&x.jours>=0&&x.jours<=num(sv.permisJours));
+    c.ch[h.id]=x});
+  // Pannes
+  PN.forEach(p=>{const x={};x.mission=(p.veh&&p.date)?missionAt(p.veh,p.date):"";
+    const mm=misByNum[x.mission];x.chauffeur=!p.veh?"":(mm?mm.chauffeur||"":(vByImmat[p.veh]?.chauffeur||""));
+    x.jours=(p.veh&&p.date&&p.type===PT_GR)?(p.dreel?dnum(p.dreel):T)-dnum(p.date):"";
+    x.retard=(p.veh&&p.statut!=="RÉPARÉE"&&p.dprev&&T>dnum(p.dprev))?T-dnum(p.dprev):"";
+    const a=[];if(!p.type)a.push("Gravité à préciser");if(!p.statut)a.push("Statut à préciser");
+    if(p.statut==="PANNE SANS SOLUTION"&&!p.motif)a.push("Motif à préciser");if(p.statut==="RÉPARÉE"&&!p.dreel)a.push("Date réelle de réparation manquante");
+    x.ctrl=a;x.open=p.statut!=="RÉPARÉE";c.pn[p.id]=x});
+  // Maintenance
+  MA.forEach(m=>{const x={};x.total=num(m.cp)+num(m.cmo);
+    x.duree=(m.entree&&m.statut!=="PLANIFIÉE")?(m.sreel?dnum(m.sreel):T)-dnum(m.entree):"";
+    x.retard=(m.statut==="EN COURS"&&m.sprev&&T>dnum(m.sprev))?T-dnum(m.sprev):"";c.ma[m.id]=x});
+  // Accidents
+  AC.forEach(a=>{const x={};x.mission=(a.veh&&a.date)?missionAt(a.veh,a.date):"";x.jours=(a.veh&&a.date)?(a.reel?dnum(a.reel):T)-dnum(a.date):"";
+    x.open=a.cat===AC_HS||(a.cat===AC_R&&!a.reel);c.ac[a.id]=x});
+  // Dépenses
+  DE.forEach(d=>{const x={};x.carb=num(d.qte)*num(d.pu);x.total=x.carb+num(d.peage)+num(d.frais)+num(d.repar)+num(d.autres);c.de[d.id]=x});
+  // Entretien préventif
+  const per={};(P.entretiens||[]).forEach(e=>per[e.type]=e);
+  EN.forEach(e=>{const x={};const p=per[e.type]||{};x.pkm=num(p.km)>0?num(p.km):"";x.pj=num(p.jours)>0?num(p.jours):"";
+    x.ekm=(x.pkm!==""&&has(e.kder))?num(e.kder)+x.pkm:"";x.ej=(x.pj!==""&&e.dder)?dnum(e.dder)+x.pj:"";
+    const v=vByImmat[e.veh];x.kact=v&&has(v.km)?num(v.km):"";
+    x.krest=(x.ekm!==""&&x.kact!==""&&x.kact!==0)?x.ekm-x.kact:"";x.jrest=x.ej!==""?x.ej-T:"";
+    x.niveau=(x.krest!==""&&x.krest<0)||(x.jrest!==""&&x.jrest<0)?2:((x.krest!==""&&x.krest<=num(sv.entretienKm))||(x.jrest!==""&&x.jrest<=num(sv.entretienJours)))?1:0;
+    x.statut=(!e.dder&&!has(e.kder))?"⚫ À renseigner":["🟢 À jour","🟠 Échéance proche","🔴 Échéance dépassée"][x.niveau];c.en[e.id]=x});
+  // Véhicules
+  const oblig=(P.documents||[]).filter(d=>d.obligatoire).map(d=>d.nom);
+  V.forEach(v=>{const x={};const im=v.immat;
+    const acc=AC.filter(a=>a.veh===im), pn=PN.filter(p=>p.veh===im), ma=MA.filter(m=>m.veh===im);
+    const nHS=acc.filter(a=>a.cat===AC_HS).length, nAR=acc.filter(a=>a.cat===AC_R&&!a.reel).length;
+    const nSS=pn.filter(p=>p.type===PT_GR&&p.statut==="PANNE SANS SOLUTION").length, nPG=pn.filter(p=>p.type===PT_GR&&p.statut!=="RÉPARÉE").length;
+    const nMA=ma.filter(m=>m.statut==="EN COURS").length, nMIN=pn.filter(p=>p.type===PT_MIN&&p.statut!=="RÉPARÉE").length;
+    const nPLAN=M.filter(m=>m.veh===im&&m.statut==="PLANIFIÉE").length;
+    x.statut=nHS?ST_HS:nAR?ST_AR:nSS?ST_SS:nPG?ST_PG:nMA?ST_MA:ST_OK;
+    const mis=M.find(m=>m.statut==="EN COURS"&&m.veh===im);
+    x.mission=mis?mis.num:"—";x.misId=mis?mis.id:null;x.dest=mis?mis.dest||"":"";x.phase=mis?mis.phase||"":"";
+    x.situation=x.statut===ST_HS?"Hors service":x.statut===ST_AR?"Accidenté":(x.statut===ST_PG||x.statut===ST_SS)?"Immobilisé":x.statut===ST_MA?"Au garage":
+      mis?(x.phase||"En mission"):nPLAN?"En attente de mission":"Disponible";
+    x.mineure=nMIN>0;
+    const kc=CO.find(k=>c.co[k.id].actif&&k.veh===im);x.sitcont=kc?kc.sit||"":"Sans conteneur";x.ncont=kc?kc.num:"";
+    const aOpen=acc.find(a=>c.ac[a.id].open), pOpen=pn.find(p=>p.type===PT_GR&&p.statut!=="RÉPARÉE"), mOpen=ma.find(m=>m.statut==="EN COURS");
+    x.motif=x.garage=x.piece=x.depuis="";
+    if(x.statut!==ST_OK){
+      x.motif=aOpen?"Accident : "+(aOpen.desc||""):pOpen?(pOpen.classif||"")+" – "+(pOpen.nature||""):mOpen?"Maintenance : "+(mOpen.travaux||""):"";
+      x.garage=aOpen?aOpen.garage||"":pOpen?pOpen.garage||"":mOpen?mOpen.garage||"":"";
+      x.piece=pOpen&&pOpen.piece?pOpen.piece+(pOpen.dispo?" ("+pOpen.dispo+")":""):"";
+      x.depuis=aOpen?aOpen.date:pOpen?pOpen.date:mOpen?mOpen.entree:"";}
+    x.jours=x.depuis?T-dnum(x.depuis):"";
+    const dl=DO.filter(d=>d.veh===im);const present=new Set(dl.map(d=>d.doc));x.docmiss=oblig.filter(n=>!present.has(n));
+    const nivs=dl.map(d=>c.do[d.id].niv);
+    x.docs=(x.docmiss.length||nivs.some(n=>n>=3))?"🔴 Expiré / manquant":nivs.includes(2)?"🟠 Échéance proche":nivs.includes(1)?"🟡 À surveiller":"🟢 Valides";
+    const enl=EN.filter(e=>e.veh===im).map(e=>c.en[e.id].niveau);x.entretien=enl.includes(2)?"🔴 Dépassé":enl.includes(1)?"🟠 Proche":"🟢 À jour";
+    x.ctot=sum(ma,m=>c.ma[m.id].total)+sum(DE.filter(d=>d.veh===im),d=>c.de[d.id].total)+sum(acc,a=>a.cout);
+    x.chmulti=!!(v.chauffeur&&V.filter(w=>w.chauffeur===v.chauffeur).length>1);
+    x.nbconf=M.filter(m=>m.veh===im&&c.mis[m.id].conflit).length;
+    const ch=chByNom[v.chauffeur];x.tel=ch?ch.tel||"":"";x.permexp=!!(v.chauffeur&&ch&&c.ch[ch.id].jours!==""&&c.ch[ch.id].jours<0);
+    const a=[];if(!v.loc)a.push("Sans localisation");if(!v.chauffeur)a.push("Sans chauffeur");if(x.chmulti)a.push("Chauffeur affecté à plusieurs camions");
+    if(x.nbconf)a.push("Missions simultanées (véhicule ou chauffeur)");if(x.statut!==ST_OK&&x.mission!=="—")a.push("Mission en cours alors que le camion est immobilisé");
+    if(x.permexp)a.push("Permis du chauffeur expiré");if(!v.camion||!v.type||!v.proprio||!has(v.km)||!v.maj)a.push("Données obligatoires manquantes");
+    if(x.docmiss.length)a.push(x.docmiss.length+" document(s) obligatoire(s) non enregistré(s)");
+    x.anom=a;x.incoh=x.chmulti||x.nbconf>0||x.permexp||(x.statut!==ST_OK&&x.mission!=="—");
+    x.manq=!v.camion||!v.type||!v.proprio||!has(v.km)||!v.maj||x.docmiss.length>0;
+    c.veh[v.id]=x});
+  // Missions (2e passe : contrôles)
+  M.forEach(m=>{const x=c.mis[m.id];const a=[];const v=vByImmat[m.veh];const vs=v?c.veh[v.id].statut:"";
+    if(!m.veh)a.push("Véhicule non renseigné");if(x.conflit)a.push("Véhicule ou chauffeur sur 2 missions simultanées");if(x.retard>0)a.push("Retour en retard");
+    if(/conteneur/i.test(m.activite||"")&&x.nbcont===0&&m.statut!=="PLANIFIÉE"&&m.statut!=="ANNULÉE")a.push("Aucun conteneur enregistré");
+    if(m.statut==="EN COURS"&&m.veh&&vs&&vs!==ST_OK)a.push("Camion non opérationnel");if(m.statut==="EN COURS"&&!m.phase)a.push("Phase à renseigner");
+    x.ctrl=a;x.locact=v?v.loc||"":""});
+  C=c;C.alerts=buildAlerts();
+}
+const cv=v=>C.veh[v.id]||{};
+
+/* ======================================================================
+   ALERTES — mêmes rubriques que la feuille ALERTES
+   ====================================================================== */
+function buildAlerts(){
+  const V=S.vehicules,c=C;
+  const A=(key,u,lab,act,col,rows,cols)=>({key,u,lab,act,col,rows,cols});
+  const vcol=[["Camion",v=>plate(v.immat)]];
+  return[
+    A("immob",1,"Camions immobilisés (panne grave)","Suivre la réparation avec le garage ; décider si la pièce manque.","vehicules",V.filter(v=>[ST_PG,ST_SS].includes(c.veh[v.id].statut)),
+      [...vcol,["Localisation",v=>esc(v.loc)],["Garage",v=>esc(c.veh[v.id].garage)],["Jours d'immob.",v=>c.veh[v.id].jours,"n"],["Motif / pièce",v=>esc(c.veh[v.id].motif)+(c.veh[v.id].piece?`<br><span class="muted">${esc(c.veh[v.id].piece)}</span>`:""),"w"]]),
+    A("ss",1,"Pannes sans solution : décision de la Direction","Décider : réparation, achat de pièce, cannibalisation ou remplacement du véhicule.","pannes",S.pannes.filter(p=>p.veh&&p.statut==="PANNE SANS SOLUTION"),
+      [["Camion",p=>plate(p.veh)],["Organe",p=>esc(p.classif)],["Motif",p=>esc(p.motif)],["Jours d'immob.",p=>c.pn[p.id].jours,"n"],["Décision",p=>esc(p.decision||"—")]]),
+    A("acc",1,"Camions accidentés (réparables et HS)","Suivre le dossier d'assurance et la remise en service ou la décision de réforme.","vehicules",V.filter(v=>[ST_AR,ST_HS].includes(c.veh[v.id].statut)),
+      [...vcol,["Statut",v=>pill(c.veh[v.id].statut)],["Garage",v=>esc(c.veh[v.id].garage)],["Jours d'immob.",v=>c.veh[v.id].jours,"n"],["Motif",v=>esc(c.veh[v.id].motif),"w"]]),
+    A("docexp",1,"Documents expirés ou manquants","Renouveler ou retrouver le document ; immobiliser le camion si la loi l'exige.","documents",
+      [...S.documents.filter(d=>c.do[d.id].niv>=3),...V.flatMap(v=>c.veh[v.id].docmiss.map(n=>({id:null,veh:v.immat,doc:n,_missing:true})))],
+      [["Camion",d=>plate(d.veh)],["Document",d=>esc(d.doc)],["Expiration",d=>fD(d.dexp),"d"],["Jours",d=>d._missing?"":c.do[d.id].jours,"n"],["Statut",d=>pill(d._missing?"NON ENREGISTRÉ":c.do[d.id].statut,d._missing?"hs":"")]]),
+    A("permexp",1,"Permis expirés ou non renseignés","Ne plus faire conduire le chauffeur tant que le permis n'est pas renouvelé.","chauffeurs",S.chauffeurs.filter(h=>h.nom&&c.ch[h.id].expire),
+      [["Chauffeur",h=>esc(h.nom)],["N° permis",h=>esc(h.npermis)],["Expiration",h=>fD(h.exp),"d"],["Camion affecté",h=>esc(c.ch[h.id].veh)],["Alerte",h=>pill(c.ch[h.id].alerte)]]),
+    A("incoh",1,"Incohérences (missions simultanées, chauffeur sur 2 camions, permis expiré…)","Corriger l'affectation dans Flotte ou dans Missions.","vehicules",V.filter(v=>c.veh[v.id].incoh),
+      [...vcol,["Chauffeur",v=>esc(v.chauffeur)],["Mission",v=>esc(c.veh[v.id].mission)],["Statut",v=>pill(c.veh[v.id].statut)],["Détail",v=>`<span class="anom">${esc(c.veh[v.id].anom.join(" · "))}</span>`,"w"]]),
+    A("sans",1,"Camions sans chauffeur ou sans localisation","Compléter la fiche du camion (chauffeur affecté, localisation actuelle).","vehicules",V.filter(v=>!v.loc||!v.chauffeur),
+      [...vcol,["N° Camion",v=>esc(v.camion)],["Chauffeur",v=>esc(v.chauffeur||"—")],["Localisation",v=>esc(v.loc||"—")],["Situation",v=>pill(c.veh[v.id].situation)]]),
+    A("manq",1,"Données obligatoires manquantes","Compléter la fiche du camion et enregistrer les documents manquants.","vehicules",V.filter(v=>c.veh[v.id].manq),
+      [...vcol,["N° Camion",v=>esc(v.camion)],["Type",v=>esc(v.type)],["Km",v=>fN(v.km),"n"],["Détail",v=>`<span class="anom">${esc(c.veh[v.id].anom.join(" · "))}</span>`,"w"]]),
+    A("ent",0,"Entretiens préventifs à effectuer","Programmer l'intervention en maintenance puis mettre à jour l'entretien préventif.","entretiens",S.entretiens.filter(e=>e.veh&&c.en[e.id].niveau>=1),
+      [["Camion",e=>plate(e.veh)],["Entretien",e=>esc(e.type)],["Échéance",e=>c.en[e.id].ej!==""?fD(isoOf(c.en[e.id].ej)):"","d"],["Km restants",e=>fN(c.en[e.id].krest),"n"],["Statut",e=>pill(c.en[e.id].statut)]]),
+    A("maret",0,"Maintenances en retard (sortie garage dépassée)","Relancer le garage ou mettre à jour la date prévue.","maintenances",S.maintenances.filter(m=>c.ma[m.id].retard>0),
+      [["Camion",m=>plate(m.veh)],["Garage",m=>esc(m.garage)],["Sortie prévue",m=>fD(m.sprev),"d"],["Retard (j)",m=>c.ma[m.id].retard,"n"],["Travaux",m=>esc(m.travaux),"w"]]),
+    A("min",0,"Pannes mineures à réparer (camion toujours en service)","Programmer la réparation au prochain passage au dépôt.","pannes",S.pannes.filter(p=>p.veh&&p.type===PT_MIN&&p.statut!=="RÉPARÉE"),
+      [["Camion",p=>plate(p.veh)],["Organe",p=>esc(p.classif)],["Signalée le",p=>fD(p.date),"d"],["Pièce",p=>esc(p.dispo)],["Nature",p=>esc(p.nature),"w"]]),
+    A("docech",0,"Documents arrivant à échéance","Lancer le renouvellement.","documents",S.documents.filter(d=>[1,2].includes(c.do[d.id].niv)),
+      [["Camion",d=>plate(d.veh)],["Document",d=>esc(d.doc)],["Expiration",d=>fD(d.dexp),"d"],["Jours",d=>c.do[d.id].jours,"n"],["Statut",d=>pill(c.do[d.id].statut)]]),
+    A("permech",0,"Permis arrivant à expiration","Prévenir le chauffeur et suivre le renouvellement.","chauffeurs",S.chauffeurs.filter(h=>h.nom&&c.ch[h.id].bientot),
+      [["Chauffeur",h=>esc(h.nom)],["N° permis",h=>esc(h.npermis)],["Expiration",h=>fD(h.exp),"d"],["Jours",h=>c.ch[h.id].jours,"n"],["Camion affecté",h=>esc(c.ch[h.id].veh)]]),
+    A("misret",0,"Missions en retard","Appeler le chauffeur ; mettre à jour la date prévue ou clôturer la mission.","missions",S.missions.filter(m=>c.mis[m.id].retard>0),
+      [["Mission",m=>esc(m.num)],["Camion",m=>plate(m.veh)],["Destination",m=>esc(m.dest)],["Retard (j)",m=>c.mis[m.id].retard,"n"],["Chauffeur",m=>esc(m.chauffeur)]]),
+  ];
+}
+const alertCount=k=>(C.alerts.find(a=>a.key===k)||{rows:[]}).rows.length;
+
+/* ======================================================================
+   NAVIGATION
+   ====================================================================== */
+const ROUTES=[
+  ["Pilotage"],["tableau","Tableau de bord"],["alertes","Alertes"],["fiche","Fiche camion"],
+  ["Saisie"],["flotte","Flotte","vehicules"],["missions","Missions","missions"],["conteneurs","Conteneurs","conteneurs"],["chauffeurs","Chauffeurs","chauffeurs"],
+  ["Technique"],["pannes","Pannes","pannes"],["maintenance","Maintenance","maintenances"],["accidents","Accidents","accidents"],["entretien","Entretien préventif","entretiens"],
+  ["Administratif"],["documents","Documents","documents"],["depenses","Carburant & dépenses","depenses"],["parametres","Paramètres"],["utilisateurs","Utilisateurs"],
+];
+let R="tableau", FICHE=null; const FILT={};
+function route(){const h=(location.hash||"").slice(1);R=ROUTES.some(r=>r[0]===h&&r[1])?h:"tableau";schedule(true)}
+window.addEventListener("hashchange",route);
+function go(r){if(location.hash.slice(1)===r)route();else location.hash=r}
+function routeOk(r){if(r==="utilisateurs")return isAdmin();const L=LIST_R[r];return !L||canR(L.col)}
+function renderNav(){
+  const n=C.alerts?C.alerts.filter(a=>a.u).reduce((s,a)=>s+a.rows.length,0):0;
+  const vis=ROUTES.filter(r=>r.length===1||routeOk(r[0]));
+  $("#nav").innerHTML=vis.filter((r,i)=>r.length>1||(vis[i+1]&&vis[i+1].length>1)).map(r=>r.length===1?`<div class="grp">${esc(r[0])}</div>`:
+    `<a href="#${r[0]}" class="${R===r[0]?"on":""}"${R===r[0]?' aria-current="page"':""}><span>${esc(r[1])}</span>${r[0]==="alertes"&&n?`<span class="cnt" title="Alertes urgentes">${n}</span>`:""}</a>`).join("");
+  const on=$("#nav a.on");if(on&&window.innerWidth<=900)on.scrollIntoView({block:"nearest",inline:"center"});
+}
+let pend=false,full=false;
+function schedule(f){if(f)full=true;if(pend)return;pend=true;requestAnimationFrame(()=>{pend=false;const ff=full;full=false;render(ff)})}
+let lastR=null;
+function render(force){
+  const view=$("#view");
+  const gate=AUTHVIEW?vAuth():(SESSION&&READY&&(!ME||!ME.actif))?vPending():null;
+  document.body.classList.toggle("authmode",!!gate);
+  if(gate){view.innerHTML=gate;lastR=null;return}
+  if(!routeOk(R)){R="tableau"}
+  compute();renderNav();renderSync();
+  const ae=document.activeElement;
+  if(!force&&lastR===R&&R==="parametres"&&(DIRTY||BUSY||(view.contains(ae)&&ae.matches("input,select,textarea")))){renderBanner();return} // ne pas écraser une saisie en cours
+  if(lastR===R&&!force&&LIST_R[R]){renderTable();renderBanner();return}
+  lastR=R;
+  const fn={tableau:vDash,alertes:vAlerts,fiche:vFiche,parametres:vParams,utilisateurs:vUsers}[R];
+  view.innerHTML=`<div id="banner"></div>`+(fn?fn():vList());
+  renderBanner();
+  if(LIST_R[R])renderTable();
+  bindView();
+}
+function renderBanner(){
+  const b=$("#banner");if(!b)return;
+  let h="";
+  if(!READY)h=`<div class="banner" data-kind="info">Chargement des données…</div>`;
+  else if(!navigator.onLine)h=`<div class="banner"><span>Vous êtes <b>hors connexion</b>. Vous pouvez consulter et saisir normalement : les modifications seront envoyées dès le retour d'Internet${OUTBOX.length?` (${OUTBOX.length} en attente)`:""}.</span></div>`;
+  else if(!CANWRITE)h=`<div class="banner" data-kind="info">Accès en lecture seule : vous pouvez consulter mais pas modifier les données.</div>`;
+  else if(COLS.some(c=>S[c].some(r=>r.demo)))h=`<div class="banner" data-kind="info"><span>Les données affichées sont des <b>exemples fictifs</b> repris du classeur Excel. Un administrateur peut les remplacer en important votre classeur, ou les supprimer, dans Paramètres.</span>${isAdmin()?`<a class="btn sm" href="#parametres">Ouvrir Paramètres</a>`:""}</div>`;
+  b.innerHTML=h;
+}
+
+/* ======================================================================
+   VUES LISTE (une par feuille de saisie)
+   ====================================================================== */
+const c_=(l,v,f,o={})=>({l,v,f,...o});
+const LIST_R={
+ flotte:{col:"vehicules",title:"Flotte",sub:"Registre des camions et situation en temps réel. Le statut technique et la situation sont calculés à partir des pannes, maintenances, accidents et missions : on ne les saisit jamais.",
+  filters:[["statut","Statut technique",STATUTS,v=>cv(v).statut],["situation","Situation",SITUATIONS,v=>cv(v).situation]],
+  cols:[c_("Immatriculation",v=>plate(v.immat)),c_("N°",v=>esc(v.camion)),c_("Type",v=>esc(v.type)),c_("Chauffeur",v=>esc(v.chauffeur||"—")),c_("Localisation",v=>esc(v.loc||"—")),
+   c_("Statut technique",v=>pill(cv(v).statut)+(cv(v).mineure?` <span class="pill amb" title="Panne mineure ouverte">mineure</span>`:"")),c_("Situation",v=>pill(cv(v).situation)),
+   c_("Mission",v=>esc(cv(v).mission)+(cv(v).dest?` <span class="muted">→ ${esc(cv(v).dest)}</span>`:"")),c_("Conteneur",v=>esc(cv(v).sitcont)+(cv(v).ncont?`<br><span class="muted">${esc(cv(v).ncont)}</span>`:"")),
+   c_("Jours immob.",v=>cv(v).jours,"n"),c_("Documents",v=>pill(cv(v).docs)),c_("Entretien",v=>pill(cv(v).entretien)),c_("Km",v=>fN(v.km),"n"),
+   c_("Anomalies",v=>cv(v).anom.length?`<span class="anom">${esc(cv(v).anom.join(" · "))}</span>`:"","w")],
+  click:v=>{FICHE=v.immat;go("fiche")}},
+ missions:{col:"missions",title:"Missions & mouvements",sub:"Quel camion, où, avec qui, pour quelle mission, depuis quand. Pour une mission EN COURS, renseigner la phase.",
+  filters:[["statut","Statut",LOCK.statutsMission,m=>m.statut]],sort:(a,b)=>String(b.dep||"").localeCompare(String(a.dep||"")),
+  cols:[c_("N° mission",m=>`<b>${esc(m.num)}</b>`),c_("Camion",m=>plate(m.veh)),c_("Chauffeur",m=>esc(m.chauffeur)),c_("Client",m=>esc(m.client)),c_("Trajet",m=>esc(m.charg)+(m.dest?" → "+esc(m.dest):"")),
+   c_("Départ",m=>fD(m.dep),"d"),c_("Retour prévu",m=>fD(m.prev),"d"),c_("Retour réel",m=>fD(m.reel),"d"),c_("Statut",m=>pill(m.statut)),c_("Phase",m=>esc(m.phase)),
+   c_("Conteneurs",m=>C.mis[m.id].nbcont||"","n"),c_("Durée (j)",m=>C.mis[m.id].duree,"n"),c_("Retard (j)",m=>C.mis[m.id].retard,"n"),c_("Contrôles",m=>C.mis[m.id].ctrl.length?`<span class="anom">${esc(C.mis[m.id].ctrl.join(" · "))}</span>`:"","w")]},
+ conteneurs:{col:"conteneurs",title:"Conteneurs",sub:"Une ligne par conteneur et par transport. Saisir la date de débarquement pour libérer le camion.",
+  filters:[["actif","Afficher",["Sur un plateau","Débarqués"],k=>C.co[k.id].actif?"Sur un plateau":"Débarqués"]],sort:(a,b)=>String(b.dchg||"").localeCompare(String(a.dchg||"")),
+  cols:[c_("N° conteneur",k=>`<b>${esc(k.num)}</b>`),c_("Type",k=>esc(k.tcont)),c_("Camion",k=>plate(k.veh)),c_("Mission",k=>esc(k.mission)),c_("Client",k=>esc(C.co[k.id].client)),
+   c_("Destination",k=>esc(C.co[k.id].dest)),c_("Chargé / vide",k=>esc(k.chv)),c_("Situation",k=>pill(k.sit)),c_("Chargement",k=>fDT(k.dchg),"d"),c_("Débarquement",k=>fDT(k.ddeb),"d"),
+   c_("Jours plateau",k=>C.co[k.id].duree!==""?fN(C.co[k.id].duree,1):"","n"),c_("État",k=>pill(k.etat)),c_("Contrôles",k=>C.co[k.id].ctrl.length?`<span class="anom">${esc(C.co[k.id].ctrl.join(" · "))}</span>`:"","w")]},
+ chauffeurs:{col:"chauffeurs",title:"Chauffeurs",sub:"Personnel de conduite et permis. Le véhicule affecté vient de la fiche du camion.",
+  filters:[["alerte","Permis",["🟢 Permis valide","🟠 Expire prochainement","🔴 Permis expiré","⚫ Permis non renseigné"],h=>C.ch[h.id].alerte]],sort:(a,b)=>String(a.nom).localeCompare(String(b.nom)),
+  cols:[c_("Nom et prénom",h=>`<b>${esc(h.nom)}</b>`),c_("Matricule",h=>esc(h.mat)),c_("Téléphone",h=>esc(h.tel)),c_("Statut",h=>pill(h.statut)),c_("Permis",h=>esc(h.permis)),c_("N° permis",h=>esc(h.npermis)),
+   c_("Expiration",h=>fD(h.exp),"d"),c_("Jours restants",h=>C.ch[h.id].jours,"n"),c_("Alerte permis",h=>pill(C.ch[h.id].alerte)),c_("Camion affecté",h=>C.ch[h.id].veh==="Non affecté"?'<span class="muted">Non affecté</span>':plate(C.ch[h.id].veh)),
+   c_("Missions",h=>C.ch[h.id].nbmis,"n"),c_("Accidents",h=>C.ch[h.id].nbacc,"n")]},
+ pannes:{col:"pannes",title:"Pannes",sub:"Gravité MINEURE : le camion reste opérationnel. GRAVE : il passe automatiquement EN PANNE – IMMOBILISÉ jusqu'au statut RÉPARÉE.",
+  filters:[["ouv","Afficher",["En cours","Réparées"],p=>p.statut==="RÉPARÉE"?"Réparées":"En cours"],["statut","Statut",LOCK.statutsPanne,p=>p.statut]],sort:(a,b)=>String(b.date||"").localeCompare(String(a.date||"")),
+  cols:[c_("Date",p=>fD(p.date),"d"),c_("Camion",p=>plate(p.veh)),c_("Gravité",p=>p.type===PT_GR?pill("GRAVE","bad"):p.type===PT_MIN?pill("MINEURE","amb"):""),c_("Organe",p=>esc(p.classif)),
+   c_("Nature",p=>esc(p.nature),"w"),c_("Garage",p=>esc(p.garage)),c_("Pièce",p=>esc(p.piece)+(p.dispo?`<br><span class="muted">${esc(p.dispo)}</span>`:"")),c_("Statut",p=>pill(p.statut)),
+   c_("Jours immob.",p=>C.pn[p.id].jours,"n"),c_("Retard (j)",p=>C.pn[p.id].retard,"n"),c_("Coût estimatif",p=>fM(p.cout),"n",{sum:p=>p.cout}),c_("Contrôles",p=>C.pn[p.id].ctrl.length?`<span class="anom">${esc(C.pn[p.id].ctrl.join(" · "))}</span>`:"","w")]},
+ maintenance:{col:"maintenances",title:"Maintenance",sub:"Une ligne par passage au garage. Statut EN COURS : le camion est EN MAINTENANCE. Les coûts réels se saisissent ici.",
+  filters:[["statut","Statut",LOCK.statutsMaint,m=>m.statut]],sort:(a,b)=>String(b.entree||"").localeCompare(String(a.entree||"")),
+  cols:[c_("Entrée",m=>fD(m.entree),"d"),c_("Camion",m=>plate(m.veh)),c_("Origine",m=>esc(m.origine)),c_("Type",m=>esc(m.type)),c_("Garage",m=>esc(m.garage)),c_("Travaux",m=>esc(m.travaux),"w"),
+   c_("Statut",m=>pill(m.statut)),c_("Sortie prévue",m=>fD(m.sprev),"d"),c_("Sortie réelle",m=>fD(m.sreel),"d"),c_("Durée (j)",m=>C.ma[m.id].duree,"n"),c_("Retard (j)",m=>C.ma[m.id].retard,"n"),
+   c_("Coût total",m=>fM(C.ma[m.id].total),"n",{sum:m=>C.ma[m.id].total})]},
+ accidents:{col:"accidents",title:"Accidents",sub:"RÉPARABLE : le camion redevient opérationnel à la date réelle de remise en service. IRRÉPARABLE / HS : il reste hors service ; renseigner les décisions de la Direction.",
+  filters:[["cat","Catégorie",LOCK.catAccident,a=>a.cat]],sort:(a,b)=>String(b.date||"").localeCompare(String(a.date||"")),
+  cols:[c_("Date",a=>fD(a.date),"d"),c_("Camion",a=>plate(a.veh)),c_("Catégorie",a=>pill(a.cat===AC_HS?"IRRÉPARABLE / HS":a.cat===AC_R?"RÉPARABLE":"",a.cat===AC_HS?"hs":"acc")),c_("Lieu",a=>esc(a.lieu)),
+   c_("Chauffeur",a=>esc(a.chauffeur)),c_("Description",a=>esc(a.desc),"w"),c_("Gravité",a=>esc(a.grav)),c_("Garage",a=>esc(a.garage)),c_("Dossier",a=>pill(a.statut)),
+   c_("Remise en service",a=>fD(a.reel)||(a.rprev?`<span class="muted">prévue ${fD(a.rprev)}</span>`:""),"d"),c_("Jours immob.",a=>C.ac[a.id].jours,"n"),
+   c_("Estimation",a=>fM(a.estim),"n",{sum:a=>a.estim}),c_("Coût réparation",a=>fM(a.cout),"n",{sum:a=>a.cout})]},
+ documents:{col:"documents",title:"Documents administratifs",sub:"Assurance, vignette, carte grise, autorisation de transport, visite technique. Seuils d'alerte réglables dans Paramètres.",
+  filters:[["statut","Statut",["VALIDE","ÉCHÉANCE À SURVEILLER","ÉCHÉANCE PROCHE","EXPIRÉ","DOCUMENT MANQUANT"],d=>C.do[d.id].statut]],sort:(a,b)=>String(a.veh).localeCompare(String(b.veh))||String(a.doc).localeCompare(String(b.doc)),
+  cols:[c_("Camion",d=>plate(d.veh)),c_("Document",d=>esc(d.doc)),c_("N° document",d=>esc(d.ndoc)),c_("Émission",d=>fD(d.demi),"d"),c_("Expiration",d=>fD(d.dexp),"d"),
+   c_("Jours restants",d=>C.do[d.id].jours,"n"),c_("Statut",d=>pill(C.do[d.id].statut,["ok","amb","warn","bad","hs"][C.do[d.id].niv])),c_("Observations",d=>esc(d.obs),"w")]},
+ depenses:{col:"depenses",title:"Carburant & dépenses",sub:"Coûts d'exploitation par véhicule et par mission. Les totaux suivent les filtres.",
+  filters:[],sort:(a,b)=>String(b.date||"").localeCompare(String(a.date||"")),
+  cols:[c_("Date",d=>fD(d.date),"d"),c_("Camion",d=>plate(d.veh)),c_("Mission",d=>esc(d.mission)),c_("Km",d=>fN(d.km),"n"),c_("Carburant (L)",d=>fN(d.qte),"n",{sum:d=>d.qte,plain:1}),
+   c_("Prix unit.",d=>fM(d.pu),"n"),c_("Montant carburant",d=>fM(C.de[d.id].carb),"n",{sum:d=>C.de[d.id].carb}),c_("Péage",d=>fM(d.peage),"n",{sum:d=>d.peage}),
+   c_("Frais de route",d=>fM(d.frais),"n",{sum:d=>d.frais}),c_("Réparation en route",d=>fM(d.repar),"n",{sum:d=>d.repar}),c_("Autres",d=>fM(d.autres),"n",{sum:d=>d.autres}),
+   c_("Total",d=>`<b>${fM(C.de[d.id].total)}</b>`,"n",{sum:d=>C.de[d.id].total})]},
+ entretien:{col:"entretiens",title:"Entretien préventif",sub:"Échéances par kilométrage et/ou par date. Saisir la date et/ou le km du dernier entretien ; les périodicités se règlent dans Paramètres.",
+  filters:[["statut","Statut",["🔴 Échéance dépassée","🟠 Échéance proche","🟢 À jour","⚫ À renseigner"],e=>C.en[e.id].statut]],sort:(a,b)=>C.en[b.id].niveau-C.en[a.id].niveau||String(a.veh).localeCompare(String(b.veh)),
+  cols:[c_("Camion",e=>plate(e.veh)),c_("Entretien",e=>esc(e.type)),c_("Dernier entretien",e=>fD(e.dder),"d"),c_("Km dernier",e=>fN(e.kder),"n"),c_("Périodicité",e=>[C.en[e.id].pkm!==""?fN(C.en[e.id].pkm)+" km":"",C.en[e.id].pj!==""?C.en[e.id].pj+" j":""].filter(Boolean).join(" / ")),
+   c_("Échéance km",e=>fN(C.en[e.id].ekm),"n"),c_("Échéance date",e=>C.en[e.id].ej!==""?fD(isoOf(C.en[e.id].ej)):"","d"),c_("Km actuel",e=>fN(C.en[e.id].kact),"n"),
+   c_("Km restants",e=>fN(C.en[e.id].krest),"n"),c_("Jours restants",e=>C.en[e.id].jrest,"n"),c_("Statut",e=>pill(C.en[e.id].statut))]},
+};
+function vList(){
+  const L=LIST_R[R],E=ENT[L.col];const F=FILT[R]||(FILT[R]={q:""});
+  return`<div class="ph"><div><h1>${esc(L.title)}</h1><p>${esc(L.sub)}</p></div>
+    <div class="acts">${canW(L.col)?`<button class="btn pri" data-new="${L.col}">+ Ajouter ${E.un==="intervention"||E.un==="entretien"?"une":["panne","mission","dépense"].includes(E.un)?"une":"un"} ${esc(E.un)}</button>`:""}</div></div>
+   <div class="tb"><input type="search" id="q" placeholder="Rechercher (immatriculation, nom, lieu…)" value="${esc(F.q)}" aria-label="Rechercher">
+    ${L.filters.map(([k,l,opts])=>`<select data-f="${k}" aria-label="${esc(l)}"><option value="">${esc(l)} : tous</option>${opts.map(o=>`<option${F[k]===o?" selected":""}>${esc(o)}</option>`).join("")}</select>`).join("")}
+    <span class="meta" id="meta"></span></div>
+   <div class="tw" id="tbl"></div>`;
+}
+function filtered(){
+  const L=LIST_R[R];const F=FILT[R]||{};let rows=S[L.col].slice();
+  if(F.q){const q=F.q.toLowerCase();rows=rows.filter(r=>Object.values(r).some(v=>typeof v==="string"&&v.toLowerCase().includes(q))||(L.col==="vehicules"&&cv(r).anom.join(" ").toLowerCase().includes(q)))}
+  L.filters.forEach(([k,,,get])=>{if(F[k])rows=rows.filter(r=>get(r)===F[k])});
+  if(L.sort)rows.sort(L.sort);else rows.sort((a,b)=>String(a[ENT[L.col].key]||"").localeCompare(String(b[ENT[L.col].key]||""),"fr",{numeric:true}));
+  return rows;
+}
+function tableHTML(rows,cols,opt={}){
+  if(!rows.length)return`<div class="empty">${opt.empty||"Aucune ligne."}</div>`;
+  const sums=cols.some(c=>c.sum);
+  return`<table class="t rt"><thead><tr>${cols.map(c=>`<th class="${c.f||""}">${esc(c.l)}</th>`).join("")}</tr></thead>
+  <tbody>${rows.map((r,i)=>`<tr data-i="${i}" tabindex="0">${cols.map(c=>{const v=c.v(r);return`<td class="${c.f||""}" data-l="${esc(c.l)}">${v===""||v==null?"":v}</td>`}).join("")}</tr>`).join("")}</tbody>
+  ${sums?`<tfoot><tr>${cols.map((c,i)=>`<td class="${c.f||""}" data-l="${c.sum?"Total "+esc(c.l):""}">${c.sum?(c.plain?fN(sum(rows,c.sum)):fM(sum(rows,c.sum))):(i===0?"TOTAUX":"")}</td>`).join("")}</tr></tfoot>`:""}</table>`;
+}
+let CUR_ROWS=[];
+function renderTable(){
+  const L=LIST_R[R];const el=$("#tbl");if(!el)return;
+  CUR_ROWS=filtered();const E=ENT[L.col];
+  const loading=!READY;
+  el.innerHTML=loading?`<div class="empty">Chargement des données…</div>`:tableHTML(CUR_ROWS,L.cols,{empty:S[L.col].length?"Aucune ligne ne correspond à la recherche.":`Aucun ${esc(E.un)} enregistré pour l'instant. Utilisez « + Ajouter » pour saisir le premier.`});
+  const m=$("#meta");if(m)m.textContent=`${CUR_ROWS.length} ligne${CUR_ROWS.length>1?"s":""}${CUR_ROWS.length!==S[L.col].length?" sur "+S[L.col].length:""}`;
+}
+
+/* ======================================================================
+   TABLEAU DE BORD
+   ====================================================================== */
+function tile(l,v,s,tc,href){return`<button class="tile" style="--tc:${tc}" ${href?`data-go="${href}"`:""}><span class="l">${esc(l)}</span><span class="v">${v}</span>${s?`<span class="s">${s}</span>`:""}</button>`}
+function bars(items,color){const mx=Math.max(1,...items.map(i=>i[1]));
+  return`<div class="bars">${items.map(([l,n,c])=>`<div class="bar"><div class="tr"><div class="fl" style="width:${(n/mx*100).toFixed(1)}%;--c:${c||color};opacity:.28"></div><span class="lb">${esc(l)}</span></div><span class="nv">${n}</span></div>`).join("")}</div>`}
+function donut(items){const tot=items.reduce((a,i)=>a+i[1],0);const r=52,cx=64,cy=64,C2=2*Math.PI*r;let off=0;
+  const segs=tot?items.filter(i=>i[1]>0).map(([l,n,c])=>{const len=n/tot*C2;const s=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c}" stroke-width="18" stroke-dasharray="${len} ${C2-len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${cx} ${cy})"><title>${esc(l)} : ${n}</title></circle>`;off+=len;return s}).join(""):"";
+  return`<div class="donut"><svg width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Répartition"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="18"/>${segs}
+    <text x="64" y="62" text-anchor="middle" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-weight="700" font-size="30" fill="var(--ink)">${tot}</text><text x="64" y="80" text-anchor="middle" font-size="11" fill="var(--ink-3)">camions</text></svg>
+    <div class="legend">${items.map(([l,n,c])=>`<span><span class="dot" style="background:${c}"></span>${esc(l)}<b>${n}</b></span>`).join("")}</div></div>`}
+function vDash(){
+  const V=S.vehicules,c=C,sv=P.seuils;const tot=V.length;const cnt=f=>V.filter(v=>f(c.veh[v.id],v)).length;
+  const ope=cnt(x=>x.statut===ST_OK), opeMin=cnt(x=>x.statut===ST_OK&&x.mineure);
+  const enMis=cnt(x=>x.mission!=="—"&&x.statut===ST_OK), charges=cnt(x=>x.sitcont==="Conteneur chargé");
+  const pg=cnt(x=>x.statut===ST_PG), ss=cnt(x=>x.statut===ST_SS), ma=cnt(x=>x.statut===ST_MA), ar=cnt(x=>x.statut===ST_AR), hs=cnt(x=>x.statut===ST_HS);
+  const libres=cnt(x=>x.situation==="Disponible"||x.situation==="En attente de mission");
+  const dispo=tot?ope/tot:0;const dcol=dispo<.7?"var(--bad)":dispo<.85?"#d97a00":"var(--ok)";
+  const sit=s=>cnt(x=>x.situation===s);
+  const enServ=sit("En mission")+sit("En attente de chargement")+sit("En attente de déchargement")+sit("En retour");
+  const indisp=sit("Au garage")+sit("Immobilisé")+sit("Accidenté")+sit("Hors service");
+  const stCols=["var(--ok)","#d23142","#8e0016","#d97a00","#8e5bb0","#3a414c"];
+  const locs=[...new Set([...(P.listes.localisations||[]),...V.map(v=>v.loc).filter(Boolean)])].map(l=>[l,V.filter(v=>v.loc===l).length]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
+  const nl=V.filter(v=>!v.loc).length;if(nl)locs.push(["Non renseignée",nl,"#d23142"]);
+  const types=[...new Set([...(P.listes.typesVehicule||[]),...V.map(v=>v.type).filter(Boolean)])].map(l=>[l,V.filter(v=>v.type===l).length]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
+  const A=c.alerts;const ac=k=>alertCount(k);
+  const urg=[["Camions immobilisés",ac("immob")],["Accidents (réparables + HS)",ac("acc")],["Pannes sans solution",ac("ss")],["Documents expirés / manquants",ac("docexp")],["Permis expirés / non renseignés",ac("permexp")],["Anomalies de saisie",ac("incoh")+ac("sans")+ac("manq")]];
+  const trt=[["Maintenances / entretiens à effectuer",ac("ent")+ac("maret")],["Pannes mineures à réparer",ac("min")],["Documents arrivant à échéance",ac("docech")],["Permis arrivant à échéance",ac("permech")],["Missions en retard",ac("misret")]];
+  const alist=(items,u)=>`<div class="al-list">${items.map(([l,n])=>`<button class="al-row" data-go="alertes"><span>${esc(l)}</span><span class="c" style="background:${n?(u?"var(--crit-bg)":"#c46a10"):"var(--ok-bg)"};color:${n?"#fff":"var(--ok)"}">${n}</span></button>`).join("")}</div>`;
+  const M=S.missions, CH=S.chauffeurs, PN=S.pannes, CO=S.conteneurs;
+  const chA=s=>CH.filter(h=>c.ch[h.id].alerte.includes(s)).length;
+  const nextP=CH.filter(h=>h.exp).sort((a,b)=>String(a.exp).localeCompare(String(b.exp))).slice(0,10);
+  const sumMA=sum(S.maintenances,m=>c.ma[m.id].total), sumAC=sum(S.accidents,a=>a.cout), DE=S.depenses;
+  const costs=[["Maintenance (garages)",sumMA],["Réparations après accident",sumAC],["Carburant",sum(DE,d=>c.de[d.id].carb)],["Péages",sum(DE,d=>d.peage)],["Frais de route",sum(DE,d=>d.frais)],["Réparations en route",sum(DE,d=>d.repar)],["Autres dépenses",sum(DE,d=>d.autres)]];
+  const ctot=costs.reduce((a,x)=>a+x[1],0);const cmx=Math.max(1,...costs.map(x=>x[1]));
+  const pj=PN.map(p=>c.pn[p.id].jours).filter(x=>x!=="");
+  const immob=V.filter(v=>c.veh[v.id].statut!==ST_OK).sort((a,b)=>(num(c.veh[b.id].jours))-(num(c.veh[a.id].jours)));
+  const pct=x=>(x*100).toLocaleString("fr-FR",{maximumFractionDigits:1})+" %";
+  const loading=!READY;
+  return`<div class="ph"><div><h1>Tableau de bord</h1><p>Situation au ${fD(TODAY)}. Combien de camions, où, disponibles ou non, pourquoi, depuis quand, et ce qui demande une action. Montants en ${esc(sv.devise)}.</p></div>
+    <div class="acts">${canW("pannes")?`<button class="btn" data-new="pannes">+ Panne</button>`:""}${canW("missions")?`<button class="btn" data-new="missions">+ Mission</button>`:""}${canW("depenses")?`<button class="btn" data-new="depenses">+ Dépense</button>`:""}<a class="btn amb" href="#alertes">Voir les alertes</a></div></div>
+  ${loading?`<div class="card empty">Chargement des données de la flotte…</div>`:!tot?`<div class="card empty">Aucun camion enregistré. Commencez par <a href="#flotte">ajouter vos camions</a>, ou importez votre classeur Excel depuis <a href="#parametres">Paramètres</a>.</div>`:""}
+  <div class="sec-t">La flotte en un coup d'œil</div>
+  <div class="tiles">
+    ${tile("Total flotte",tot,"Taux d'immobilisation : "+(tot?Math.round((1-dispo)*100):0)+" %","var(--navy)","flotte")}
+    ${tile("Opérationnels",ope,opeMin?`dont ${opeMin} avec panne mineure`:"aucune panne mineure","var(--ok)","flotte")}
+    ${tile("En mission",enMis,`dont ${charges} chargés`,"#2f6fd6","missions")}
+    ${tile("En panne",pg+ss,`dont ${ss} sans solution`,"#d23142","pannes")}
+    ${tile("Maintenance",ma,"au garage","#d97a00","maintenance")}
+    ${tile("Accidentés / HS",ar+hs,`dont ${hs} irréparable${hs>1?"s":""}`,"#8e5bb0","accidents")}
+    ${tile("Disponibilité",`<span style="color:${dcol}">${Math.round(dispo*100)} %</span>`,`libres maintenant : ${libres}`,dcol,"flotte")}
+  </div>
+  <div class="sec-t">Situation de la flotte</div>
+  <div class="g2">
+    <div class="panel"><h3>Statut technique</h3>${donut(STATUTS.map((s,i)=>[s,cnt(x=>x.statut===s),stCols[i]]))}</div>
+    <div class="panel"><h3>Disponibles / en service / indisponibles</h3>
+      <div class="stack" role="img" aria-label="Répartition de la disponibilité">${[[libres,"var(--ok)"],[enServ,"#2f6fd6"],[indisp,"#d23142"]].map(([n,col])=>n?`<span style="flex:${n};background:${col}">${n}</span>`:"").join("")}</div>
+      <div class="legend" style="margin-top:10px"><span><span class="dot" style="background:var(--ok)"></span>Disponibles (libres)<b>${libres}</b></span><span><span class="dot" style="background:#2f6fd6"></span>En service (mission, attente, retour)<b>${enServ}</b></span><span><span class="dot" style="background:#d23142"></span>Indisponibles (garage, immobilisés, accidentés, HS)<b>${indisp}</b></span></div>
+      <h3 style="margin-top:16px">Situation détaillée</h3>${bars(SITUATIONS.map(s=>[s,sit(s),TONE_COL[toneOf(s)]||"var(--navy)"]).filter(x=>x[1]>0),"var(--navy)")}</div>
+    <div class="panel"><h3>Camions par localisation</h3>${bars(locs,"#2f6fd6")}</div>
+    <div class="panel"><h3>Camions par type</h3>${bars(types,"var(--ok)")}</div>
+  </div>
+  <div class="sec-t">Alertes prioritaires</div>
+  <div class="g2">
+    <div class="panel"><h3 style="color:var(--bad)">Urgent</h3>${alist(urg,1)}</div>
+    <div class="panel"><h3 style="color:#c46a10">À traiter</h3>${alist(trt,0)}</div>
+  </div>
+  ${immob.length?`<div class="panel"><h3>Camions indisponibles : pourquoi et depuis quand</h3><div class="tw" style="border:0">${tableHTML(immob,[
+    c_("Camion",v=>plate(v.immat)),c_("Statut",v=>pill(c.veh[v.id].statut)),c_("Motif",v=>esc(c.veh[v.id].motif),"w"),c_("Garage",v=>esc(c.veh[v.id].garage)),c_("Pièce",v=>esc(c.veh[v.id].piece)),
+    c_("Depuis le",v=>fD(c.veh[v.id].depuis),"d"),c_("Jours",v=>c.veh[v.id].jours,"n")])}</div></div>`:""}
+  <div class="sec-t">Exploitation</div>
+  <div class="tiles">
+    ${tile("Missions en cours",M.filter(m=>m.statut==="EN COURS").length,"","#2f6fd6","missions")}
+    ${tile("Camions chargés",charges,"conteneur chargé à bord","var(--ok)","conteneurs")}
+    ${tile("Avec conteneur vide",cnt(x=>x.sitcont==="Conteneur vide"),"","#8a6d00","conteneurs")}
+    ${tile("Sans conteneur",cnt(x=>x.sitcont==="Sans conteneur"),"","#8a96a4","flotte")}
+    ${tile("Camions en attente",cnt(x=>/^En attente/.test(x.situation)),"mission, chargement ou déchargement","#d97a00","flotte")}
+    ${tile("Camions en retour",sit("En retour"),"","#2f6fd6","flotte")}
+    ${tile("Missions en retard",M.filter(m=>c.mis[m.id].retard>0).length,"","#d23142","missions")}
+  </div>
+  <div class="sec-t">Permis de conduire</div>
+  <div class="g2">
+    <div class="tiles" style="align-content:start">
+      ${tile("Chauffeurs",CH.length,"","var(--navy)","chauffeurs")}${tile("Permis valides",chA("valide"),"","var(--ok)","chauffeurs")}
+      ${tile("Expirent bientôt",chA("prochainement"),`sous ${sv.permisJours} jours`,"#d97a00","chauffeurs")}${tile("Permis expirés",chA("expiré"),"","#d23142","chauffeurs")}
+      ${tile("Non renseignés",chA("non renseigné"),"","#3a414c","chauffeurs")}
+    </div>
+    <div class="panel"><h3>Les 10 prochaines échéances de permis</h3><div class="tw" style="border:0">${tableHTML(nextP,[c_("Chauffeur",h=>esc(h.nom)),c_("N° permis",h=>esc(h.npermis)),c_("Type",h=>esc(h.permis)),c_("Expiration",h=>fD(h.exp),"d"),c_("Jours",h=>c.ch[h.id].jours,"n"),c_("Statut",h=>pill(c.ch[h.id].alerte))],{empty:"Aucune date d'expiration saisie."})}</div></div>
+  </div>
+  <div class="sec-t">Indicateurs de performance et coûts</div>
+  <div class="g4">
+    <div class="panel"><h3>Flotte</h3><dl class="kv"><dt>Taux de disponibilité</dt><dd>${pct(dispo)}</dd><dt>Taux d'immobilisation</dt><dd>${pct(tot?1-dispo:0)}</dd><dt>Véhicules opérationnels</dt><dd>${ope}</dd><dt>Véhicules immobilisés</dt><dd>${tot-ope}</dd><dt>Véhicules accidentés</dt><dd>${ar+hs}</dd></dl></div>
+    <div class="panel"><h3>Maintenance</h3><dl class="kv"><dt>Nombre de pannes</dt><dd>${PN.filter(p=>p.veh).length}</dd><dt>Pannes graves</dt><dd>${PN.filter(p=>p.type===PT_GR).length}</dd><dt>Pannes mineures</dt><dd>${PN.filter(p=>p.type===PT_MIN).length}</dd><dt>Pannes sans solution</dt><dd>${PN.filter(p=>p.statut==="PANNE SANS SOLUTION").length}</dd><dt>Durée moy. d'immobilisation</dt><dd>${pj.length?fN(pj.reduce((a,b)=>a+b,0)/pj.length,1)+" j":"—"}</dd><dt>Coût total de maintenance</dt><dd>${fM(sumMA)}</dd><dt>Coût moyen / véhicule</dt><dd>${fM(tot?sumMA/tot:0)}</dd></dl></div>
+    <div class="panel"><h3>Exploitation</h3><dl class="kv"><dt>Nombre de missions</dt><dd>${M.filter(m=>m.num).length}</dd><dt>Missions terminées</dt><dd>${M.filter(m=>m.statut==="TERMINÉE").length}</dd><dt>Missions en cours</dt><dd>${M.filter(m=>m.statut==="EN COURS").length}</dd><dt>Missions en retard</dt><dd>${M.filter(m=>c.mis[m.id].retard>0).length}</dd><dt>Conteneurs transportés</dt><dd>${CO.filter(k=>k.num).length}</dd><dt>Conteneurs chargés</dt><dd>${CO.filter(k=>k.chv==="CHARGÉ").length}</dd><dt>Conteneurs vides</dt><dd>${CO.filter(k=>k.chv==="VIDE").length}</dd></dl></div>
+    <div class="panel"><h3>Coûts d'exploitation (${esc(sv.devise)})</h3><div class="bars">${costs.map(([l,n])=>`<div class="bar" style="grid-template-columns:minmax(0,1fr) auto"><div class="tr"><div class="fl" style="width:${(n/cmx*100).toFixed(1)}%;--c:#d97a00;opacity:.3"></div><span class="lb">${esc(l)}</span></div><span class="nv">${fM(n)}</span></div>`).join("")}</div>
+      <dl class="kv" style="margin-top:10px;border-top:2px solid var(--line);padding-top:8px"><dt><b>Coût total d'exploitation</b></dt><dd>${fM(ctot)}</dd></dl></div>
+  </div>`;
+}
+
+/* ======================================================================
+   ALERTES
+   ====================================================================== */
+function vAlerts(){
+  const A=C.alerts;const tu=A.filter(a=>a.u).reduce((s,a)=>s+a.rows.length,0), to=A.filter(a=>!a.u).reduce((s,a)=>s+a.rows.length,0);
+  return`<div class="ph"><div><h1>Alertes</h1><p>Ce qui demande une action, mis à jour automatiquement. Traiter d'abord l'urgent, puis le reste. Une alerte disparaît dès que la donnée est corrigée. Cliquer une ligne pour ouvrir la fiche concernée.</p></div></div>
+  <div class="tiles">${tile("Urgent",tu,"cas à traiter en priorité","var(--crit-bg)")}${tile("À traiter",to,"cas à programmer","#c46a10")}${tile("Total",tu+to,"alertes actives","var(--navy)")}</div>
+  ${A.map((a,i)=>`<section class="ablk"><header class="${a.u?"u":"o"}"><span>${a.u?"Urgent":"À traiter"} : ${esc(a.lab)}</span><span>${a.rows.length} cas</span></header>
+    ${a.rows.length?`<div class="act">Action : ${esc(a.act)}</div><div class="tw" data-al="${i}">${tableHTML(a.rows,a.cols.map(([l,v,f])=>c_(l,v,f)))}</div>`:`<div class="ok-note">Rien à signaler.</div>`}</section>`).join("")}`;
+}
+
+/* ======================================================================
+   FICHE CAMION (historique)
+   ====================================================================== */
+function vFiche(){
+  const V=S.vehicules.slice().sort((a,b)=>String(a.immat).localeCompare(String(b.immat)));
+  if(!FICHE||!C.vByImmat[FICHE])FICHE=V[0]?.immat||null;
+  const v=C.vByImmat[FICHE];
+  const sel=`<select id="ficheSel" aria-label="Choisir un camion" class="btn" style="font-weight:600">${V.map(x=>`<option${x.immat===FICHE?" selected":""}>${esc(x.immat)}</option>`).join("")}</select>`;
+  if(!v)return`<div class="ph"><div><h1>Fiche camion</h1><p>Aucun camion enregistré.</p></div></div>`;
+  const x=cv(v),im=v.immat,c=C;
+  const F=(l,val)=>`<div><span>${esc(l)}</span><b>${val||'<span class="muted">—</span>'}</b></div>`;
+  const by=(col,k,f)=>S[col].filter(r=>r.veh===im).sort((a,b)=>String(b[k]||"").localeCompare(String(a[k]||"")));
+  const H=(t,col,rows,cols,newLbl)=>`<div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><h3 style="margin:0">${esc(t)} <span class="muted">(${rows.length})</span></h3>${canW(col)&&newLbl?`<button class="btn sm" data-new="${col}" data-veh="${esc(im)}">${esc(newLbl)}</button>`:""}</div><div class="tw" data-hist="${col}">${tableHTML(rows,cols,{empty:"Aucun enregistrement."})}</div></div>`;
+  const hm=by("missions","dep"),hc=by("conteneurs","dchg"),hp=by("pannes","date"),hma=by("maintenances","entree"),ha=by("accidents","date"),hd=by("documents","dexp"),he=by("depenses","date"),hen=by("entretiens","dder");
+  FICHE_ROWS={missions:hm,conteneurs:hc,pannes:hp,maintenances:hma,accidents:ha,documents:hd,depenses:he,entretiens:hen};
+  return`<div class="ph"><div><h1>Fiche camion</h1><p>Situation actuelle et tout l'historique du camion, saisies les plus récentes en premier.</p></div><div class="acts">${sel}${canW("vehicules")?`<button class="btn pri" data-edit-veh="${esc(v.id)}">Modifier le camion</button>`:""}</div></div>
+  <div class="panel"><div class="fiche-h">${plate(im)}<span style="font-family:var(--f-display);font-size:22px;font-weight:700">${esc(v.camion)} · ${esc(v.type)}</span>${pill(x.statut)}${pill(x.situation)}${x.mineure?pill("Panne mineure ouverte","amb"):""}</div>
+    ${x.anom.length?`<p class="anom" style="margin:10px 0 0"><b>Anomalies :</b> ${esc(x.anom.join(" · "))}</p>`:""}</div>
+  <div class="g2">
+    <div class="panel"><h3>Identification</h3><div class="fields">${F("Propriétaire",esc(v.proprio))}${F("Chauffeur",esc(v.chauffeur))}${F("Téléphone",esc(x.tel))}${F("Localisation",esc(v.loc))}${F("Kilométrage",fN(v.km)+(has(v.km)?" km":""))}${F("Dernière mise à jour",fD(v.maj))}${F("Observations",esc(v.obs))}</div></div>
+    <div class="panel"><h3>Situation actuelle</h3><div class="fields">${F("Mission en cours",esc(x.mission!=="—"?x.mission:""))}${F("Destination",esc(x.dest))}${F("Situation conteneur",esc(x.sitcont))}${F("N° conteneur",esc(x.ncont))}${F("Motif d'immobilisation",esc(x.motif))}${F("Garage",esc(x.garage))}${F("Pièce",esc(x.piece))}${F("Immobilisé depuis",x.depuis?fD(x.depuis)+" ("+x.jours+" j)":"")}${F("Documents",pill(x.docs))}${F("Entretien préventif",pill(x.entretien))}${F("Coût total cumulé",fM(x.ctot)+" "+esc(P.seuils.devise))}</div></div>
+  </div>
+  <div class="tiles">${tile("Missions",hm.length,"","#2f6fd6")}${tile("Pannes",hp.length,"","#d23142")}${tile("Accidents",ha.length,"","#8e5bb0")}${tile("Conteneurs",hc.length,"","var(--ok)")}${tile("Carburant",fM(sum(he,d=>c.de[d.id].carb)),esc(P.seuils.devise),"#d97a00")}${tile("Dépenses de route",fM(sum(he,d=>c.de[d.id].total)),esc(P.seuils.devise),"#d97a00")}</div>
+  ${H("Missions","missions",hm,[c_("N°",m=>esc(m.num)),c_("Activité",m=>esc(m.activite)),c_("Départ",m=>fD(m.dep),"d"),c_("Destination",m=>esc(m.dest)),c_("Statut",m=>pill(m.statut)),c_("Phase",m=>esc(m.phase))],"+ Mission")}
+  ${H("Pannes","pannes",hp,[c_("Date",p=>fD(p.date),"d"),c_("Gravité",p=>p.type===PT_GR?pill("GRAVE","bad"):pill("MINEURE","amb")),c_("Organe",p=>esc(p.classif)),c_("Nature",p=>esc(p.nature),"w"),c_("Statut",p=>pill(p.statut)),c_("Jours immob.",p=>c.pn[p.id].jours,"n")],"+ Déclarer une panne")}
+  ${H("Maintenance","maintenances",hma,[c_("Entrée",m=>fD(m.entree),"d"),c_("Origine",m=>esc(m.origine)),c_("Type",m=>esc(m.type)),c_("Garage",m=>esc(m.garage)),c_("Coût total",m=>fM(c.ma[m.id].total),"n"),c_("Statut",m=>pill(m.statut))],"+ Entrée au garage")}
+  ${H("Accidents","accidents",ha,[c_("Date",a=>fD(a.date),"d"),c_("Catégorie",a=>pill(a.cat===AC_HS?"IRRÉPARABLE / HS":"RÉPARABLE",a.cat===AC_HS?"hs":"acc")),c_("Lieu",a=>esc(a.lieu)),c_("Description",a=>esc(a.desc),"w"),c_("Coût",a=>fM(a.cout),"n"),c_("Dossier",a=>pill(a.statut))],"+ Accident")}
+  ${H("Conteneurs","conteneurs",hc,[c_("N°",k=>esc(k.num)),c_("Type",k=>esc(k.tcont)),c_("Chargé / vide",k=>esc(k.chv)),c_("Situation",k=>pill(k.sit)),c_("Chargement",k=>fDT(k.dchg),"d"),c_("Débarquement",k=>fDT(k.ddeb),"d")],"+ Conteneur")}
+  ${H("Documents administratifs","documents",hd,[c_("Document",d=>esc(d.doc)),c_("N°",d=>esc(d.ndoc)),c_("Expiration",d=>fD(d.dexp),"d"),c_("Jours restants",d=>c.do[d.id].jours,"n"),c_("Statut",d=>pill(c.do[d.id].statut,["ok","amb","warn","bad","hs"][c.do[d.id].niv]))],"+ Document")}
+  ${H("Entretien préventif","entretiens",hen,[c_("Entretien",e=>esc(e.type)),c_("Dernier",e=>fD(e.dder),"d"),c_("Km dernier",e=>fN(e.kder),"n"),c_("Km restants",e=>fN(c.en[e.id].krest),"n"),c_("Jours restants",e=>c.en[e.id].jrest,"n"),c_("Statut",e=>pill(c.en[e.id].statut))],"+ Entretien")}
+  ${H("Carburant & dépenses","depenses",he,[c_("Date",d=>fD(d.date),"d"),c_("Mission",d=>esc(d.mission)),c_("Carburant (L)",d=>fN(d.qte),"n"),c_("Montant carburant",d=>fM(c.de[d.id].carb),"n"),c_("Total",d=>fM(c.de[d.id].total),"n",{sum:d=>c.de[d.id].total})],"+ Dépense")}`;
+}
+let FICHE_ROWS={};
+
+/* ======================================================================
+   PARAMÈTRES (listes, seuils, import / export)
+   ====================================================================== */
+let DRAFT=null, DIRTY=false, BUSY=false;
+function vParams(){
+  DRAFT=structuredClone(P);DIRTY=false;const ro=!isAdmin();
+  const s=P.seuils;const nDemo=COLS.reduce((a,c)=>a+S[c].filter(r=>r.demo).length,0);const nAll=COLS.reduce((a,c)=>a+S[c].length,0);
+  const seuil=(k,l)=>`<div class="f"><label for="s_${k}">${esc(l)}</label><input id="s_${k}" data-seuil="${k}" type="${k==="devise"?"text":"number"}" value="${esc(s[k])}" ${ro?"disabled":""}></div>`;
+  return`<div class="ph"><div><h1>Paramètres</h1><p>Listes des menus déroulants, seuils d'alerte, périodicités d'entretien et documents obligatoires. Les listes verrouillées sont utilisées par les calculs et ne se modifient pas.</p></div>
+    <div class="acts">${ro?"":`<button class="btn pri" id="saveP">Enregistrer les paramètres</button>`}</div></div>
+  <div class="sec-t">Données</div>
+  <div class="g2">
+    <div class="panel"><h3>Importer le classeur Excel</h3><p class="muted" style="margin:0 0 10px;font-size:13.5px">Reprend les feuilles Flotte, Missions, Conteneurs, Chauffeurs, Pannes, Maintenance, Accidents, Documents, Carburant & dépenses et Entretien préventif du fichier Gestion_Flotte_v2.xlsx. Les données actuelles (${nAll} lignes) sont <b>remplacées</b> pour tous les utilisateurs.</p>
+      ${ro||!READY?`<p class="muted" style="font-size:13px">Réservé aux administrateurs.</p>`:`<button class="btn" id="impBtn">Choisir le fichier .xlsx…</button>`}<div id="impZone" style="margin-top:10px"></div></div>
+    <div class="panel"><h3>Exporter vers Excel</h3><p class="muted" style="margin:0 0 10px;font-size:13.5px">Un classeur avec une feuille par rubrique, colonnes calculées comprises (statut, situation, alertes…). Utile pour une sauvegarde ou un envoi.</p>
+      <button class="btn" id="expBtn">Télécharger l'export .xlsx</button>
+      ${nDemo&&isAdmin()?`<h3 style="margin-top:18px">Données d'exemple</h3><p class="muted" style="margin:0 0 10px;font-size:13.5px">${nDemo} lignes fictives (scénario Conakry – Mali) sont chargées pour la démonstration.</p><div id="demoZone"><button class="btn dng" id="demoBtn">Supprimer les données d'exemple</button></div>`:""}</div>
+  </div>
+  <div class="sec-t">Seuils d'alerte et réglages</div>
+  <div class="panel"><div class="fg">${seuil("permisJours","Permis : alerte « expire prochainement » (jours avant)")}${seuil("docSurveiller","Documents : « à surveiller » en dessous de (jours)")}${seuil("docProche","Documents : « échéance proche » en dessous de (jours)")}${seuil("entretienKm","Entretien : alerte avant échéance (km)")}${seuil("entretienJours","Entretien : alerte avant échéance (jours)")}${seuil("devise","Devise des montants")}</div></div>
+  <div class="g2">
+    <div class="panel"><h3>Entretiens périodiques</h3><div class="tw" style="border:0"><table class="mini"><thead><tr><th>Entretien</th><th>Périodicité (km)</th><th>Périodicité (jours)</th><th></th></tr></thead><tbody id="entT"></tbody></table></div>
+      ${ro?"":`<div class="addrow"><input id="entNew" placeholder="Nouvel entretien…" aria-label="Nouvel entretien"><button class="btn sm" id="entAdd">Ajouter</button></div>`}</div>
+    <div class="panel"><h3>Documents administratifs</h3><div class="tw" style="border:0"><table class="mini"><thead><tr><th>Document</th><th>Obligatoire</th><th></th></tr></thead><tbody id="docT"></tbody></table></div>
+      ${ro?"":`<div class="addrow"><input id="docNew" placeholder="Nouveau document…" aria-label="Nouveau document"><button class="btn sm" id="docAdd">Ajouter</button></div>`}</div>
+  </div>
+  <div class="sec-t">Listes modifiables</div>
+  <div class="pgrid" id="lists"></div>
+  <div class="sec-t">Listes verrouillées (utilisées par les calculs)</div>
+  <div class="pgrid">${[["Statuts techniques (calculés)",STATUTS],["Situations du camion (calculées)",SITUATIONS],...Object.entries(LOCK).map(([k,v])=>[LOCK_LABELS[k],v])].map(([l,v])=>`<div class="panel"><h3>${esc(l)}</h3><div class="chips">${v.map(x=>`<span class="chip" style="padding-right:8px">${esc(x)}</span>`).join("")}</div></div>`).join("")}</div>`;
+}
+function renderParamsDraft(){
+  const ro=!isAdmin();
+  $("#lists").innerHTML=Object.keys(LIST_LABELS).map(k=>`<div class="panel"><h3>${esc(LIST_LABELS[k])}</h3><div class="chips">${(DRAFT.listes[k]||[]).map((x,i)=>`<span class="chip">${esc(x)}${ro?"":`<button data-rm="${k}" data-i="${i}" aria-label="Retirer ${esc(x)}">×</button>`}</span>`).join("")}</div>
+    ${ro?"":`<div class="addrow"><input data-addin="${k}" placeholder="Ajouter une valeur…" aria-label="Ajouter à ${esc(LIST_LABELS[k])}"><button class="btn sm" data-add="${k}">Ajouter</button></div>`}</div>`).join("");
+  $("#entT").innerHTML=DRAFT.entretiens.map((e,i)=>`<tr><td>${esc(e.type)}</td><td><input type="number" data-ek="${i}" data-f="km" value="${has(e.km)?e.km:""}" ${ro?"disabled":""} aria-label="Km ${esc(e.type)}"></td><td><input type="number" data-ek="${i}" data-f="jours" value="${has(e.jours)?e.jours:""}" ${ro?"disabled":""} aria-label="Jours ${esc(e.type)}"></td><td>${ro?"":`<button class="btn sm" data-erm="${i}" aria-label="Retirer">×</button>`}</td></tr>`).join("");
+  $("#docT").innerHTML=DRAFT.documents.map((d,i)=>`<tr><td>${esc(d.nom)}</td><td><input type="checkbox" data-dob="${i}" ${d.obligatoire?"checked":""} ${ro?"disabled":""} style="width:auto" aria-label="Obligatoire ${esc(d.nom)}"></td><td>${ro?"":`<button class="btn sm" data-drm="${i}" aria-label="Retirer">×</button>`}</td></tr>`).join("");
+}
+
+/* ======================================================================
+   FORMULAIRE (ajout / modification)
+   ====================================================================== */
+function opts(src){
+  if(src.startsWith("!"))return LOCK[src.slice(1)];
+  if(src==="@vehicules")return S.vehicules.map(v=>v.immat).filter(Boolean).sort();
+  if(src==="@chauffeurs")return S.chauffeurs.map(h=>h.nom).filter(Boolean).sort((a,b)=>a.localeCompare(b,"fr"));
+  if(src==="@missions")return S.missions.map(m=>m.num).filter(Boolean).sort().reverse();
+  if(src==="@docs")return P.documents.map(d=>d.nom);
+  if(src==="@entretiens")return P.entretiens.map(e=>e.type);
+  return P.listes[src]||[];
+}
+function nextMission(){const y=new Date().getFullYear();let mx=0;S.missions.forEach(m=>{const r=/^M-(\d{4})-(\d+)$/.exec(m.num||"");if(r&&+r[1]===y)mx=Math.max(mx,+r[2])});return`M-${y}-${String(mx+1).padStart(3,"0")}`}
+let FORM=null;
+function openForm(col,row,preset){
+  const E=ENT[col];const isNew=!row;const data=row?{...row}:{};
+  if(isNew){E.fields.forEach(f=>{if(f.def==="today")data[f.k]=TODAY;else if(f.def==="nextMission")data[f.k]=nextMission();else if(f.def)data[f.k]=f.def});Object.assign(data,preset||{})}
+  FORM={col,id:row?row.id:null,isNew};
+  const ro=!canW(col);
+  const field=f=>{
+    if(f.s)return`<div class="fsec">${esc(f.s)}</div>`;
+    const v=data[f.k]??"";const id="f_"+f.k;const dis=ro||(!isNew&&f.lockEdit)?"disabled":"";
+    let inp;
+    if(f.t==="sel"){let o=opts(f.o);if(v&&!o.includes(v))o=[v,...o];inp=`<select id="${id}" name="${f.k}" ${dis}><option value=""></option>${o.map(x=>`<option${x===v?" selected":""}>${esc(x)}</option>`).join("")}</select>`}
+    else if(f.t==="free")inp=`<input id="${id}" name="${f.k}" list="dl_${f.k}" value="${esc(v)}" ${dis}><datalist id="dl_${f.k}">${opts(f.o).map(x=>`<option value="${esc(x)}">`).join("")}</datalist>`;
+    else if(f.t==="area")inp=`<textarea id="${id}" name="${f.k}" ${dis}>${esc(v)}</textarea>`;
+    else{const ty={num:"number",date:"date",dt:"datetime-local",time:"time"}[f.t]||"text";inp=`<input id="${id}" name="${f.k}" type="${ty}" ${f.t==="num"?'step="any" min="0" inputmode="decimal"':""} value="${esc(v)}" ${dis}>`}
+    return`<div class="f${f.t==="area"||f.full?" full":""}" data-k="${f.k}"><label for="${id}">${esc(f.l)}${f.req?" <i>*</i>":""}</label>${inp}${f.hint?`<span class="hint">${esc(f.hint)}</span>`:""}<span class="em" hidden></span></div>`};
+  const calc=!isNew?calcSummary(col,row):"";
+  const title=(isNew?"Nouveau":"Modifier")+(["panne","mission","dépense","intervention"].includes(E.un)?(isNew?"lle ":" la "):(isNew?" ":" le "))+E.un;
+  $("#modal").innerHTML=`<div class="ov" id="ov"><div class="mod" role="dialog" aria-modal="true" aria-labelledby="mt">
+    <header><h2 id="mt">${esc(isNew?(["panne","mission","dépense","intervention"].includes(E.un)?"Nouvelle ":"Nouveau ")+E.un:"Modifier : "+(row[E.key]||E.un))}</h2><button class="btn sm" data-close aria-label="Fermer">✕</button></header>
+    <form class="bd" id="frm" novalidate>${calc}<div class="fg">${E.fields.map(field).join("")}</div></form>
+    <footer><div id="fleft">${!isNew&&!ro?`<button class="btn dng" type="button" id="delB">Supprimer</button>`:""}<span class="muted" id="trace" style="font-size:12.5px;margin-left:8px"></span></div>
+      <div style="display:flex;gap:8px"><button class="btn" type="button" data-close>${ro?"Fermer":"Annuler"}</button>${ro?"":`<button class="btn pri" type="submit" form="frm" id="saveB">Enregistrer</button>`}</div></footer></div></div>`;
+  const frm=$("#frm");
+  frm.addEventListener("submit",e=>{e.preventDefault();submitForm()});
+  frm.addEventListener("change",e=>autoFill(col,e.target));
+  $("#ov").addEventListener("click",e=>{if(e.target.id==="ov"||e.target.closest("[data-close]"))closeForm()});
+  const db=$("#delB");if(db)db.onclick=()=>{$("#fleft").innerHTML=`<span class="confirm">Supprimer définitivement ? <button class="btn dng sm" type="button" id="delY">Oui, supprimer</button><button class="btn sm" type="button" id="delN">Non</button></span>`;
+    $("#delN").onclick=()=>openForm(col,row);$("#delY").onclick=async()=>{try{await delDoc(col,row.id);closeForm();toast("Supprimé")}catch(err){toast("Suppression impossible : "+(err.message||err.code))}}};
+  if(row&&row._maj){let who="";const tr=$("#trace");const put=()=>tr.textContent="Modifié le "+new Date(row._maj).toLocaleString("fr-FR",{dateStyle:"short",timeStyle:"short"})+(who?" par "+who:"");put();
+    who=nameOf(row._par);put()}
+  setTimeout(()=>{const f=frm.querySelector("input:not([disabled]),select:not([disabled])");if(f)f.focus()},30);
+}
+function closeForm(){$("#modal").innerHTML="";FORM=null}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&FORM)closeForm()});
+function autoFill(col,t){
+  const set=(k,v)=>{const el=$("#f_"+k);if(el&&!el.value)el.value=v};
+  if(col==="pannes"&&t.name==="statut"&&t.value==="RÉPARÉE")set("dreel",TODAY);
+  if(col==="maintenances"&&t.name==="statut"&&t.value==="TERMINÉE")set("sreel",TODAY);
+  if(col==="missions"&&t.name==="statut"&&t.value==="TERMINÉE")set("reel",TODAY);
+  if(col==="missions"&&t.name==="statut"&&t.value==="EN COURS"){set("dep",TODAY);set("phase","En mission")}
+  if(col==="missions"&&t.name==="veh"){const v=C.vByImmat[t.value];if(v&&v.chauffeur)set("chauffeur",v.chauffeur)}
+  if(col==="accidents"&&t.name==="veh"){const v=C.vByImmat[t.value];if(v&&v.chauffeur)set("chauffeur",v.chauffeur)}
+  if(col==="conteneurs"&&t.name==="veh"){const m=S.missions.find(m=>m.veh===t.value&&m.statut==="EN COURS");if(m)set("mission",m.num)}
+  if(col==="depenses"&&t.name==="veh"){const m=S.missions.find(m=>m.veh===t.value&&m.statut==="EN COURS");if(m)set("mission",m.num)}
+  if(col==="pannes"&&t.name==="veh"){const v=C.vByImmat[t.value];if(v&&v.loc)set("lieu",v.loc)}
+}
+function calcSummary(col,r){
+  const c=C;let items=[];
+  if(col==="vehicules"){const x=cv(r);items=[["Statut technique",pill(x.statut)],["Situation",pill(x.situation)],["Mission en cours",esc(x.mission)],["Conteneur",esc(x.sitcont)],["Documents",pill(x.docs)],["Entretien",pill(x.entretien)]];
+    if(x.anom.length)items.push(["Anomalies",`<span class="anom">${esc(x.anom.join(" · "))}</span>`])}
+  else if(col==="missions"){const x=c.mis[r.id];items=[["Durée",x.duree!==""?x.duree+" j":""],["Retard",x.retard!==""?x.retard+" j":""],["Conteneurs",x.nbcont],["Localisation du camion",esc(x.locact)]];if(x.ctrl.length)items.push(["Contrôles",`<span class="anom">${esc(x.ctrl.join(" · "))}</span>`])}
+  else if(col==="conteneurs"){const x=c.co[r.id];items=[["Client",esc(x.client)],["Chargement",esc(x.charg)],["Destination",esc(x.dest)],["Jours sur le plateau",x.duree!==""?fN(x.duree,1):""]];if(x.ctrl.length)items.push(["Contrôles",`<span class="anom">${esc(x.ctrl.join(" · "))}</span>`])}
+  else if(col==="chauffeurs"){const x=c.ch[r.id];items=[["Camion affecté",esc(x.veh)],["Jours avant expiration",x.jours],["Alerte permis",pill(x.alerte)],["Missions",x.nbmis],["Accidents",x.nbacc]]}
+  else if(col==="pannes"){const x=c.pn[r.id];items=[["Mission au moment de la panne",esc(x.mission)],["Chauffeur",esc(x.chauffeur)],["Jours d'immobilisation",x.jours],["Retard réparation",x.retard!==""?x.retard+" j":""]];if(x.ctrl.length)items.push(["Contrôles",`<span class="anom">${esc(x.ctrl.join(" · "))}</span>`])}
+  else if(col==="maintenances"){const x=c.ma[r.id];items=[["Coût total",fM(x.total)],["Durée au garage",x.duree!==""?x.duree+" j":""],["Retard sortie",x.retard!==""?x.retard+" j":""]]}
+  else if(col==="accidents"){const x=c.ac[r.id];items=[["Mission au moment de l'accident",esc(x.mission)],["Jours d'immobilisation",x.jours]]}
+  else if(col==="documents"){const x=c.do[r.id];items=[["Jours restants",x.jours],["Statut",pill(x.statut,["ok","amb","warn","bad","hs"][x.niv])]]}
+  else if(col==="depenses"){const x=c.de[r.id];items=[["Montant carburant",fM(x.carb)],["Total dépenses",fM(x.total)]]}
+  else if(col==="entretiens"){const x=c.en[r.id];items=[["Prochaine échéance (km)",fN(x.ekm)],["Prochaine échéance (date)",x.ej!==""?fD(isoOf(x.ej)):""],["Km restants",fN(x.krest)],["Jours restants",x.jrest],["Statut",pill(x.statut)]]}
+  items=items.filter(i=>i[1]!==""&&i[1]!=null);
+  return items.length?`<div class="calc"><h4>Calculé automatiquement</h4><div class="fields">${items.map(([l,v])=>`<div><span>${esc(l)}</span><b>${v}</b></div>`).join("")}</div></div>`:"";
+}
+async function submitForm(){
+  const{col,id,isNew}=FORM;const E=ENT[col];const frm=$("#frm");const data={};
+  const old=id?S[col].find(r=>r.id===id)||{}:{};
+  // conserver les champs non présents dans le formulaire (ex. marque d'exemple)
+  Object.keys(old).forEach(k=>{if(k!=="id"&&!k.startsWith("_"))data[k]=old[k]});
+  E.fields.forEach(f=>{if(!f.k)return;const el=frm.elements[f.k];if(!el||el.disabled)return;let v=el.value.trim();
+    if(f.t==="num")v=v===""?"":Number(v);if(v===""||v==null)delete data[f.k];else data[f.k]=v});
+  frm.querySelectorAll(".f").forEach(d=>{d.classList.remove("err");const m=d.querySelector(".em");m.hidden=true});
+  const errs=[];const bad=(k,m)=>errs.push([k,m]);
+  E.fields.forEach(f=>{if(!f.k)return;const v=data[f.k];
+    if(f.req&&!has(v))bad(f.k,"Champ obligatoire.");
+    if(f.uniq&&has(v)&&S[col].some(r=>r.id!==id&&String(r[f.k]).trim().toLowerCase()===String(v).toLowerCase()))bad(f.k,"Cette valeur existe déjà (doublon interdit).");
+    if(f.t==="num"&&has(v)&&(!isFinite(v)||v<0))bad(f.k,"Saisir un nombre positif.");
+    if(f.after&&has(v)&&has(data[f.after])&&dnum(v)<dnum(data[f.after]))bad(f.k,"Date antérieure à la date de départ.")});
+  if(errs.length){errs.forEach(([k,m])=>{const d=frm.querySelector(`.f[data-k="${k}"]`);if(d){d.classList.add("err");const e=d.querySelector(".em");e.textContent=m;e.hidden=false}});
+    const first=frm.querySelector(".f.err input,.f.err select");if(first)first.focus();return}
+  const b=$("#saveB");b.disabled=true;b.textContent="Enregistrement…";
+  try{
+    await putDoc(col,id||newId(),data);
+    // saisie unique : un kilométrage de dépense plus élevé met à jour la fiche du camion
+    if(col==="depenses"&&has(data.km)&&canW("vehicules")){const v=C.vByImmat[data.veh]||S.vehicules.find(x=>x.immat===data.veh);
+      if(v&&num(data.km)>num(v.km)){const{id:vid,...rest}=v;await putDoc("vehicules",vid,{...rest,km:num(data.km),maj:data.date||TODAY})}}
+    closeForm();toast(isNew?"Enregistré":"Modifications enregistrées");
+  }catch(err){b.disabled=false;b.textContent="Enregistrer";
+    const msg=err&&err.code==="invalid_argument"?"Vous n'avez pas le droit de modifier ces données.":err&&err.code==="quota_exceeded"?"La base est pleine : supprimez d'anciennes lignes.":"Enregistrement impossible, réessayez.";
+    toast(msg)}
+}
+
+/* ======================================================================
+   IMPORT / EXPORT EXCEL
+   ====================================================================== */
+const XL={ // libellés des colonnes de saisie du classeur v2 → champ
+ vehicules:{immat:"Immatriculation",camion:"N° Camion",type:"Type de véhicule",proprio:"Propriétaire",chauffeur:"Chauffeur affecté",loc:"Localisation actuelle",km:"Kilométrage",maj:"Dernière mise à jour",obs:"Observations"},
+ missions:{num:"N° mission",activite:"Type d'activité",veh:"Véhicule",chauffeur:"Chauffeur",client:"Client",charg:"Lieu de chargement",dest:"Destination",cargo:"Type de cargaison",poids:"Poids / volume (t ou m³)",dep:"Date de départ",prev:"Date prévue de retour",reel:"Date réelle de retour",statut:"Statut de la mission",phase:"Phase (si EN COURS)"},
+ conteneurs:{num:"N° conteneur",tcont:"Type de conteneur",veh:"Camion (immatriculation)",mission:"N° mission",chv:"Chargé / vide",sit:"Situation du conteneur",dchg:"Date et heure de chargement",ddeb:"Date et heure de débarquement",etat:"État du conteneur",obs:"Observations"},
+ chauffeurs:{nom:"Nom et prénom",mat:"Matricule",tel:"Téléphone",permis:"Type de permis",npermis:"N° du permis",demi:"Date d'émission",exp:"Date d'expiration",statut:"Statut du chauffeur",obs:"Observations"},
+ pannes:{veh:"Véhicule",date:"Date de panne",heure:"Heure",lieu:"Lieu / localisation",type:"Niveau de gravité",classif:"Classification / organe",nature:"Nature de la panne",diag:"Diagnostic",garage:"Garage",piece:"Pièce nécessaire",dispo:"Pièce disponible ?",cout:"Coût estimatif",dprev:"Date prévue de réparation",dreel:"Date réelle de réparation",statut:"Statut de la panne",motif:"Motif de l'absence de solution",decision:"Décision de la Direction",obs:"Observations"},
+ maintenances:{veh:"Véhicule",origine:"Origine",type:"Type d'intervention",garage:"Garage",entree:"Date d'entrée au garage",travaux:"Travaux à effectuer",pieces:"Pièces utilisées",cp:"Coût des pièces",cmo:"Coût main-d'œuvre",sprev:"Date prévue de sortie",sreel:"Date réelle de sortie",statut:"Statut",obs:"Observations"},
+ accidents:{veh:"Véhicule",cat:"Catégorie",date:"Date",heure:"Heure",lieu:"Lieu",chauffeur:"Chauffeur",desc:"Description",grav:"Gravité",domm:"Dommages",estim:"Estimation des réparations",assur:"Assurance",dossier:"N° dossier assurance",garage:"Garage",entree:"Date d'entrée au garage",rprev:"Remise en service prévue",reel:"Remise en service réelle",cout:"Coût de réparation",resp:"Responsabilité",statut:"Statut du dossier",reforme:"Décision de réforme (si HS)",rempl:"Décision de remplacement (si HS)",valeur:"Valeur estimative du véhicule",obsdir:"Observations de la Direction",obs:"Observations"},
+ documents:{veh:"Véhicule",doc:"Document",ndoc:"N° document",demi:"Date d'émission",dexp:"Date d'expiration",obs:"Observations"},
+ depenses:{date:"Date",veh:"Véhicule",mission:"Mission",km:"Kilométrage",qte:"Quantité de carburant (L)",pu:"Prix unitaire",peage:"Péage",frais:"Frais de route",repar:"Réparation en route",autres:"Autres dépenses",obs:"Observations"},
+ entretiens:{veh:"Véhicule",type:"Entretien",dder:"Date du dernier entretien",kder:"Km au dernier entretien",obs:"Observations"},
+};
+const norm=s=>String(s??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g,"'").replace(/\s+/g," ").trim().toLowerCase();
+function xlVal(v,t){
+  if(v===null||v===undefined||v==="")return undefined;
+  if(t==="date"||t==="dt"||t==="time"){
+    if(typeof v==="number"){const days=Math.floor(v),fr=v-days;const iso=isoOf(days-25569);const mins=Math.round(fr*1440);const hm=pad(Math.floor(mins/60)%24)+":"+pad(mins%60);
+      return t==="date"?iso:t==="time"?hm:iso+"T"+hm}
+    const m=/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2}))?/.exec(String(v));if(m){const iso=`${m[3]}-${pad(m[2])}-${pad(m[1])}`;return t==="dt"?iso+"T"+pad(m[4]||0)+":"+(m[5]||"00"):iso}
+    return String(v).trim()}
+  if(t==="num"){const n=num(v);return isFinite(n)?n:undefined}
+  const s=String(v).trim();return s===""?undefined:s;
+}
+function parseWorkbook(buf){
+  const wb=XLSX.read(buf,{type:"array",cellDates:false});const out={};const notes=[];
+  COLS.forEach(col=>{
+    const E=ENT[col];const ws=wb.Sheets[E.sheet]||wb.Sheets[Object.keys(wb.Sheets).find(n=>norm(n)===norm(E.sheet))];
+    if(!ws){notes.push(`Feuille « ${E.sheet} » absente`);out[col]=[];return}
+    const rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:""});
+    let hi=rows.findIndex(r=>r.some(c=>norm(c)===norm(XL[col][E.key==="veh"&&col==="depenses"?"veh":Object.keys(XL[col])[0]])));
+    if(hi<0){notes.push(`En-têtes introuvables dans « ${E.sheet} »`);out[col]=[];return}
+    const hdr=rows[hi].map(norm);const map={};
+    Object.entries(XL[col]).forEach(([k,l])=>{const i=hdr.indexOf(norm(l));if(i>=0&&map[k]===undefined)map[k]=i});
+    const types={};E.fields.forEach(f=>{if(f.k)types[f.k]=f.t});
+    const recs=[];
+    for(let r=hi+1;r<rows.length;r++){const row=rows[r];const d={};
+      Object.entries(map).forEach(([k,i])=>{const v=xlVal(row[i],types[k]);if(v!==undefined)d[k]=v});
+      const keyF=col==="depenses"?"veh":E.key;if(!has(d[keyF]))continue;recs.push(d)}
+    out[col]=recs});
+  return{out,notes};
+}
+async function doImport(file){
+  const z=$("#impZone");BUSY=true;z.innerHTML=`<span class="muted">Lecture du fichier…</span>`;
+  try{const buf=await file.arrayBuffer();const{out,notes}=parseWorkbook(new Uint8Array(buf));
+    const n=COLS.reduce((a,c)=>a+out[c].length,0);
+    if(!n){BUSY=false;z.innerHTML=`<p class="anom">Aucune donnée reconnue dans ce fichier. Vérifiez qu'il s'agit bien du classeur de gestion de flotte (feuilles FLOTTE, PANNES…).</p>`;return}
+    const cur=COLS.reduce((a,c)=>a+S[c].length,0);
+    z.innerHTML=`<div class="calc"><h4>Contenu reconnu</h4><div class="fields">${COLS.map(c=>`<div><span>${esc(ENT[c].nom)}</span><b>${out[c].length}</b></div>`).join("")}</div>${notes.length?`<p class="anom" style="margin:8px 0 0">${esc(notes.join(" · "))}</p>`:""}</div>
+      <p class="confirm" style="margin-top:10px">Remplacer les ${cur} lignes actuelles par ces ${n} lignes ? <button class="btn dng sm" id="impY">Oui, remplacer</button><button class="btn sm" id="impN">Annuler</button></p>`;
+    $("#impN").onclick=()=>{z.innerHTML="";BUSY=false};
+    $("#impY").onclick=async()=>{z.innerHTML=`<span id="impP" class="muted">Import en cours…</span>`;const prog=$("#impP");
+      try{const dels=COLS.flatMap(c=>S[c].map(r=>[c,r.id]));const adds=COLS.flatMap(c=>out[c].map(d=>[c,d]));const total=dels.length+adds.length;let k=0;const tick=()=>{k++;prog.textContent=`Import en cours… ${Math.round(k/total*100)} %`};
+        await pool(dels,4,async([c,id])=>{await delDoc(c,id);tick()});
+        await pool(adds,4,async([c,d])=>{await putDoc(c,newId(),d);tick()});
+        BUSY=false;toast(`Import terminé : ${n} lignes enregistrées`);schedule(true)}
+      catch(err){z.innerHTML=`<p class="anom">L'import s'est interrompu (${esc(err.code||err.message||"erreur")}). Les données sont partiellement importées ; relancez l'import pour recommencer proprement.</p>`;BUSY=false}}}
+  catch(err){BUSY=false;z.innerHTML=`<p class="anom">Fichier illisible. Choisissez un fichier .xlsx enregistré depuis Excel.</p>`}
+}
+async function doExport(){
+  if(!window.XLSX){toast("Module Excel non chargé");return}
+  const wb=XLSX.utils.book_new();const c=C;
+  const sheets=[
+    ["FLOTTE","vehicules",r=>({...pick(r,"vehicules"),"Téléphone chauffeur":cv(r).tel,"STATUT TECHNIQUE":cv(r).statut,"SITUATION DU CAMION":cv(r).situation,"Panne mineure":cv(r).mineure?"OUI":"NON","Mission en cours":cv(r).mission,"Destination ":cv(r).dest,"Situation conteneur":cv(r).sitcont,"N° conteneur à bord":cv(r).ncont,"Motif d'immobilisation":cv(r).motif,"Garage":cv(r).garage,"Pièce":cv(r).piece,"Immobilisé depuis le":fD(cv(r).depuis),"Jours d'immobilisation":cv(r).jours,"Documents":cv(r).docs,"Entretien préventif":cv(r).entretien,"Coût total cumulé":cv(r).ctot,"Anomalies":cv(r).anom.join(" · ")})],
+    ["MISSIONS","missions",r=>({...pick(r,"missions"),"Nb conteneurs":c.mis[r.id].nbcont,"Durée (jours)":c.mis[r.id].duree,"Jours de retard":c.mis[r.id].retard,"Contrôles":c.mis[r.id].ctrl.join(" · ")})],
+    ["CONTENEURS","conteneurs",r=>({...pick(r,"conteneurs"),"Client":c.co[r.id].client,"Destination":c.co[r.id].dest,"Jours sur le plateau":c.co[r.id].duree===""?"":Math.round(c.co[r.id].duree*10)/10,"Contrôles":c.co[r.id].ctrl.join(" · ")})],
+    ["CHAUFFEURS","chauffeurs",r=>({...pick(r,"chauffeurs"),"Véhicule affecté":c.ch[r.id].veh,"Jours avant expiration":c.ch[r.id].jours,"Alerte permis":c.ch[r.id].alerte,"Nb missions":c.ch[r.id].nbmis,"Accidents":c.ch[r.id].nbacc})],
+    ["PANNES","pannes",r=>({...pick(r,"pannes"),"Mission en cours":c.pn[r.id].mission,"Chauffeur":c.pn[r.id].chauffeur,"Jours d'immobilisation":c.pn[r.id].jours,"Retard réparation (j)":c.pn[r.id].retard,"Contrôles":c.pn[r.id].ctrl.join(" · ")})],
+    ["MAINTENANCE","maintenances",r=>({...pick(r,"maintenances"),"Coût total":c.ma[r.id].total,"Durée au garage (j)":c.ma[r.id].duree,"Retard sortie (j)":c.ma[r.id].retard})],
+    ["ACCIDENTS","accidents",r=>({...pick(r,"accidents"),"Mission":c.ac[r.id].mission,"Jours d'immobilisation":c.ac[r.id].jours})],
+    ["DOCUMENTS ADMINISTRATIFS","documents",r=>({...pick(r,"documents"),"Statut":c.do[r.id].statut,"Jours restants":c.do[r.id].jours})],
+    ["CARBURANT & DÉPENSES","depenses",r=>({...pick(r,"depenses"),"Montant carburant":c.de[r.id].carb,"Total dépenses":c.de[r.id].total})],
+    ["ENTRETIEN PRÉVENTIF","entretiens",r=>({...pick(r,"entretiens"),"Prochaine échéance (km)":c.en[r.id].ekm,"Prochaine échéance (date)":c.en[r.id].ej!==""?fD(isoOf(c.en[r.id].ej)):"","Km restants":c.en[r.id].krest,"Jours restants":c.en[r.id].jrest,"Statut":c.en[r.id].statut})],
+  ];
+  sheets.forEach(([name,col,f])=>{const ws=XLSX.utils.json_to_sheet(S[col].map(f),{header:Object.values(XL[col])});XLSX.utils.book_append_sheet(wb,ws,name.slice(0,31))});
+  const al=C.alerts.flatMap(a=>a.rows.map(r=>({"Niveau":a.u?"URGENT":"À TRAITER","Rubrique":a.lab,"Camion / chauffeur":r.veh||r.immat||r.nom||"","Détail":r.doc||r.num||r.type||r.classif||""})));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(al),"ALERTES");
+  const out=XLSX.write(wb,{type:"array",bookType:"xlsx"});
+  const url=URL.createObjectURL(new Blob([out],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+  const a=document.createElement("a");a.href=url;a.download=`Gestion_Flotte_export_${TODAY}.xlsx`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);toast("Export téléchargé")
+}
+function pick(r,col){const o={};const types={};ENT[col].fields.forEach(f=>{if(f.k)types[f.k]=f.t});
+  Object.entries(XL[col]).forEach(([k,l])=>{const v=r[k];o[l]=!has(v)?"":types[k]==="date"?fD(v):types[k]==="dt"?fDT(v):v});return o}
+async function deleteDemo(){
+  const z=$("#demoZone");BUSY=true;const items=COLS.flatMap(c=>S[c].filter(r=>r.demo).map(r=>[c,r.id]));
+  z.innerHTML=`<span class="confirm">Supprimer les ${items.length} lignes d'exemple ? <button class="btn dng sm" id="dY">Oui, supprimer</button><button class="btn sm" id="dN">Non</button></span>`;
+  $("#dN").onclick=()=>{BUSY=false;schedule(true)};
+  $("#dY").onclick=async()=>{z.innerHTML=`<span class="muted" id="dP">Suppression…</span>`;let k=0;
+    try{await pool(items,4,async([c,id])=>{await delDoc(c,id);k++;const p=$("#dP");if(p)p.textContent=`Suppression… ${k}/${items.length}`});BUSY=false;toast("Exemples supprimés");schedule(true)}
+    catch(e){BUSY=false;toast("Suppression interrompue, réessayez");schedule(true)}}
+}
+
+/* ======================================================================
+   ÉVÉNEMENTS
+   ====================================================================== */
+function bindView(){
+  const v=$("#view");
+  v.onclick=e=>{
+    const nb=e.target.closest("[data-new]");if(nb){const col=nb.dataset.new;openForm(col,null,nb.dataset.veh?{veh:nb.dataset.veh}:null);return}
+    const g=e.target.closest("[data-go]");if(g){go(g.dataset.go);return}
+    const ev=e.target.closest("[data-edit-veh]");if(ev){openForm("vehicules",S.vehicules.find(x=>x.id===ev.dataset.editVeh));return}
+    const tr=e.target.closest("tbody tr[data-i]");if(!tr)return;const i=+tr.dataset.i;
+    const al=tr.closest("[data-al]"), hi=tr.closest("[data-hist]");
+    if(al){const a=C.alerts[+al.dataset.al];const r=a.rows[i];
+      if(r._missing){openForm("documents",null,{veh:r.veh,doc:r.doc});return}
+      if(a.col==="vehicules"){FICHE=r.immat;go("fiche");return}openForm(a.col,r);return}
+    if(hi){openForm(hi.dataset.hist,FICHE_ROWS[hi.dataset.hist][i]);return}
+    if(tr.closest("#tbl")){const L=LIST_R[R];const r=CUR_ROWS[i];if(L.click)L.click(r);else openForm(L.col,r);return}
+    if(R==="tableau"){const imm=tr.querySelector(".plate");if(imm){FICHE=imm.textContent;go("fiche")}}
+  };
+  v.onkeydown=e=>{if(e.key==="Enter"&&e.target.matches("tbody tr[data-i]"))e.target.click()};
+  const q=$("#q");if(q)q.oninput=()=>{FILT[R].q=q.value;renderTable()};
+  v.querySelectorAll("select[data-f]").forEach(s=>s.onchange=()=>{FILT[R][s.dataset.f]=s.value;renderTable()});
+  const fs=$("#ficheSel");if(fs)fs.onchange=()=>{FICHE=fs.value;schedule(true)};
+  if(R==="parametres")renderParamsDraft();
+}
+// Paramètres : écouteurs installés une seule fois
+$("#view").addEventListener("input",e=>{if(R!=="parametres"||!DRAFT)return;const t=e.target;
+  if(t.dataset.seuil){DRAFT.seuils[t.dataset.seuil]=t.dataset.seuil==="devise"?t.value:Number(t.value);DIRTY=true}
+  if(t.dataset.ek!==undefined&&t.dataset.f){DRAFT.entretiens[+t.dataset.ek][t.dataset.f]=t.value===""?null:Number(t.value);DIRTY=true}
+  if(t.dataset.dob!==undefined){DRAFT.documents[+t.dataset.dob].obligatoire=t.checked;DIRTY=true}});
+$("#view").addEventListener("click",e=>{if(R!=="parametres"||!DRAFT)return;const t=e.target;const v=$("#view");
+  if(t.dataset.rm){DRAFT.listes[t.dataset.rm].splice(+t.dataset.i,1);DIRTY=true;renderParamsDraft()}
+  if(t.dataset.add){const k=t.dataset.add;const inp=v.querySelector(`[data-addin="${k}"]`);const val=inp.value.trim();if(val&&!(DRAFT.listes[k]||[]).includes(val)){(DRAFT.listes[k]=DRAFT.listes[k]||[]).push(val);DIRTY=true;renderParamsDraft();v.querySelector(`[data-addin="${k}"]`).focus()}}
+  if(t.dataset.erm!==undefined){DRAFT.entretiens.splice(+t.dataset.erm,1);DIRTY=true;renderParamsDraft()}
+  if(t.dataset.drm!==undefined){DRAFT.documents.splice(+t.dataset.drm,1);DIRTY=true;renderParamsDraft()}
+  if(t.id==="entAdd"){const i=$("#entNew");if(i.value.trim()){DRAFT.entretiens.push({type:i.value.trim(),km:null,jours:null});i.value="";DIRTY=true;renderParamsDraft()}}
+  if(t.id==="docAdd"){const i=$("#docNew");if(i.value.trim()){DRAFT.documents.push({nom:i.value.trim(),obligatoire:true});i.value="";DIRTY=true;renderParamsDraft()}}
+  if(t.id==="saveP"){t.disabled=true;saveParams(DRAFT).then(()=>{DIRTY=false;toast("Paramètres enregistrés");schedule(true)}).catch(()=>{t.disabled=false;toast("Enregistrement impossible")})}
+  if(t.id==="impBtn")$("#fileIn").click();
+  if(t.id==="expBtn")doExport();
+  if(t.id==="demoBtn")deleteDemo();
+});
+$("#view").addEventListener("keydown",e=>{if(R==="parametres"&&e.key==="Enter"&&e.target.dataset.addin){e.preventDefault();$("#view").querySelector(`[data-add="${e.target.dataset.addin}"]`).click()}});
+$("#fileIn").onchange=e=>{const f=e.target.files[0];e.target.value="";if(f)doImport(f)};
+init();
+if("serviceWorker" in navigator&&location.protocol!=="file:"){navigator.serviceWorker.register("sw.js").catch(e=>console.warn("service worker",e))}
+</script>
+</body>
+</html>

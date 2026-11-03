@@ -65,6 +65,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .btn{border:1px solid var(--line);background:var(--surface);border-radius:5px;padding:7px 13px;cursor:pointer;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .btn:hover{border-color:var(--ink-3)}
 .btn.pri{background:var(--navy);border-color:var(--navy);color:var(--navy-ink)}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:var(--ok-bg)}
 .btn.amb{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .btn.dng{color:var(--bad);border-color:var(--bad)}
 .btn.sm{padding:4px 9px;font-size:13px}
@@ -334,14 +335,14 @@ const ENT={
   {k:"type",l:"Niveau de gravité",t:"sel",o:"!typesPanne",req:1,hint:"GRAVE : le camion passe automatiquement EN PANNE – IMMOBILISÉ jusqu'au statut RÉPARÉE."},
   {k:"classif",l:"Classification / organe",t:"sel",o:"classifPanne"},{k:"nature",l:"Nature de la panne",t:"text"},{k:"diag",l:"Diagnostic",t:"text"},
   {s:"Réparation"},
-  {k:"garage",l:"Garage",t:"sel",o:"garages"},{k:"piece",l:"Pièce nécessaire",t:"text"},{k:"dispo",l:"Pièce disponible ?",t:"sel",o:"dispoPiece"},
+  {k:"garage",l:"Garage",t:"free",o:"garages",hint:"Choisir dans la liste ou taper le nom d'un nouveau garage."},{k:"piece",l:"Pièce nécessaire",t:"text"},{k:"dispo",l:"Pièce disponible ?",t:"sel",o:"dispoPiece"},
   {k:"cout",l:"Coût estimatif",t:"num",money:1},{k:"dprev",l:"Date prévue de réparation",t:"date"},{k:"dreel",l:"Date réelle de réparation",t:"date"},
   {k:"statut",l:"Statut de la panne",t:"sel",o:"!statutsPanne",req:1,def:"SIGNALÉE"},
   {k:"motif",l:"Motif de l'absence de solution",t:"sel",o:"motifsSS"},{k:"decision",l:"Décision de la Direction",t:"sel",o:"decisions"},
   {k:"obs",l:"Observations",t:"area"}]},
  maintenances:{nom:"Maintenance",un:"intervention",sheet:"MAINTENANCE",key:"veh",fields:[
   {k:"veh",l:"Véhicule",t:"sel",o:"@vehicules",req:1},{k:"origine",l:"Origine",t:"sel",o:"origines"},{k:"type",l:"Type d'intervention",t:"sel",o:"typesMaintenance"},
-  {k:"garage",l:"Garage",t:"sel",o:"garages"},{k:"entree",l:"Date d'entrée au garage",t:"date",def:"today"},
+  {k:"garage",l:"Garage",t:"free",o:"garages",hint:"Choisir dans la liste ou taper le nom d'un nouveau garage."},{k:"entree",l:"Date d'entrée au garage",t:"date",def:"today"},
   {k:"statut",l:"Statut",t:"sel",o:"!statutsMaint",req:1,def:"EN COURS",hint:"EN COURS : le camion passe EN MAINTENANCE."},
   {k:"travaux",l:"Travaux à effectuer",t:"text",full:1},{k:"pieces",l:"Pièces utilisées",t:"text"},
   {s:"Coûts et sortie"},
@@ -354,7 +355,7 @@ const ENT={
   {k:"desc",l:"Description",t:"text",full:1},{k:"grav",l:"Gravité",t:"sel",o:"gravite"},{k:"domm",l:"Dommages",t:"text"},
   {s:"Assurance et réparation"},
   {k:"estim",l:"Estimation des réparations",t:"num",money:1},{k:"assur",l:"Assurance",t:"text"},{k:"dossier",l:"N° dossier assurance",t:"text"},
-  {k:"garage",l:"Garage",t:"sel",o:"garages"},{k:"entree",l:"Date d'entrée au garage",t:"date"},{k:"rprev",l:"Remise en service prévue",t:"date"},
+  {k:"garage",l:"Garage",t:"free",o:"garages",hint:"Choisir dans la liste ou taper le nom d'un nouveau garage."},{k:"entree",l:"Date d'entrée au garage",t:"date"},{k:"rprev",l:"Remise en service prévue",t:"date"},
   {k:"reel",l:"Remise en service réelle",t:"date",hint:"Pour un véhicule réparable : le camion redevient opérationnel à cette date."},
   {k:"cout",l:"Coût de réparation",t:"num",money:1},{k:"resp",l:"Responsabilité",t:"sel",o:"responsabilite"},{k:"statut",l:"Statut du dossier",t:"sel",o:"statutsDossier",def:"OUVERT"},
   {s:"Décisions de la Direction (si irréparable / HS)"},
@@ -909,7 +910,7 @@ const LIST_R={
   filters:[["ouv","Afficher",["En cours","Réparées"],p=>p.statut==="RÉPARÉE"?"Réparées":"En cours"],["statut","Statut",LOCK.statutsPanne,p=>p.statut]],sort:(a,b)=>String(b.date||"").localeCompare(String(a.date||"")),
   cols:[c_("Date",p=>fD(p.date),"d"),c_("Camion",p=>plate(p.veh)),c_("Gravité",p=>p.type===PT_GR?pill("GRAVE","bad"):p.type===PT_MIN?pill("MINEURE","amb"):""),c_("Organe",p=>esc(p.classif)),
    c_("Nature",p=>esc(p.nature),"w"),c_("Garage",p=>esc(p.garage)),c_("Pièce",p=>esc(p.piece)+(p.dispo?`<br><span class="muted">${esc(p.dispo)}</span>`:"")),c_("Statut",p=>pill(p.statut)),
-   c_("Jours immob.",p=>C.pn[p.id].jours,"n"),c_("Retard (j)",p=>C.pn[p.id].retard,"n"),c_("Coût estimatif",p=>fM(p.cout),"n",{sum:p=>p.cout}),c_("Contrôles",p=>C.pn[p.id].ctrl.length?`<span class="anom">${esc(C.pn[p.id].ctrl.join(" · "))}</span>`:"","w")]},
+   c_("Jours immob.",p=>C.pn[p.id].jours,"n"),c_("Retard (j)",p=>C.pn[p.id].retard,"n"),c_("Coût estimatif",p=>fM(p.cout),"n",{sum:p=>p.cout}),c_("Diagnostic / observations",p=>esc([p.diag,p.obs].filter(Boolean).join(" · ")),"w"),c_("Contrôles",p=>C.pn[p.id].ctrl.length?`<span class="anom">${esc(C.pn[p.id].ctrl.join(" · "))}</span>`:"","w")]},
  maintenance:{col:"maintenances",title:"Maintenance",sub:"Une ligne par passage au garage. Statut EN COURS : le camion est EN MAINTENANCE. Les coûts réels se saisissent ici.",
   filters:[["statut","Statut",LOCK.statutsMaint,m=>m.statut]],sort:(a,b)=>String(b.entree||"").localeCompare(String(a.entree||"")),
   cols:[c_("Entrée",m=>fD(m.entree),"d"),c_("Camion",m=>plate(m.veh)),c_("Origine",m=>esc(m.origine)),c_("Type",m=>esc(m.type)),c_("Garage",m=>esc(m.garage)),c_("Travaux",m=>esc(m.travaux),"w"),
@@ -1162,6 +1163,7 @@ function opts(src){
   if(src==="@missions")return S.missions.map(m=>m.num).filter(Boolean).sort().reverse();
   if(src==="@docs")return P.documents.map(d=>d.nom);
   if(src==="@entretiens")return P.entretiens.map(e=>e.type);
+  if(src==="garages"){const g=new Set(P.listes.garages||[]);["pannes","maintenances","accidents"].forEach(c=>S[c].forEach(r=>{if(r.garage)g.add(r.garage)}));return[...g].sort((a,b)=>a.localeCompare(b,"fr"))}
   return P.listes[src]||[];
 }
 function nextMission(){const y=new Date().getFullYear();let mx=0;S.missions.forEach(m=>{const r=/^M-(\d{4})-(\d+)$/.exec(m.num||"");if(r&&+r[1]===y)mx=Math.max(mx,+r[2])});return`M-${y}-${String(mx+1).padStart(3,"0")}`}
@@ -1185,18 +1187,25 @@ function openForm(col,row,preset){
   $("#modal").innerHTML=`<div class="ov" id="ov"><div class="mod" role="dialog" aria-modal="true" aria-labelledby="mt">
     <header><h2 id="mt">${esc(isNew?(["panne","mission","dépense","intervention"].includes(E.un)?"Nouvelle ":"Nouveau ")+E.un:"Modifier : "+(row[E.key]||E.un))}</h2><button class="btn sm" data-close aria-label="Fermer">✕</button></header>
     <form class="bd" id="frm" novalidate>${calc}<div class="fg">${E.fields.map(field).join("")}</div></form>
-    <footer><div id="fleft">${!isNew&&!ro?`<button class="btn dng" type="button" id="delB">Supprimer</button>`:""}<span class="muted" id="trace" style="font-size:12.5px;margin-left:8px"></span></div>
+    <footer><div id="fleft">${!isNew&&!ro?`<button class="btn dng" type="button" id="delB">Supprimer</button>`:""}${!isNew&&!ro&&RESTORE[col]&&RESTORE[col].open(row)?`<button class="btn ok" type="button" id="restB" style="margin-left:8px">${esc(RESTORE[col].label)}</button>`:""}<span class="muted" id="trace" style="font-size:12.5px;margin-left:8px"></span></div>
       <div style="display:flex;gap:8px"><button class="btn" type="button" data-close>${ro?"Fermer":"Annuler"}</button>${ro?"":`<button class="btn pri" type="submit" form="frm" id="saveB">Enregistrer</button>`}</div></footer></div></div>`;
   const frm=$("#frm");
   frm.addEventListener("submit",e=>{e.preventDefault();submitForm()});
   frm.addEventListener("change",e=>autoFill(col,e.target));
   $("#ov").addEventListener("click",e=>{if(e.target.id==="ov"||e.target.closest("[data-close]"))closeForm()});
+  const rb=$("#restB");if(rb)rb.onclick=()=>{const R0=RESTORE[col];Object.entries(R0.set).forEach(([k,v])=>{const el=frm.elements[k];if(el&&!el.disabled&&(R0.force.includes(k)||!el.value))el.value=v==="today"?TODAY:v});submitForm()};
   const db=$("#delB");if(db)db.onclick=()=>{$("#fleft").innerHTML=`<span class="confirm">Supprimer définitivement ? <button class="btn dng sm" type="button" id="delY">Oui, supprimer</button><button class="btn sm" type="button" id="delN">Non</button></span>`;
     $("#delN").onclick=()=>openForm(col,row);$("#delY").onclick=async()=>{try{await delDoc(col,row.id);closeForm();toast("Supprimé")}catch(err){toast("Suppression impossible : "+(err.message||err.code))}}};
   if(row&&row._maj){let who="";const tr=$("#trace");const put=()=>tr.textContent="Modifié le "+new Date(row._maj).toLocaleString("fr-FR",{dateStyle:"short",timeStyle:"short"})+(who?" par "+who:"");put();
     who=nameOf(row._par);put()}
   setTimeout(()=>{const f=frm.querySelector("input:not([disabled]),select:not([disabled])");if(f)f.focus()},30);
 }
+// Remise en service en un clic : la fiche est clôturée, le camion redevient OPÉRATIONNEL s'il n'a plus rien d'ouvert
+const RESTORE={
+  pannes:{label:"✓ Réparée : remettre en service",open:r=>r.statut!=="RÉPARÉE",set:{statut:"RÉPARÉE",dreel:"today"},force:["statut"]},
+  maintenances:{label:"✓ Sortie du garage",open:r=>r.statut!=="TERMINÉE",set:{statut:"TERMINÉE",sreel:"today"},force:["statut"]},
+  accidents:{label:"✓ Remis en service",open:r=>r.cat===AC_R&&!r.reel,set:{reel:"today"},force:[]},
+};
 function closeForm(){$("#modal").innerHTML="";FORM=null}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&FORM)closeForm()});
 function autoFill(col,t){
@@ -1246,6 +1255,7 @@ async function submitForm(){
   const b=$("#saveB");b.disabled=true;b.textContent="Enregistrement…";
   try{
     await putDoc(col,id||newId(),data);
+    if(data.garage&&isAdmin()&&!(P.listes.garages||[]).includes(data.garage)){const np=structuredClone(P);np.listes.garages=[...(np.listes.garages||[]),data.garage];await saveParams(np)}
     // saisie unique : un kilométrage de dépense plus élevé met à jour la fiche du camion
     if(col==="depenses"&&has(data.km)&&canW("vehicules")){const v=C.vByImmat[data.veh]||S.vehicules.find(x=>x.immat===data.veh);
       if(v&&num(data.km)>num(v.km)){const{id:vid,...rest}=v;await putDoc("vehicules",vid,{...rest,km:num(data.km),maj:data.date||TODAY})}}

@@ -521,7 +521,10 @@ async function sync(full){
   if(!SB||!SESSION||SYNCING)return;
   if(!navigator.onLine){setSync("offline");return}
   SYNCING=true;setSync("sync");
+  let retryAuth=false;
   try{
+    // 0. jeton de connexion : le renouveler s'il a expiré (onglet en veille, appareil endormi…)
+    try{const{data:sd}=await SB.auth.getSession();if(sd&&sd.session){SESSION=sd.session;if(sd.session.expires_at&&sd.session.expires_at*1000<Date.now()+60000){const{data:rf}=await SB.auth.refreshSession();if(rf&&rf.session)SESSION=rf.session}}}catch(_){}
     // 1. envoyer les saisies faites sur cet appareil
     let refused=0;
     while(OUTBOX.length){
@@ -557,9 +560,13 @@ async function sync(full){
     await loadProfile();
     READY=true;persist();setSync(OUTBOX.length?"pending":"ok");
   }catch(e){console.warn("synchronisation",e);
+    if(/PGRST30[13]|JWT|expired/i.test(String((e&&(e.code||""))+" "+(e&&e.message||"")))&&!sync._auth){
+      sync._auth=true;try{const{data:rf}=await SB.auth.refreshSession();if(rf&&rf.session){SESSION=rf.session;retryAuth=true}}catch(_){}}
     const offline=!navigator.onLine||/fetch|network/i.test(String(e&&(e.message||e)));
     setSync(offline?"offline":"err",offline?"":(e.message||String(e)));
   }finally{SYNCING=false;schedule()}
+  if(retryAuth){setTimeout(()=>sync(full),500);return}
+  sync._auth=false;
   if(OUTBOX.length&&navigator.onLine)setTimeout(()=>sync(),3000);
 }
 async function loadProfile(){

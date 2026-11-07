@@ -253,6 +253,14 @@ table.t{border-collapse:collapse;width:100%;font-size:13.5px}
   .rt td.n{text-align:right}
 }
 
+/* demandes d'achat */
+.btn.wa{background:#1f8f4e;border-color:#1f8f4e;color:#fff}
+.wa-list{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.pj{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.linkb{border:0;background:none;padding:0;color:var(--info);font-weight:600;cursor:pointer;text-align:left;text-decoration:underline}
+.da-up{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.da-up label.btn{cursor:pointer}
+.da-hist{margin:8px 0 0;padding-left:20px;font-size:13px;display:flex;flex-direction:column;gap:4px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* --- application installable : connexion, synchronisation, utilisateurs --- */
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -313,6 +321,9 @@ const LOCK={
   typesPanne:[PT_MIN,PT_GR],
   statutsPanne:["SIGNALÉE","EN DIAGNOSTIC","EN RÉPARATION","EN ATTENTE DE PIÈCE","PANNE SANS SOLUTION","RÉPARÉE"],
   statutsMaint:["PLANIFIÉE","EN COURS","TERMINÉE"],
+  objetsDA:["Panne","Maintenance","Carburant"],
+  urgencesDA:["Normale","Urgente"],
+  statutsDA:["BROUILLON","SOUMISE","VALIDÉE","APPROUVÉE","REJETÉE"],
   catAccident:[AC_R,AC_HS],
   sitConteneur:["Sans conteneur","Conteneur chargé","Conteneur vide","Conteneur débarqué du plateau","En attente de chargement","En attente de déchargement","Autre"],
   chargeVide:["CHARGÉ","VIDE"],
@@ -327,6 +338,7 @@ const DEFAULT_PARAMS={
     garages:["Garage Chez Maître Chinois","Garage Mamadou Tolier","Garage Maître Amadou"],
     classifPanne:["Boîte de vitesses","Pont","Moteur","Pompe","Embrayage","Système de freinage","Système électrique","Système hydraulique","Transmission","Pneumatique","Suspension","Électrique mineur","Éclairage","Petite fuite","Accessoire","Carrosserie","Soudure","Autre – à préciser"],
     categoriesPanne:["Mécanique","Électricité","Tôlerie","Soudure","Autre"],
+    fournisseurs:[],
     motifsSS:["Pièce introuvable","Pièce indisponible","Pièce incompatible","Pièce trop coûteuse","Diagnostic non finalisé","Expertise nécessaire","Autre"],
     dispoPiece:["DISPONIBLE","INDISPONIBLE","À COMMANDER","NON NÉCESSAIRE"],
     decisions:["EN ATTENTE DE DÉCISION","RÉPARER","ACHETER LA PIÈCE","CANNIBALISATION","REMPLACER LE VÉHICULE"],
@@ -346,7 +358,7 @@ const DEFAULT_PARAMS={
   entretiens:[{type:"Vidange",km:10000,jours:180},{type:"Filtres",km:20000,jours:365},{type:"Freins",km:30000,jours:null},{type:"Pneus",km:60000,jours:null},{type:"Batterie",km:null,jours:730},{type:"Suspension",km:50000,jours:365},{type:"Graissage",km:5000,jours:30},{type:"Autre entretien",km:null,jours:null}],
   documents:[{nom:"Assurance",obligatoire:true},{nom:"Vignette",obligatoire:true},{nom:"Carte grise",obligatoire:true},{nom:"Carte bleue / autorisation de transport",obligatoire:true},{nom:"Visite technique",obligatoire:true},{nom:"Autre autorisation",obligatoire:false}],
 };
-const LIST_LABELS={activites:"Types de missions (activités)",localisations:"Localisations",typesVehicule:"Types de véhicules",proprietaires:"Propriétaires",garages:"Garages",classifPanne:"Classification des pannes",categoriesPanne:"Catégories de panne (rapport)",motifsSS:"Motifs « sans solution »",dispoPiece:"Disponibilité de la pièce",decisions:"Décisions de la Direction",origines:"Origines de maintenance",typesMaintenance:"Types de maintenance",gravite:"Gravité des accidents",responsabilite:"Responsabilité",statutsDossier:"Statuts dossier accident",reforme:"Décision de réforme",remplacement:"Décision de remplacement",typesConteneur:"Types de conteneur",etatsConteneur:"États du conteneur",statutsChauffeur:"Statuts chauffeur",permis:"Types de permis",cargaisons:"Types de cargaison"};
+const LIST_LABELS={activites:"Types de missions (activités)",localisations:"Localisations",typesVehicule:"Types de véhicules",proprietaires:"Propriétaires",garages:"Garages",classifPanne:"Classification des pannes",categoriesPanne:"Catégories de panne (rapport)",fournisseurs:"Fournisseurs (demandes d'achat)",motifsSS:"Motifs « sans solution »",dispoPiece:"Disponibilité de la pièce",decisions:"Décisions de la Direction",origines:"Origines de maintenance",typesMaintenance:"Types de maintenance",gravite:"Gravité des accidents",responsabilite:"Responsabilité",statutsDossier:"Statuts dossier accident",reforme:"Décision de réforme",remplacement:"Décision de remplacement",typesConteneur:"Types de conteneur",etatsConteneur:"États du conteneur",statutsChauffeur:"Statuts chauffeur",permis:"Types de permis",cargaisons:"Types de cargaison"};
 const LOCK_LABELS={phases:"Phases de mission",statutsMission:"Statuts de mission",typesPanne:"Gravité des pannes",statutsPanne:"Statuts de panne",statutsMaint:"Statuts de maintenance",catAccident:"Catégories d'accident",sitConteneur:"Situations du conteneur",chargeVide:"Chargé / vide"};
 
 /* ======================================================================
@@ -430,8 +442,21 @@ const ENT={
  entretiens:{nom:"Entretien préventif",un:"entretien",sheet:"ENTRETIEN PRÉVENTIF",key:"veh",fields:[
   {k:"veh",l:"Véhicule",t:"sel",o:"@vehicules",req:1},{k:"type",l:"Entretien",t:"sel",o:"@entretiens",req:1},
   {k:"dder",l:"Date du dernier entretien",t:"date"},{k:"kder",l:"Km au dernier entretien",t:"num"},{k:"obs",l:"Observations",t:"area"}]},
+ achats:{nom:"Demandes d'achat",un:"demande d'achat",sheet:"DEMANDES D'ACHAT",key:"num",fields:[
+  {s:"Demande"},
+  {k:"num",l:"N° DA",t:"text",req:1,uniq:1,lockEdit:1,def:"nextDA"},{k:"date",l:"Date",t:"date",req:1,def:"today"},
+  {k:"objet",l:"Objet",t:"sel",o:"!objetsDA",req:1},{k:"urgence",l:"Urgence",t:"sel",o:"!urgencesDA",def:"Normale"},
+  {k:"veh",l:"Camion",t:"sel",o:"@vehicules",hint:"Obligatoire pour une panne ou une maintenance."},
+  {k:"ref",l:"Panne / maintenance concernée",t:"sel",o:"@refsDA"},
+  {s:"Achat"},
+  {k:"fournisseur",l:"Fournisseur",t:"free",o:"fournisseurs"},
+  {k:"designation",l:"Désignation (pièces, travaux, carburant)",t:"area"},
+  {k:"qte",l:"Quantité (litres pour le carburant)",t:"num"},{k:"pu",l:"Prix unitaire",t:"num",money:1},
+  {k:"montant",l:"Montant total",t:"num",money:1,req:1,hint:"Calculé : quantité × prix unitaire. Modifiable."},
+  {k:"obs",l:"Justification",t:"area"}]},
 };
 const COLS=Object.keys(ENT);
+const IMPORT_COLS=()=>COLS.filter(c=>c!=="achats");
 
 /* ======================================================================
    OUTILS
@@ -483,8 +508,8 @@ const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 async function pool(items,n,fn,onProg){let i=0,done=0;const run=async()=>{while(i<items.length){const it=items[i++];await fn(it);done++;onProg&&onProg(done,items.length)}};await Promise.all(Array.from({length:n},run))}
 
 /* Droits : "w" = saisie, "r" = lecture, absent = aucun accès */
-const canR=col=>!!(ME&&ME.actif&&(ME.admin||col==="config"||["r","w"].includes((ME.droits||{})[col])));
-const canW=col=>!!(ME&&ME.actif&&(ME.admin||(col!=="config"&&(ME.droits||{})[col]==="w")));
+const canR=col=>!!(ME&&ME.actif&&(ME.admin||col==="config"||["r","w"].includes((ME.droits||{})[col])||(col==="achats"&&ME.validation)));
+const canW=col=>!!(ME&&ME.actif&&(ME.admin||(col!=="config"&&(ME.droits||{})[col]==="w")||(col==="achats"&&ME.validation)));
 const isAdmin=()=>!!(ME&&ME.actif&&ME.admin);
 let CANWRITE=false; // vrai si l'utilisateur peut saisir dans au moins une rubrique
 function refreshRights(){CANWRITE=!!ME&&COLS.some(canW)}
@@ -526,21 +551,21 @@ async function sync(full){
     // 0. jeton de connexion : le renouveler s'il a expiré (onglet en veille, appareil endormi…)
     try{const{data:sd}=await SB.auth.getSession();if(sd&&sd.session){SESSION=sd.session;if(sd.session.expires_at&&sd.session.expires_at*1000<Date.now()+60000){const{data:rf}=await SB.auth.refreshSession();if(rf&&rf.session)SESSION=rf.session}}}catch(_){}
     // 1. envoyer les saisies faites sur cet appareil
-    let refused=0;
+    let refused=0,refMsg="";
     while(OUTBOX.length){
       const batch=OUTBOX.slice(0,100);
       const rows=batch.map(o=>({id:o.col+":"+o.id,col:o.col,data:o.data,deleted:o.deleted}));
       const{error}=await SB.from("records").upsert(rows);
       if(error){
-        if(error.code==="42501"||/row-level security/i.test(error.message||"")){
+        if(error.code==="42501"||error.code==="P0001"||/row-level security/i.test(error.message||"")){
           // droits insuffisants : on envoie une par une et on écarte celles refusées
-          for(const o of batch){const{error:e2}=await SB.from("records").upsert({id:o.col+":"+o.id,col:o.col,data:o.data,deleted:o.deleted});if(e2)refused++}
+          for(const o of batch){const{error:e2}=await SB.from("records").upsert({id:o.col+":"+o.id,col:o.col,data:o.data,deleted:o.deleted});if(e2){refused++;if(e2.code==="P0001")refMsg=e2.message}}
           full=true;
         }else throw error;
       }
       const sent=new Set(batch);OUTBOX=OUTBOX.filter(o=>!sent.has(o));persist();
     }
-    if(refused)toast(`${refused} modification(s) refusée(s) : vos droits ne permettent pas cette saisie.`);
+    if(refused)toast(refMsg?`Modification refusée : ${refMsg}`:`${refused} modification(s) refusée(s) : vos droits ne permettent pas cette saisie.`);
     // 2. récupérer les changements faits par les autres
     let since=(!full&&LASTSYNC)?new Date(Date.parse(LASTSYNC)-120000).toISOString():"1970-01-01T00:00:00Z";
     if(full||!LASTSYNC){COLS.forEach(c=>S[c]=[])}
@@ -573,7 +598,7 @@ async function loadProfile(){
   const{data:me,error}=await SB.from("profiles").select("*").eq("id",SESSION.user.id).maybeSingle();
   if(error)throw error;
   const was=JSON.stringify(ME&&[ME.actif,ME.admin,ME.droits]);ME=me;refreshRights();
-  if(ME&&ME.actif){const{data:all}=await SB.from("profiles").select("id,nom,email,role,droits,admin,actif,created_at").order("created_at");PROFILES=Object.fromEntries((all||[]).map(p=>[p.id,p]))}
+  if(ME&&ME.actif){const{data:all}=await SB.from("profiles").select("*").order("created_at");PROFILES=Object.fromEntries((all||[]).map(p=>[p.id,p]))}
   if(was!==JSON.stringify(ME&&[ME.actif,ME.admin,ME.droits]))schedule(true);
 }
 const nameOf=id=>(PROFILES[id]&&(PROFILES[id].nom||PROFILES[id].email))||"";
@@ -612,12 +637,12 @@ let confirmOut=false;
 /* ======================================================================
    CONNEXION, COMPTES ET DROITS
    ====================================================================== */
-const MODULES=[["vehicules","Flotte"],["missions","Missions"],["conteneurs","Conteneurs"],["chauffeurs","Chauffeurs"],["pannes","Pannes"],["maintenances","Maintenance"],["accidents","Accidents"],["entretiens","Entretien préventif"],["documents","Documents"],["depenses","Carburant & dépenses"]];
+const MODULES=[["achats","Demandes d'achat"],["vehicules","Flotte"],["missions","Missions"],["conteneurs","Conteneurs"],["chauffeurs","Chauffeurs"],["pannes","Pannes"],["maintenances","Maintenance"],["accidents","Accidents"],["entretiens","Entretien préventif"],["documents","Documents"],["depenses","Carburant & dépenses"]];
 const allRights=v=>Object.fromEntries(MODULES.map(([k])=>[k,v]));
 const PRESETS={
   "Gestionnaire de flotte":{admin:false,droits:allRights("w")},
-  "Exploitation":{admin:false,droits:{...allRights("r"),missions:"w",conteneurs:"w",chauffeurs:"w",depenses:"w"}},
-  "Technique / garage":{admin:false,droits:{...allRights("r"),pannes:"w",maintenances:"w",accidents:"w",entretiens:"w"}},
+  "Exploitation":{admin:false,droits:{...allRights("r"),missions:"w",conteneurs:"w",chauffeurs:"w",depenses:"w",achats:"w"}},
+  "Technique / garage":{admin:false,droits:{...allRights("r"),pannes:"w",maintenances:"w",accidents:"w",entretiens:"w",achats:"w"}},
   "Administratif":{admin:false,droits:{...allRights("r"),documents:"w",chauffeurs:"w",depenses:"w"}},
   "Consultation":{admin:false,droits:allRights("r")},
   "Administrateur":{admin:true,droits:allRights("w")},
@@ -697,7 +722,7 @@ function vUsers(){
   <div class="ucards">${list.map(p=>userCard(p)).join("")||`<div class="card empty">Aucun utilisateur.</div>`}</div>`;
 }
 function userCard(p){
-  const d=UDRAFT[p.id]||(UDRAFT[p.id]={actif:p.actif,admin:p.admin,role:p.role,droits:{...(p.droits||{})}});
+  const d=UDRAFT[p.id]||(UDRAFT[p.id]={actif:p.actif,admin:p.admin,role:p.role,droits:{...(p.droits||{})},validation:p.validation||"",tel:p.tel||""});
   const self=p.id===ME.id;
   const sel=(k,v)=>`<select data-u="${p.id}" data-m="${k}" ${d.admin?"disabled":""} aria-label="Droits ${esc(k)}"><option value=""${!v?" selected":""}>Aucun</option><option value="r"${v==="r"?" selected":""}>Lecture</option><option value="w"${v==="w"?" selected":""}>Saisie</option></select>`;
   return`<section class="panel ucard${p.actif?"":" waiting"}" data-card="${p.id}">
@@ -705,6 +730,8 @@ function userCard(p){
       <div class="uflags"><label><input type="checkbox" data-u="${p.id}" data-flag="actif" ${d.actif?"checked":""} ${self?"disabled":""}> Compte actif</label>
       <label><input type="checkbox" data-u="${p.id}" data-flag="admin" ${d.admin?"checked":""} ${self?"disabled":""}> Administrateur</label></div></header>
     <div class="f" style="max-width:320px"><label for="pr_${p.id}">Profil type</label><select id="pr_${p.id}" data-u="${p.id}" data-preset ${self?"disabled":""}><option value="">Personnalisé</option>${Object.keys(PRESETS).map(k=>`<option${d.role===k?" selected":""}>${esc(k)}</option>`).join("")}</select></div>
+    <div class="fg" style="margin-bottom:10px"><div class="f"><label for="uv_${p.id}">Rôle dans les demandes d'achat</label><select id="uv_${p.id}" data-u="${p.id}" data-val><option value="">Aucun (saisie seulement)</option>${Object.entries(VAL_LAB).map(([k,l])=>`<option value="${k}"${d.validation===k?" selected":""}>${esc(l)}</option>`).join("")}</select></div>
+      <div class="f"><label for="ut_${p.id}">N° WhatsApp (avec indicatif, ex. 224 620 00 00 00)</label><input id="ut_${p.id}" data-u="${p.id}" data-tel inputmode="tel" value="${esc(d.tel)}"></div></div>
     <div class="ugrid">${MODULES.map(([k,l])=>`<div class="f"><label>${esc(l)}</label>${d.admin?`<span class="pill ok">Saisie (admin)</span>`:sel(k,d.droits[k])}</div>`).join("")}</div>
     <footer>${self?`<span class="muted">Vous ne pouvez pas retirer vos propres droits d'administrateur.</span>`:`<button class="btn pri" data-usave="${p.id}">Enregistrer</button>${p.actif?"":` <button class="btn dng" data-udel="${p.id}">Refuser et supprimer</button>`}`}<span class="muted" data-umsg="${p.id}"></span></footer></section>`;
 }
@@ -713,6 +740,8 @@ document.addEventListener("change",e=>{
   if(t.dataset.flag){d[t.dataset.flag]=t.checked;if(t.dataset.flag==="admin"){d.role=t.checked?"Administrateur":"Personnalisé"}}
   else if(t.dataset.preset!==undefined){const pr=PRESETS[t.value];if(pr){d.admin=pr.admin;d.droits={...pr.droits};d.role=t.value;if(!d.actif)d.actif=true}else d.role="Personnalisé"}
   else if(t.dataset.m){if(t.value)d.droits[t.dataset.m]=t.value;else delete d.droits[t.dataset.m];d.role="Personnalisé"}
+  else if(t.dataset.val!==undefined){d.validation=t.value}
+  else if(t.dataset.tel!==undefined){d.tel=t.value.trim();return}
   const card=document.querySelector(`[data-card="${t.dataset.u}"]`);if(card)card.outerHTML=userCard(PROFILES[t.dataset.u]);
 });
 document.addEventListener("click",async e=>{
@@ -721,9 +750,10 @@ document.addEventListener("click",async e=>{
   const s=e.target.closest("[data-usave]");
   if(s){const id=s.dataset.usave,d=UDRAFT[id];const msg=document.querySelector(`[data-umsg="${id}"]`);s.disabled=true;
     const role=d.admin?"Administrateur":(d.role||"Personnalisé");
-    const{error}=await SB.from("profiles").update({actif:d.actif,admin:d.admin,role,droits:d.droits}).eq("id",id);
+    const tel=(document.querySelector(`[data-u="${id}"][data-tel]`)||{}).value;if(tel!==undefined)d.tel=tel.trim();
+    const{error}=await SB.from("profiles").update({actif:d.actif,admin:d.admin,role,droits:d.droits,validation:d.validation||null,tel:d.tel||null}).eq("id",id);
     s.disabled=false;if(error){msg.textContent=" Enregistrement impossible : "+(navigator.onLine?error.message:"pas de connexion Internet");return}
-    PROFILES[id]={...PROFILES[id],actif:d.actif,admin:d.admin,role,droits:d.droits};delete UDRAFT[id];toast("Droits enregistrés");schedule(true);return}
+    PROFILES[id]={...PROFILES[id],actif:d.actif,admin:d.admin,role,droits:d.droits,validation:d.validation||null,tel:d.tel||null};delete UDRAFT[id];toast("Droits enregistrés");schedule(true);return}
   const x=e.target.closest("[data-udel]");
   if(x){const id=x.dataset.udel;const foot=x.parentElement;
     foot.innerHTML=`<span class="confirm">Supprimer ce compte en attente ? <button class="btn dng sm" data-udelY="${id}">Oui</button><button class="btn sm" data-udelN>Non</button></span>`;return}
@@ -810,6 +840,7 @@ function compute(){
     const nMA=ma.filter(m=>m.statut==="EN COURS").length, nMIN=pn.filter(p=>p.type===PT_MIN&&p.statut!=="RÉPARÉE").length;
     const nPLAN=M.filter(m=>m.veh===im&&m.statut==="PLANIFIÉE").length;
     x.statut=nHS?ST_HS:nAR?ST_AR:nSS?ST_SS:nPG?ST_PG:nMA?ST_MA:ST_OK;
+    x.garageLoc=x.statut===ST_OK&&/garage/i.test(v.loc||"");if(x.garageLoc)x.statut=ST_MA; // localisé dans un garage : indisponible
     const mis=M.find(m=>m.statut==="EN COURS"&&m.veh===im);
     x.mission=mis?mis.num:"—";x.misId=mis?mis.id:null;x.dest=mis?mis.dest||"":"";x.phase=mis?mis.phase||"":"";
     x.situation=x.statut===ST_HS?"Hors service":x.statut===ST_AR?"Accidenté":(x.statut===ST_PG||x.statut===ST_SS)?"Immobilisé":x.statut===ST_MA?"Au garage":
@@ -819,8 +850,8 @@ function compute(){
     const aOpen=acc.find(a=>c.ac[a.id].open), pOpen=pn.find(p=>p.type===PT_GR&&p.statut!=="RÉPARÉE"), mOpen=ma.find(m=>m.statut==="EN COURS");
     x.motif=x.garage=x.piece=x.depuis="";
     if(x.statut!==ST_OK){
-      x.motif=aOpen?"Accident : "+(aOpen.desc||""):pOpen?(pOpen.classif||"")+" – "+(pOpen.nature||""):mOpen?"Maintenance : "+(mOpen.travaux||""):"";
-      x.garage=aOpen?aOpen.garage||"":pOpen?pOpen.garage||"":mOpen?mOpen.garage||"":"";
+      x.motif=aOpen?"Accident : "+(aOpen.desc||""):pOpen?(pOpen.classif||"")+" – "+(pOpen.nature||""):mOpen?"Maintenance : "+(mOpen.travaux||""):x.garageLoc?"Localisé au garage (aucune maintenance saisie)":"";
+      x.garage=aOpen?aOpen.garage||"":pOpen?pOpen.garage||"":mOpen?mOpen.garage||"":x.garageLoc?v.loc:"";
       x.piece=pOpen&&pOpen.piece?pOpen.piece+(pOpen.dispo?" ("+pOpen.dispo+")":""):"";
       x.depuis=aOpen?aOpen.date:pOpen?pOpen.date:mOpen?mOpen.entree:"";}
     x.jours=x.depuis?T-dnum(x.depuis):"";
@@ -857,6 +888,8 @@ function buildAlerts(){
   const A=(key,u,lab,act,col,rows,cols)=>({key,u,lab,act,col,rows,cols});
   const vcol=[["Camion",v=>plate(v.immat)]];
   return[
+    A("da",1,"Demandes d'achat en attente de votre décision","Ouvrir la demande : vérifier les montants et les pièces, puis valider, approuver ou rejeter.","achats",S.achats.filter(daATraiter),
+      [["N° DA",r=>esc(r.num)],["Objet",r=>esc(r.objet)],["Camion",r=>plate(r.veh)],["Montant",r=>fM(r.montant),"n"],["Statut",r=>daPill(r)]]),
     A("immob",1,"Camions immobilisés (panne grave)","Suivre la réparation avec le garage ; décider si la pièce manque.","vehicules",V.filter(v=>[ST_PG,ST_SS].includes(c.veh[v.id].statut)),
       [...vcol,["Localisation",v=>esc(v.loc)],["Garage",v=>esc(c.veh[v.id].garage)],["Jours d'immob.",v=>c.veh[v.id].jours,"n"],["Motif / pièce",v=>esc(c.veh[v.id].motif)+(c.veh[v.id].piece?`<br><span class="muted">${esc(c.veh[v.id].piece)}</span>`:""),"w"]]),
     A("ss",1,"Pannes sans solution : décision de la Direction","Décider : réparation, achat de pièce, cannibalisation ou remplacement du véhicule.","pannes",S.pannes.filter(p=>p.veh&&p.statut==="PANNE SANS SOLUTION"),
@@ -896,7 +929,8 @@ const alertCount=k=>(C.alerts.find(a=>a.key===k)||{rows:[]}).rows.length;
 const ROUTES=[
   ["Pilotage"],["tableau","Tableau de bord"],["alertes","Alertes"],["fiche","Fiche camion"],["rapports","Rapports"],
   ["Saisie"],["flotte","Flotte","vehicules"],["missions","Missions","missions"],["conteneurs","Conteneurs","conteneurs"],["chauffeurs","Chauffeurs","chauffeurs"],
-  ["Technique"],["pannes","Pannes","pannes"],["maintenance","Maintenance","maintenances"],["accidents","Accidents","accidents"],["entretien","Entretien préventif","entretiens"],
+  ["Technique"],["indispo","En panne / au garage","vehicules"],["pannes","Pannes","pannes"],["maintenance","Maintenance","maintenances"],["accidents","Accidents","accidents"],["entretien","Entretien préventif","entretiens"],
+  ["Achats"],["achats","Demandes d'achat","achats"],
   ["Administratif"],["documents","Documents","documents"],["depenses","Carburant & dépenses","depenses"],["parametres","Paramètres"],["utilisateurs","Utilisateurs"],
 ];
 let R="tableau", FICHE=null; const FILT={};
@@ -947,13 +981,26 @@ function renderBanner(){
 const c_=(l,v,f,o={})=>({l,v,f,...o});
 const LIST_R={
  flotte:{col:"vehicules",title:"Flotte",sub:"Registre des camions et situation en temps réel. Le statut technique et la situation sont calculés à partir des pannes, maintenances, accidents et missions : on ne les saisit jamais.",
-  filters:[["statut","Statut technique",STATUTS,v=>cv(v).statut],["situation","Situation",SITUATIONS,v=>cv(v).situation]],
+  filters:[["dispo","Disponibilité",["Disponibles","En panne ou au garage"],v=>cv(v).statut===ST_OK?"Disponibles":"En panne ou au garage"],["statut","Statut technique",STATUTS,v=>cv(v).statut],["situation","Situation",SITUATIONS,v=>cv(v).situation]],
   cols:[c_("Immatriculation",v=>plate(v.immat)),c_("N°",v=>esc(v.camion)),c_("Type",v=>esc(v.type)),c_("Chauffeur",v=>esc(v.chauffeur||"—")),c_("Localisation",v=>esc(v.loc||"—")),
    c_("Statut technique",v=>pill(cv(v).statut)+(cv(v).mineure?` <span class="pill amb" title="Panne mineure ouverte">mineure</span>`:"")),c_("Situation",v=>pill(cv(v).situation)),
    c_("Mission",v=>esc(cv(v).mission)+(cv(v).dest?` <span class="muted">→ ${esc(cv(v).dest)}</span>`:"")),c_("Conteneur",v=>esc(cv(v).sitcont)+(cv(v).ncont?`<br><span class="muted">${esc(cv(v).ncont)}</span>`:"")),
    c_("Jours immob.",v=>cv(v).jours,"n"),c_("Documents",v=>pill(cv(v).docs)),c_("Entretien",v=>pill(cv(v).entretien)),c_("Km",v=>fN(v.km),"n"),
    c_("Anomalies",v=>cv(v).anom.length?`<span class="anom">${esc(cv(v).anom.join(" · "))}</span>`:"","w")],
   click:v=>{FICHE=v.immat;go("fiche")}},
+ indispo:{col:"vehicules",title:"Camions en panne ou au garage",noAdd:1,base:v=>cv(v).statut!==ST_OK,
+  sub:"Tous les camions indisponibles aujourd'hui : panne grave, panne sans solution, maintenance ou garage, accident. Ils redeviennent disponibles dès que la panne est RÉPARÉE, la maintenance TERMINÉE ou le camion remis en service.",
+  filters:[["statut","Statut technique",STATUTS.filter(s=>s!==ST_OK),v=>cv(v).statut]],sort:(a,b)=>num(cv(b).jours)-num(cv(a).jours),
+  cols:[c_("Immatriculation",v=>plate(v.immat)),c_("N°",v=>esc(v.camion)),c_("Statut",v=>pill(cv(v).statut)),c_("Motif",v=>esc(cv(v).motif),"w"),c_("Garage",v=>esc(cv(v).garage)),
+   c_("Pièce",v=>esc(cv(v).piece)),c_("Chauffeur",v=>esc(v.chauffeur||"—")),c_("Localisation",v=>esc(v.loc||"—")),c_("Depuis",v=>fD(cv(v).depuis),"d"),c_("Jours",v=>cv(v).jours,"n"),
+   c_("DA",v=>{const l=S.achats.filter(a=>a.veh===v.immat&&!["APPROUVÉE","REJETÉE"].includes(daSt(a)));return l.length?pill(l.length+" en cours","warn"):""})],
+  click:v=>{FICHE=v.immat;go("fiche")}},
+ achats:{col:"achats",title:"Demandes d'achat",sub:"Circuit : l'agent saisit et soumet → le responsable logistique vérifie, corrige, valide ou rejette → la DG ou le RAF approuve ou rejette. Joignez la facture ou le devis (scan ou photo).",
+  filters:[["moi","Afficher",["À traiter par moi","Mes demandes"],r=>daATraiter(r)?"À traiter par moi":(ME&&r.demandeur===ME.id)?"Mes demandes":""],["statut","Statut",LOCK.statutsDA,r=>daSt(r)],["objet","Objet",LOCK.objetsDA,r=>r.objet]],
+  sort:(a,b)=>String(b.num||"").localeCompare(String(a.num||""),"fr",{numeric:true}),
+  cols:[c_("N° DA",r=>`<b>${esc(r.num)}</b>`),c_("Date",r=>fD(r.date),"d"),c_("Objet",r=>esc(r.objet)+(r.urgence==="Urgente"?` ${pill("URGENT","bad")}`:"")),c_("Camion",r=>plate(r.veh)),
+   c_("Désignation",r=>esc(r.designation),"w"),c_("Fournisseur",r=>esc(r.fournisseur)),c_("Montant",r=>fM(r.montant),"n",{sum:r=>r.montant}),c_("Statut",r=>daPill(r)),
+   c_("Demandeur",r=>esc(r.demandeur_nom||nameOf(r.demandeur))),c_("Pièces",r=>(r.pieces||[]).length?"📎 "+(r.pieces||[]).length:"","n")]},
  missions:{col:"missions",title:"Missions & mouvements",sub:"Quel camion, où, avec qui, pour quelle mission, depuis quand. Pour une mission EN COURS, renseigner la phase.",
   filters:[["statut","Statut",LOCK.statutsMission,m=>m.statut]],sort:(a,b)=>String(b.dep||"").localeCompare(String(a.dep||"")),
   cols:[c_("N° mission",m=>`<b>${esc(m.num)}</b>`),c_("Camion",m=>plate(m.veh)),c_("Chauffeur",m=>esc(m.chauffeur)),c_("Client",m=>esc(m.client)),c_("Trajet",m=>esc(m.charg)+(m.dest?" → "+esc(m.dest):"")),
@@ -1002,16 +1049,16 @@ const LIST_R={
    c_("Km restants",e=>fN(C.en[e.id].krest),"n"),c_("Jours restants",e=>C.en[e.id].jrest,"n"),c_("Statut",e=>pill(C.en[e.id].statut))]},
 };
 function vList(){
-  const L=LIST_R[R],E=ENT[L.col];const F=FILT[R]||(FILT[R]={q:""});
+  const L=LIST_R[R],E=ENT[L.col];const F=FILT[R]||(FILT[R]={q:"",...(R==="flotte"?{dispo:"Disponibles"}:R==="achats"&&(myVal()||isAdmin())?{moi:"À traiter par moi"}:{})});
   return`<div class="ph"><div><h1>${esc(L.title)}</h1><p>${esc(L.sub)}</p></div>
-    <div class="acts">${canW(L.col)?`<button class="btn pri" data-new="${L.col}">+ Ajouter ${E.un==="intervention"||E.un==="entretien"?"une":["panne","mission","dépense"].includes(E.un)?"une":"un"} ${esc(E.un)}</button>`:""}</div></div>
+    <div class="acts">${R==="indispo"&&canW("achats")?`<button class="btn" data-new="achats">+ Demande d'achat</button>`:""}${canW(L.col)&&!L.noAdd?`<button class="btn pri" data-new="${L.col}">+ Ajouter ${E.un==="intervention"||E.un==="entretien"?"une":["panne","mission","dépense","demande d'achat"].includes(E.un)?"une":"un"} ${esc(E.un)}</button>`:""}</div></div>
    <div class="tb"><input type="search" id="q" placeholder="Rechercher (immatriculation, nom, lieu…)" value="${esc(F.q)}" aria-label="Rechercher">
     ${L.filters.map(([k,l,opts])=>`<select data-f="${k}" aria-label="${esc(l)}"><option value="">${esc(l)} : tous</option>${opts.map(o=>`<option${F[k]===o?" selected":""}>${esc(o)}</option>`).join("")}</select>`).join("")}
     <span class="meta" id="meta"></span></div>
    <div class="tw" id="tbl"></div>`;
 }
 function filtered(){
-  const L=LIST_R[R];const F=FILT[R]||{};let rows=S[L.col].slice();
+  const L=LIST_R[R];const F=FILT[R]||{};let rows=S[L.col].slice();if(L.base)rows=rows.filter(L.base);
   if(F.q){const q=F.q.toLowerCase();rows=rows.filter(r=>Object.values(r).some(v=>typeof v==="string"&&v.toLowerCase().includes(q))||(L.col==="vehicules"&&cv(r).anom.join(" ").toLowerCase().includes(q)))}
   L.filters.forEach(([k,,,get])=>{if(F[k])rows=rows.filter(r=>get(r)===F[k])});
   if(L.sort)rows.sort(L.sort);else rows.sort((a,b)=>String(a[ENT[L.col].key]||"").localeCompare(String(b[ENT[L.col].key]||""),"fr",{numeric:true}));
@@ -1030,7 +1077,7 @@ function renderTable(){
   CUR_ROWS=filtered();const E=ENT[L.col];
   const loading=!READY;
   el.innerHTML=loading?`<div class="empty">Chargement des données…</div>`:tableHTML(CUR_ROWS,L.cols,{empty:S[L.col].length?"Aucune ligne ne correspond à la recherche.":`Aucun ${esc(E.un)} enregistré pour l'instant. Utilisez « + Ajouter » pour saisir le premier.`});
-  const m=$("#meta");if(m)m.textContent=`${CUR_ROWS.length} ligne${CUR_ROWS.length>1?"s":""}${CUR_ROWS.length!==S[L.col].length?" sur "+S[L.col].length:""}`;
+  const m=$("#meta");const tot=L.base?S[L.col].filter(L.base).length:S[L.col].length;if(m)m.textContent=`${CUR_ROWS.length} ligne${CUR_ROWS.length>1?"s":""}${CUR_ROWS.length!==tot?" sur "+tot:""}`;
 }
 
 /* ======================================================================
@@ -1225,6 +1272,7 @@ function opts(src){
   if(src==="@chauffeurs")return S.chauffeurs.map(h=>h.nom).filter(Boolean).sort((a,b)=>a.localeCompare(b,"fr"));
   if(src==="@missions")return S.missions.map(m=>m.num).filter(Boolean).sort().reverse();
   if(src==="@docs")return P.documents.map(d=>d.nom);
+  if(src==="@refsDA")return daRefs();
   if(src==="@entretiens")return P.entretiens.map(e=>e.type);
   if(src==="garages"){const g=new Set(P.listes.garages||[]);["pannes","maintenances","accidents"].forEach(c=>S[c].forEach(r=>{if(r.garage)g.add(r.garage)}));return[...g].sort((a,b)=>a.localeCompare(b,"fr"))}
   return P.listes[src]||[];
@@ -1233,7 +1281,7 @@ function nextMission(){const y=new Date().getFullYear();let mx=0;S.missions.forE
 let FORM=null;
 function openForm(col,row,preset){
   const E=ENT[col];const isNew=!row;const data=row?{...row}:{};
-  if(isNew){E.fields.forEach(f=>{if(f.def==="today")data[f.k]=TODAY;else if(f.def==="nextMission")data[f.k]=nextMission();else if(f.def)data[f.k]=f.def});Object.assign(data,preset||{})}
+  if(isNew){E.fields.forEach(f=>{if(f.def==="today")data[f.k]=TODAY;else if(f.def==="nextMission")data[f.k]=nextMission();else if(f.def==="nextDA")data[f.k]=nextDA();else if(f.def)data[f.k]=f.def});Object.assign(data,preset||{})}
   FORM={col,id:row?row.id:null,isNew};
   const ro=!canW(col);
   const field=f=>{
@@ -1246,17 +1294,19 @@ function openForm(col,row,preset){
     else{const ty={num:"number",date:"date",dt:"datetime-local",time:"time"}[f.t]||"text";inp=`<input id="${id}" name="${f.k}" type="${ty}" ${f.t==="num"?'step="any" min="0" inputmode="decimal"':""} value="${esc(v)}" ${dis}>`}
     return`<div class="f${f.t==="area"||f.full?" full":""}" data-k="${f.k}"><label for="${id}">${esc(f.l)}${f.req?" <i>*</i>":""}</label>${inp}${f.hint?`<span class="hint">${esc(f.hint)}</span>`:""}<span class="em" hidden></span></div>`};
   const calc=!isNew?calcSummary(col,row):"";
-  const title=(isNew?"Nouveau":"Modifier")+(["panne","mission","dépense","intervention"].includes(E.un)?(isNew?"lle ":" la "):(isNew?" ":" le "))+E.un;
+  const title=(isNew?"Nouveau":"Modifier")+(["panne","mission","dépense","intervention","demande d'achat"].includes(E.un)?(isNew?"lle ":" la "):(isNew?" ":" le "))+E.un;
   $("#modal").innerHTML=`<div class="ov" id="ov"><div class="mod" role="dialog" aria-modal="true" aria-labelledby="mt">
-    <header><h2 id="mt">${esc(isNew?(["panne","mission","dépense","intervention"].includes(E.un)?"Nouvelle ":"Nouveau ")+E.un:"Modifier : "+(row[E.key]||E.un))}</h2><button class="btn sm" data-close aria-label="Fermer">✕</button></header>
+    <header><h2 id="mt">${esc(isNew?(["panne","mission","dépense","intervention","demande d'achat"].includes(E.un)?"Nouvelle ":"Nouveau ")+E.un:"Modifier : "+(row[E.key]||E.un))}</h2><button class="btn sm" data-close aria-label="Fermer">✕</button></header>
     <form class="bd" id="frm" novalidate>${calc}<div class="fg">${E.fields.map(field).join("")}</div></form>
-    <footer><div id="fleft">${!isNew&&!ro?`<button class="btn dng" type="button" id="delB">Supprimer</button>`:""}${!isNew&&!ro&&RESTORE[col]&&RESTORE[col].open(row)?`<button class="btn ok" type="button" id="restB" style="margin-left:8px">${esc(RESTORE[col].label)}</button>`:""}<span class="muted" id="trace" style="font-size:12.5px;margin-left:8px"></span></div>
+    <footer><div id="fleft">${!isNew&&!ro?`<button class="btn dng" type="button" id="delB">Supprimer</button>`:""}${!isNew&&!ro&&RESTORE[col]&&RESTORE[col].open(row)?`<button class="btn ok" type="button" id="restB" style="margin-left:8px">${esc(RESTORE[col].label)}</button>`:""}${!isNew&&["pannes","maintenances"].includes(col)&&canW("achats")?`<button class="btn" type="button" id="daB" style="margin-left:8px">Créer une demande d'achat</button>`:""}<span class="muted" id="trace" style="font-size:12.5px;margin-left:8px"></span></div>
       <div style="display:flex;gap:8px"><button class="btn" type="button" data-close>${ro?"Fermer":"Annuler"}</button>${ro?"":`<button class="btn pri" type="submit" form="frm" id="saveB">Enregistrer</button>`}</div></footer></div></div>`;
   const frm=$("#frm");
   frm.addEventListener("submit",e=>{e.preventDefault();submitForm()});
   frm.addEventListener("change",e=>autoFill(col,e.target));
   $("#ov").addEventListener("click",e=>{if(e.target.id==="ov"||e.target.closest("[data-close]"))closeForm()});
   const rb=$("#restB");if(rb)rb.onclick=()=>{const R0=RESTORE[col];Object.entries(R0.set).forEach(([k,v])=>{const el=frm.elements[k];if(el&&!el.disabled&&(R0.force.includes(k)||!el.value))el.value=v==="today"?TODAY:v});submitForm()};
+  if(col==="achats")daDecorate(row);
+  const dab=$("#daB");if(dab)dab.onclick=()=>{const p={objet:col==="pannes"?"Panne":"Maintenance",veh:row.veh,ref:daRefs(row.veh).find(x=>x.startsWith((col==="pannes"?"Panne du ":"Maintenance du ")+fD(col==="pannes"?row.date:row.entree)))||""};closeForm();openForm("achats",null,p)};
   const db=$("#delB");if(db)db.onclick=()=>{$("#fleft").innerHTML=`<span class="confirm">Supprimer définitivement ? <button class="btn dng sm" type="button" id="delY">Oui, supprimer</button><button class="btn sm" type="button" id="delN">Non</button></span>`;
     $("#delN").onclick=()=>openForm(col,row);$("#delY").onclick=async()=>{try{await delDoc(col,row.id);closeForm();toast("Supprimé")}catch(err){toast("Suppression impossible : "+(err.message||err.code))}}};
   if(row&&row._maj){let who="";const tr=$("#trace");const put=()=>tr.textContent="Modifié le "+new Date(row._maj).toLocaleString("fr-FR",{dateStyle:"short",timeStyle:"short"})+(who?" par "+who:"");put();
@@ -1282,6 +1332,9 @@ function autoFill(col,t){
   if(col==="conteneurs"&&t.name==="veh"){const m=S.missions.find(m=>m.veh===t.value&&m.statut==="EN COURS");if(m)set("mission",m.num)}
   if(col==="depenses"&&t.name==="veh"){const m=S.missions.find(m=>m.veh===t.value&&m.statut==="EN COURS");if(m)set("mission",m.num)}
   if(col==="pannes"&&t.name==="veh"){const v=C.vByImmat[t.value];if(v&&v.loc)set("lieu",v.loc)}
+  if(col==="achats"&&t.name==="veh"){const el=$("#f_ref");if(el){const cur=el.value;el.innerHTML=`<option value=""></option>`+daRefs(t.value).map(x=>`<option${x===cur?" selected":""}>${esc(x)}</option>`).join("")}}
+  if(col==="achats"&&t.name==="ref"&&t.value){const m=/^(Panne|Maintenance) du [^·]+· ([^·]+?)(?: ·|$)/.exec(t.value);if(m){$("#f_objet").value=m[1];$("#f_veh").value=m[2].trim()}}
+  if(col==="achats"&&(t.name==="qte"||t.name==="pu")){const q=Number($("#f_qte").value),u=Number($("#f_pu").value);if(q>0&&u>0)$("#f_montant").value=Math.round(q*u)}
   if(col==="pannes"&&t.name==="classif"){const el=$("#f_categorie");if(el)el.value=catOfClassif(t.value)}
 }
 function calcSummary(col,r){
@@ -1300,33 +1353,38 @@ function calcSummary(col,r){
   items=items.filter(i=>i[1]!==""&&i[1]!=null);
   return items.length?`<div class="calc"><h4>Calculé automatiquement</h4><div class="fields">${items.map(([l,v])=>`<div><span>${esc(l)}</span><b>${v}</b></div>`).join("")}</div></div>`:"";
 }
-async function submitForm(){
+async function submitForm(extra,opt={}){
   const{col,id,isNew}=FORM;const E=ENT[col];const frm=$("#frm");const data={};
   const old=id?S[col].find(r=>r.id===id)||{}:{};
   // conserver les champs non présents dans le formulaire (ex. marque d'exemple)
   Object.keys(old).forEach(k=>{if(k!=="id"&&!k.startsWith("_"))data[k]=old[k]});
   E.fields.forEach(f=>{if(!f.k)return;const el=frm.elements[f.k];if(!el||el.disabled)return;let v=el.value.trim();
     if(f.t==="num")v=v===""?"":Number(v);if(v===""||v==null)delete data[f.k];else data[f.k]=v});
-  frm.querySelectorAll(".f").forEach(d=>{d.classList.remove("err");const m=d.querySelector(".em");m.hidden=true});
+  if(extra)Object.entries(extra).forEach(([k,v])=>{if(v===undefined)delete data[k];else data[k]=v});
+  if(col==="achats"&&isNew){data.demandeur=ME.id;data.demandeur_nom=ME.nom||ME.email}
+  frm.querySelectorAll(".f").forEach(d=>{d.classList.remove("err");const m=d.querySelector(".em");if(m)m.hidden=true});
   const errs=[];const bad=(k,m)=>errs.push([k,m]);
+  if(col==="achats"&&["Panne","Maintenance"].includes(data.objet)&&!data.veh)bad("veh","Choisissez le camion concerné.");
   E.fields.forEach(f=>{if(!f.k)return;const v=data[f.k];
     if(f.req&&!has(v))bad(f.k,"Champ obligatoire.");
     if(f.uniq&&has(v)&&S[col].some(r=>r.id!==id&&String(r[f.k]).trim().toLowerCase()===String(v).toLowerCase()))bad(f.k,"Cette valeur existe déjà (doublon interdit).");
     if(f.t==="num"&&has(v)&&(!isFinite(v)||v<0))bad(f.k,"Saisir un nombre positif.");
     if(f.after&&has(v)&&has(data[f.after])&&dnum(v)<dnum(data[f.after]))bad(f.k,"Date antérieure à la date de départ.")});
   if(errs.length){errs.forEach(([k,m])=>{const d=frm.querySelector(`.f[data-k="${k}"]`);if(d){d.classList.add("err");const e=d.querySelector(".em");e.textContent=m;e.hidden=false}});
-    const first=frm.querySelector(".f.err input,.f.err select");if(first)first.focus();return}
-  const b=$("#saveB");b.disabled=true;b.textContent="Enregistrement…";
+    const first=frm.querySelector(".f.err input,.f.err select");if(first)first.focus();return false}
+  const b=$("#saveB")||{};b.disabled=true;b.textContent="Enregistrement…";
   try{
-    await putDoc(col,id||newId(),data);
+    const nid=id||FORM.preId||newId();FORM.lastId=nid;
+    await putDoc(col,nid,data);
+    if(opt.keepOpen)return true;
     if(data.garage&&isAdmin()&&!(P.listes.garages||[]).includes(data.garage)){const np=structuredClone(P);np.listes.garages=[...(np.listes.garages||[]),data.garage];await saveParams(np)}
     // saisie unique : un kilométrage de dépense plus élevé met à jour la fiche du camion
     if(col==="depenses"&&has(data.km)&&canW("vehicules")){const v=C.vByImmat[data.veh]||S.vehicules.find(x=>x.immat===data.veh);
       if(v&&num(data.km)>num(v.km)){const{id:vid,...rest}=v;await putDoc("vehicules",vid,{...rest,km:num(data.km),maj:data.date||TODAY})}}
-    closeForm();toast(isNew?"Enregistré":"Modifications enregistrées");
+    closeForm();toast(isNew?"Enregistré":"Modifications enregistrées");return true;
   }catch(err){b.disabled=false;b.textContent="Enregistrer";
     const msg=err&&err.code==="invalid_argument"?"Vous n'avez pas le droit de modifier ces données.":err&&err.code==="quota_exceeded"?"La base est pleine : supprimez d'anciennes lignes.":"Enregistrement impossible, réessayez.";
-    toast(msg)}
+    toast(msg);return false}
 }
 
 /* ======================================================================
@@ -1357,7 +1415,7 @@ function xlVal(v,t){
 }
 function parseWorkbook(buf){
   const wb=XLSX.read(buf,{type:"array",cellDates:false});const out={};const notes=[];
-  COLS.forEach(col=>{
+  IMPORT_COLS().forEach(col=>{
     const E=ENT[col];const ws=wb.Sheets[E.sheet]||wb.Sheets[Object.keys(wb.Sheets).find(n=>norm(n)===norm(E.sheet))];
     if(!ws){notes.push(`Feuille « ${E.sheet} » absente`);out[col]=[];return}
     const rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:""});
@@ -1376,14 +1434,14 @@ function parseWorkbook(buf){
 async function doImport(file){
   const z=$("#impZone");BUSY=true;z.innerHTML=`<span class="muted">Lecture du fichier…</span>`;
   try{const buf=await file.arrayBuffer();const{out,notes}=parseWorkbook(new Uint8Array(buf));
-    const n=COLS.reduce((a,c)=>a+out[c].length,0);
+    const n=IMPORT_COLS().reduce((a,c)=>a+out[c].length,0);
     if(!n){BUSY=false;z.innerHTML=`<p class="anom">Aucune donnée reconnue dans ce fichier. Vérifiez qu'il s'agit bien du classeur de gestion de flotte (feuilles FLOTTE, PANNES…).</p>`;return}
-    const cur=COLS.reduce((a,c)=>a+S[c].length,0);
-    z.innerHTML=`<div class="calc"><h4>Contenu reconnu</h4><div class="fields">${COLS.map(c=>`<div><span>${esc(ENT[c].nom)}</span><b>${out[c].length}</b></div>`).join("")}</div>${notes.length?`<p class="anom" style="margin:8px 0 0">${esc(notes.join(" · "))}</p>`:""}</div>
+    const cur=IMPORT_COLS().reduce((a,c)=>a+S[c].length,0);
+    z.innerHTML=`<div class="calc"><h4>Contenu reconnu</h4><div class="fields">${IMPORT_COLS().map(c=>`<div><span>${esc(ENT[c].nom)}</span><b>${out[c].length}</b></div>`).join("")}</div>${notes.length?`<p class="anom" style="margin:8px 0 0">${esc(notes.join(" · "))}</p>`:""}</div>
       <p class="confirm" style="margin-top:10px">Remplacer les ${cur} lignes actuelles par ces ${n} lignes ? <button class="btn dng sm" id="impY">Oui, remplacer</button><button class="btn sm" id="impN">Annuler</button></p>`;
     $("#impN").onclick=()=>{z.innerHTML="";BUSY=false};
     $("#impY").onclick=async()=>{z.innerHTML=`<span id="impP" class="muted">Import en cours…</span>`;const prog=$("#impP");
-      try{const dels=COLS.flatMap(c=>S[c].map(r=>[c,r.id]));const adds=COLS.flatMap(c=>out[c].map(d=>[c,d]));const total=dels.length+adds.length;let k=0;const tick=()=>{k++;prog.textContent=`Import en cours… ${Math.round(k/total*100)} %`};
+      try{const dels=IMPORT_COLS().flatMap(c=>S[c].map(r=>[c,r.id]));const adds=IMPORT_COLS().flatMap(c=>out[c].map(d=>[c,d]));const total=dels.length+adds.length;let k=0;const tick=()=>{k++;prog.textContent=`Import en cours… ${Math.round(k/total*100)} %`};
         await pool(dels,4,async([c,id])=>{await delDoc(c,id);tick()});
         await pool(adds,4,async([c,d])=>{await putDoc(c,newId(),d);tick()});
         BUSY=false;toast(`Import terminé : ${n} lignes enregistrées`);schedule(true)}
@@ -1406,6 +1464,7 @@ async function doExport(){
     ["ENTRETIEN PRÉVENTIF","entretiens",r=>({...pick(r,"entretiens"),"Prochaine échéance (km)":c.en[r.id].ekm,"Prochaine échéance (date)":c.en[r.id].ej!==""?fD(isoOf(c.en[r.id].ej)):"","Km restants":c.en[r.id].krest,"Jours restants":c.en[r.id].jrest,"Statut":c.en[r.id].statut})],
   ];
   sheets.forEach(([name,col,f])=>{const ws=XLSX.utils.json_to_sheet(S[col].map(f),{header:Object.values(XL[col])});XLSX.utils.book_append_sheet(wb,ws,name.slice(0,31))});
+  if(S.achats.length)XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.achats.map(r=>({"N° DA":r.num,"Date":fD(r.date),"Objet":r.objet,"Urgence":r.urgence||"","Camion":r.veh||"","Panne / maintenance":r.ref||"","Fournisseur":r.fournisseur||"","Désignation":r.designation||"","Quantité":r.qte??"","Prix unitaire":r.pu??"","Montant":r.montant??"","Statut":DA_ST[daSt(r)],"Demandeur":r.demandeur_nom||nameOf(r.demandeur),"Dernier commentaire":r.commentaire||"","Pièces jointes":(r.pieces||[]).length,"Justification":r.obs||""}))),"DEMANDES D'ACHAT");
   const al=C.alerts.flatMap(a=>a.rows.map(r=>({"Niveau":a.u?"URGENT":"À TRAITER","Rubrique":a.lab,"Camion / chauffeur":r.veh||r.immat||r.nom||"","Détail":r.doc||r.num||r.type||r.classif||""})));
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(al),"ALERTES");
   const out=XLSX.write(wb,{type:"array",bookType:"xlsx"});
@@ -1626,6 +1685,140 @@ function rpExcel(){
   const out=XLSX.write(wb,{type:"array",bookType:"xlsx"});
   const url=URL.createObjectURL(new Blob([out],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
   const a=document.createElement("a");a.href=url;a.download=`Rapport_${RP_TITLE.replace(/[^\p{L}\p{N}]+/gu,"_").replace(/_+$/,"")}.xlsx`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);toast("Rapport téléchargé")
+}
+
+/* ======================================================================
+   DEMANDES D'ACHAT (DA) — circuit : agent → responsable logistique → DG / RAF
+   Le serveur vérifie chaque étape (déclencheur da_workflow).
+   ====================================================================== */
+const DA_ST={BROUILLON:"Brouillon",SOUMISE:"À vérifier – Logistique",VALIDÉE:"À approuver – DG / RAF",APPROUVÉE:"Approuvée",REJETÉE:"Rejetée"};
+const DA_TONE={BROUILLON:"",SOUMISE:"warn",VALIDÉE:"info",APPROUVÉE:"ok",REJETÉE:"bad"};
+const VAL_LAB={logistique:"Responsable logistique",direction:"DG / RAF"};
+const daSt=r=>r.statut||"BROUILLON";
+const daPill=r=>pill(DA_ST[daSt(r)]||daSt(r),DA_TONE[daSt(r)]);
+const myVal=()=>ME&&ME.actif?(ME.validation||""):"";
+function daActions(r){
+  if(!ME||!ME.actif)return[];const st=daSt(r);const v=myVal(),adm=!!ME.admin;const mine=!r.demandeur||r.demandeur===ME.id;
+  if(st==="BROUILLON")return(mine||adm)&&canW("achats")?["save","submit","delete"]:[];
+  if(st==="SOUMISE")return(v==="logistique"||adm)?["save","validate","reject"]:[];
+  if(st==="VALIDÉE")return(v==="direction"||adm)?["approve","reject"]:[];
+  return[];
+}
+function daATraiter(r){const st=daSt(r),v=myVal();
+  if(v)return(st==="SOUMISE"&&v==="logistique")||(st==="VALIDÉE"&&v==="direction");
+  return !!(ME&&ME.admin)&&((st==="SOUMISE"&&!validateurs("logistique").length)||(st==="VALIDÉE"&&!validateurs("direction").length));
+}
+const validateurs=role=>Object.values(PROFILES).filter(p=>p.actif&&p.validation===role);
+function nextDA(){const y=new Date().getFullYear();let mx=0;S.achats.forEach(m=>{const r=/^DA-(\d{4})-(\d+)$/.exec(m.num||"");if(r&&+r[1]===y)mx=Math.max(mx,+r[2])});return`DA-${y}-${String(mx+1).padStart(3,"0")}`}
+function daRefs(veh){
+  const pn=S.pannes.filter(p=>p.veh&&p.statut!=="RÉPARÉE"&&(!veh||p.veh===veh)).map(p=>`Panne du ${fD(p.date)} · ${p.veh}${p.classif?" · "+p.classif:""}`);
+  const ma=S.maintenances.filter(m=>m.veh&&m.statut!=="TERMINÉE"&&(!veh||m.veh===veh)).map(m=>`Maintenance du ${fD(m.entree)} · ${m.veh}${m.type?" · "+m.type:""}`);
+  return[...pn,...ma];
+}
+/* --- Téléphone WhatsApp ----------------------------------------------- */
+function waNum(t){let d=String(t||"").replace(/\D/g,"");if(!d)return"";if(d.startsWith("00"))d=d.slice(2);if(d.length===9)d="224"+d;return d}
+const appUrl=()=>location.origin+location.pathname;
+function daMsg(r,kind,nom){
+  const m=`${r.num} (${r.objet||"achat"}${r.veh?" – "+r.veh:""}, ${fM(r.montant)} ${P.seuils.devise||""})`;
+  const hi=`Bonjour ${nom||""},\n`;
+  if(kind==="submit")return hi+`la demande d'achat ${m} attend votre vérification dans ToTrans Flotte.\n${appUrl()}#achats`;
+  if(kind==="validate")return hi+`la demande d'achat ${m} a été vérifiée par la logistique et attend votre approbation.\n${appUrl()}#achats`;
+  if(kind==="approve")return hi+`votre demande d'achat ${m} a été APPROUVÉE.${r.commentaire?"\nCommentaire : "+r.commentaire:""}`;
+  if(kind==="reject")return hi+`votre demande d'achat ${m} a été REJETÉE.\nMotif : ${r.commentaire||""}`;
+  return hi+m;
+}
+function daNotifyTargets(r,kind){
+  if(kind==="submit")return validateurs("logistique");
+  if(kind==="validate")return validateurs("direction");
+  const d=PROFILES[r.demandeur];return d?[d]:[];
+}
+function daNotifyHTML(r,kind){
+  const t=daNotifyTargets(r,kind);
+  const who={submit:"le responsable logistique",validate:"la DG / le RAF",approve:"le demandeur",reject:"le demandeur"}[kind];
+  if(!t.length)return`<p class="anom">Aucun ${kind==="submit"?"responsable logistique":kind==="validate"?"validateur DG / RAF":"demandeur"} n'est désigné dans Utilisateurs : personne ne peut être prévenu.</p>`;
+  return`<p>Prévenez ${who} sur WhatsApp : le message est déjà écrit, il suffit de toucher <b>Envoyer</b> dans WhatsApp.</p>
+   <div class="wa-list">${t.map(p=>{const n=waNum(p.tel);return n?`<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${n}?text=${encodeURIComponent(daMsg(r,kind,p.nom||""))}">WhatsApp · ${esc(p.nom||p.email)}</a>`
+     :`<span class="muted">${esc(p.nom||p.email)} : numéro WhatsApp non renseigné (Utilisateurs).</span>`}).join("")}</div>`;
+}
+/* --- Pièces justificatives ------------------------------------------- */
+async function shrinkImage(file){
+  try{const bmp=await createImageBitmap(file);const k=Math.min(1,1800/Math.max(bmp.width,bmp.height));
+    const c=document.createElement("canvas");c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
+    const b=await new Promise(res=>c.toBlob(res,"image/jpeg",.78));return b&&b.size<file.size?b:file}catch(e){return file}
+}
+function piecesHTML(){
+  const L=(FORM&&FORM.pieces)||[];
+  return L.length?`<ul class="pj">${L.map((p,i)=>`<li><button type="button" class="linkb" data-pj="${i}">${/pdf/.test(p.type)?"📄":"🖼️"} ${esc(p.nom)}</button> <span class="muted">${fN((p.taille||0)/1024)} Ko · ${esc(nameOf(p.par)||"")} ${p.le?fD(p.le.slice(0,10)):""}</span></li>`).join("")}</ul>`:`<p class="muted" style="margin:0">Aucune pièce jointe.</p>`;
+}
+async function daUpload(files){
+  const msg=$("#daUpMsg");const say=t=>{if(msg)msg.textContent=t};
+  if(!navigator.onLine){say("Joindre une pièce demande une connexion Internet.");return}
+  const id=FORM.id||FORM.preId;let n=0;
+  for(const f of files){
+    say(`Envoi de ${f.name}…`);
+    const blob=/^image\//.test(f.type)?await shrinkImage(f):f;
+    if(blob.size>10*1024*1024){say(`${f.name} dépasse 10 Mo.`);continue}
+    const type=blob.type||f.type||"application/octet-stream";
+    const nom=blob===f?(f.name||"scan"):(f.name||"scan").replace(/\.[^.]+$/,"")+".jpg";
+    const path=`achats/${id}/${Date.now()}-${nom.normalize("NFD").replace(/[^\w.\-]+/g,"_").slice(-60)}`;
+    const{error}=await SB.storage.from("justificatifs").upload(path,blob,{contentType:type,upsert:false});
+    if(error){say("Envoi impossible : "+(error.message||error));return}
+    FORM.pieces.push({path,nom,type,taille:blob.size,le:new Date().toISOString(),par:ME.id});n++;
+  }
+  const z=$("#daPieces");if(z)z.innerHTML=piecesHTML();
+  if(n&&!FORM.isNew){const row=S.achats.find(r=>r.id===FORM.id);if(row){const{id:_,...rest}=row;await putDoc("achats",FORM.id,{...rest,pieces:FORM.pieces})}}
+  say(n?`${n} pièce(s) jointe(s)${FORM.isNew?" : enregistrez la demande pour les conserver.":"."}`:"");
+}
+async function openPiece(i){
+  const p=FORM.pieces[i];if(!p)return;if(!navigator.onLine){toast("Ouvrir une pièce demande une connexion Internet");return}
+  const w=window.open("","_blank");
+  const{data,error}=await SB.storage.from("justificatifs").createSignedUrl(p.path,600);
+  if(error||!data){if(w)w.close();toast("Pièce introuvable");return}
+  if(w)w.location=data.signedUrl;else location.href=data.signedUrl;
+}
+/* --- Habillage du formulaire DA ---------------------------------------- */
+function daDecorate(row){
+  const r=row||{statut:"BROUILLON"};const acts=row?daActions(row):(canW("achats")?["save","submit"]:[]);
+  FORM.pieces=[...((row&&row.pieces)||[])];if(!row)FORM.preId=newId();
+  const canUp=canW("achats");
+  const hist=(r.hist||[]).map(h=>`<li><b>${esc(DA_ST[h.a]||h.a)}</b> · ${esc(h.nom||"")} · ${h.le?new Date(h.le).toLocaleString("fr-FR",{dateStyle:"short",timeStyle:"short"}):""}${h.com?`<br><span class="muted">${esc(h.com)}</span>`:""}</li>`).join("");
+  const needCom=acts.some(a=>["validate","reject","approve"].includes(a));
+  const box=document.createElement("div");box.className="fg";
+  box.innerHTML=`<div class="fsec">Circuit de validation</div>
+    <div class="full da-step">${daPill(r)} ${row?`<span class="muted">Demandeur : ${esc(r.demandeur_nom||nameOf(r.demandeur)||"")}</span>`:""}${hist?`<ol class="da-hist">${hist}</ol>`:""}</div>
+    ${needCom?`<div class="f full" data-k="commentaire"><label for="f_commentaire">Commentaire${acts.includes("reject")?" (obligatoire pour un rejet)":""}</label><textarea id="f_commentaire" name="commentaire"></textarea><span class="em" hidden></span></div>`:""}
+    <div class="fsec">Pièces justificatives (facture, devis, bon)</div>
+    <div class="full" id="daPieces">${piecesHTML()}</div>
+    ${canUp?`<div class="full da-up"><label class="btn"><input type="file" accept="image/*" capture="environment" data-up hidden>📷 Scanner</label><label class="btn"><input type="file" accept="image/*,application/pdf" multiple data-up hidden>📎 Joindre un fichier</label><span class="muted" id="daUpMsg"></span></div>`:""}`;
+  $("#frm").appendChild(box);
+  box.querySelectorAll("[data-up]").forEach(i=>i.onchange=()=>{const f=[...i.files];i.value="";if(f.length)daUpload(f)});
+  box.addEventListener("click",e=>{const b=e.target.closest("[data-pj]");if(b)openPiece(+b.dataset.pj)});
+  // champs modifiables seulement à l'étape où l'utilisateur peut corriger
+  const edit=acts.includes("save");$("#frm").querySelectorAll(".fg:first-of-type input,.fg:first-of-type select,.fg:first-of-type textarea").forEach(el=>{if(!edit)el.disabled=true});
+  // boutons du circuit
+  const B={save:["btn","Enregistrer le brouillon"],submit:["btn pri","Soumettre à la logistique"],validate:["btn ok","Valider et transmettre à la DG / RAF"],approve:["btn ok","Approuver"],reject:["btn dng","Rejeter"]};
+  if(daSt(r)==="SOUMISE")B.save=["btn","Enregistrer les corrections"];
+  const right=$("#saveB")?$("#saveB").parentElement:$("#modal footer>div:last-child");
+  right.innerHTML=`<button class="btn" type="button" data-close>${acts.length?"Annuler":"Fermer"}</button>`+acts.filter(a=>a!=="delete").map(a=>`<button class="${B[a][0]}" type="button" data-da="${a}">${esc(B[a][1])}</button>`).join("");
+  const db=$("#delB");if(db&&!acts.includes("delete"))db.remove();
+  right.querySelectorAll("[data-da]").forEach(b=>b.onclick=()=>daAct(b.dataset.da,b));
+  const rb=$("#restB");if(rb)rb.remove();
+}
+async function daAct(a,btn){
+  const frm=$("#frm");const com=frm.elements.commentaire?frm.elements.commentaire.value.trim():"";
+  if(a==="reject"&&!com){const d=frm.querySelector('.f[data-k="commentaire"]');d.classList.add("err");const e=d.querySelector(".em");e.textContent="Indiquez le motif du rejet.";e.hidden=false;frm.elements.commentaire.focus();return}
+  const st={save:null,submit:"SOUMISE",validate:"VALIDÉE",approve:"APPROUVÉE",reject:"REJETÉE"}[a];
+  const extra={pieces:FORM.pieces};if(st)extra.statut=st;extra.commentaire=com||undefined;
+  const ok=await submitForm(extra,{keepOpen:true});if(!ok)return;
+  const id=FORM.id||FORM.lastId;const r=S.achats.find(x=>x.id===id)||{};
+  if(a==="save"){closeForm();toast("Enregistré");return}
+  const kind={submit:"submit",validate:"validate",approve:"approve",reject:"reject"}[a];
+  const t={submit:"Demande soumise",validate:"Demande validée et transmise",approve:"Demande approuvée",reject:"Demande rejetée"}[a];
+  $("#modal").innerHTML=`<div class="ov" id="ov"><div class="mod" role="dialog" aria-modal="true" aria-labelledby="mt" style="width:min(560px,100%)">
+    <header><h2 id="mt">${esc(t)}</h2><button class="btn sm" data-close aria-label="Fermer">✕</button></header>
+    <div class="bd"><p style="margin:0">${esc(r.num||"")} · ${daPill(r)}</p>${daNotifyHTML(r,kind)}</div>
+    <footer><span></span><button class="btn pri" data-close>Terminé</button></footer></div></div>`;
+  $("#ov").addEventListener("click",e=>{if(e.target.id==="ov"||e.target.closest("[data-close]"))closeForm()});
 }
 
 /* ======================================================================

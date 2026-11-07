@@ -1,6 +1,6 @@
 /* Service worker : garde l'application sur l'appareil pour l'ouvrir sans Internet.
    Changer VERSION à chaque mise à jour de l'application. */
-const VERSION = "totrans-flotte-v8";
+const VERSION = "totrans-flotte-v10";
 const SHELL = ["./", "index.html", "config.js", "manifest.webmanifest", "supabase.js", "591.supabase.js",
   "xlsx.full.min.js", "icon.svg", "icon-192.png", "icon-512.png"];
 

@@ -48,6 +48,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 .brand svg{flex:none}
 .brand b{font-family:var(--f-display);font-size:22px;letter-spacing:.02em;line-height:1}
 .brand small{display:block;font-size:11px;opacity:.75;letter-spacing:.08em;text-transform:uppercase;margin-top:3px}
+.brandlogo{display:inline-block;background:#fff;border-radius:6px;padding:5px 7px;line-height:0;max-width:100%}
+.brandlogo img{height:46px;width:auto;max-width:100%}
+.sbrand{flex-direction:column;align-items:flex-start;gap:6px}.sbrand small{margin:0 0 0 2px}
 .nav{display:flex;flex-direction:column;gap:2px}
 .nav .grp{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.6;padding:14px 10px 4px}
 .nav a{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px;border-radius:5px;color:inherit;text-decoration:none;font-weight:500}
@@ -157,6 +160,7 @@ table.t{border-collapse:collapse;width:100%;font-size:13.5px}
 .f label i{color:var(--bad);font-style:normal}
 .f input,.f select,.f textarea,.dal-r input{border:1px solid var(--line);background:var(--bg);border-radius:5px;padding:7px 9px;width:100%;min-width:0}
 .f textarea{min-height:64px;resize:vertical}
+.pwbox{position:relative;display:flex}.pwbox input{padding-right:96px}.pwt{position:absolute;right:4px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--accent,#1f3864);font:inherit;font-size:13px;font-weight:600;padding:6px 8px;cursor:pointer;border-radius:4px}.pwt:focus-visible{outline:2px solid var(--accent,#1f3864)}
 .f .hint{font-size:11.5px;color:var(--ink-3)}
 .f.err input,.f.err select{border-color:var(--bad);background:var(--bad-bg)}
 .f .em{font-size:12px;color:var(--bad);font-weight:600}
@@ -180,6 +184,7 @@ table.t{border-collapse:collapse;width:100%;font-size:13.5px}
   .side{position:sticky;top:env(safe-area-inset-top,0px);height:auto;z-index:20;padding:8px 0 0;overflow:visible}
   .brand{padding:2px max(16px,env(safe-area-inset-left,0px)) 6px}
   .brand small{display:none}
+  .sbrand .brandlogo{padding:3px 6px}.sbrand .brandlogo img{height:30px}
   .nav{flex-direction:row;overflow-x:auto;gap:2px;padding:0 max(12px,env(safe-area-inset-left,0px)) 6px;scrollbar-width:none}
   .nav .grp{display:none}
   .nav a{white-space:nowrap;padding:6px 10px}
@@ -204,6 +209,7 @@ table.t{border-collapse:collapse;width:100%;font-size:13.5px}
 .rp-ctl label.rp-ref{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;color:var(--ink-2)}
 .rp-ctl input[type=date]{border:1px solid var(--line);background:var(--surface);border-radius:5px;padding:6px 8px}
 .rp-head{border-bottom:2px solid var(--navy);padding-bottom:8px}
+.rp-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}.rp-logo{height:46px;width:auto}
 .rp-head .rp-brand{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
 .rp-head h1{font-family:var(--f-display);font-weight:700;font-size:26px;margin:2px 0 2px;line-height:1.1}
 .rp-head p{margin:0;color:var(--ink-2);font-size:13.5px}
@@ -214,6 +220,11 @@ table.t{border-collapse:collapse;width:100%;font-size:13.5px}
 .rp-g2{grid-template-columns:minmax(0,2fr) minmax(260px,1fr)}
 .rp .t tbody tr{cursor:default}
 .rp .tile{cursor:default}
+.rp-info .fields{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.rp-sigs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px;break-inside:avoid}
+.rp-sigs>div{border:1px solid var(--line);border-radius:6px;padding:8px 10px;display:flex;flex-direction:column;gap:4px;min-height:120px;font-size:13px}
+.rp-sigs .rp-sg{margin-top:auto;border-top:1px dashed var(--line);padding-top:3px;color:var(--ink-3);font-size:11.5px}
+@media (max-width:700px){.rp-sigs{grid-template-columns:1fr}}
 @media (max-width:900px){.rp-g2{grid-template-columns:minmax(0,1fr)}}
 @media print{
   @page{size:A4 landscape;margin:10mm}
@@ -258,7 +269,7 @@ table.t{border-collapse:collapse;width:100%;font-size:13.5px}
 #daPrint{display:none}
 .dp{color:#111;background:#fff;font-family:var(--f-body);font-size:12.5px;line-height:1.4}
 .dp-h{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;border-bottom:3px solid #1f3864;padding-bottom:10px;margin-bottom:14px}
-.dp-brand{font-family:var(--f-display);font-size:30px;font-weight:700;color:#1f3864;line-height:1}
+.dp-logo{height:52px;width:auto;max-width:100%}
 .dp-sub{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#555}
 .dp-t{text-align:center}.dp-t h1{margin:0;font-family:var(--f-display);font-size:26px;letter-spacing:.06em}
 .dp-num{font-family:var(--f-mono);font-size:15px;font-weight:600;margin-top:2px}
@@ -279,6 +290,21 @@ table.t{border-collapse:collapse;width:100%;font-size:13.5px}
 .dp-sign{margin-top:auto;border-top:1px dashed #9aa5b1;padding-top:3px;font-size:10.5px;color:#777;min-height:60px}
 .dp-f{margin-top:14px;font-size:10px;color:#777;text-align:center}
 @page da{size:A4 portrait;margin:12mm}
+.gp{font-size:12px;line-height:1.5}.gp p{margin:0 0 5px}
+.gp-h{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;border-bottom:3px solid #1f3864;padding-bottom:8px;margin-bottom:8px}
+.gp-t{text-align:center}.gp-t h1{margin:0;font-family:var(--f-display);font-size:20px;letter-spacing:.04em;color:#1f3864}.gp-conf{font-style:italic;font-size:11px;color:#555}
+.gp-dr{display:flex;justify-content:space-between;margin:4px 0 10px}
+.gp h2{font-size:12.5px;color:#1f3864;margin:10px 0 4px;letter-spacing:.03em}
+.gp-blank{display:inline-block;border-bottom:1px dotted #333;height:1em;vertical-align:baseline}
+.gp-v{border-bottom:1px dotted #999}
+.gp-tb th,.gp-tb td{border:1px solid #9aa5b1;padding:5px 7px;text-align:left}.gp-tb thead th{background:#1f3864;color:#fff}.gp-tb td{height:24px}.gp-tb .n{text-align:right}
+.gp-i{font-style:italic}.gp-q{margin:6px 0 6px 18px;color:#333}
+.gp-ul{margin:2px 0 6px 18px;padding:0;list-style:"▸  "}.gp-ul li{margin:1px 0}
+.gp-sigs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.gp-sigs>div{border:1px solid #9aa5b1;padding:6px 8px;display:flex;flex-direction:column;gap:2px;min-height:130px}
+.gp-st{font-weight:700;border-bottom:1px solid #9aa5b1;padding-bottom:2px;margin-bottom:2px}
+.gp-sg{margin-top:auto;font-style:italic;font-size:10.5px;color:#666;border-top:1px dashed #9aa5b1;padding-top:2px}
+.gp-pj{border:1px solid #9aa5b1;padding:6px 8px;margin-top:10px;font-size:11.5px}
 @media print{
   body.print-da .app,body.print-da #modal,body.print-da #toast{display:none!important}
   body.print-da #daPrint{display:block;page:da}
@@ -301,6 +327,7 @@ table.t{border-collapse:collapse;width:100%;font-size:13.5px}
  .dal-r .dal-i{display:none}.dal-r [data-l="des"]{grid-column:1/-1}
  .dal-r input::placeholder{color:var(--muted,#889)}}
 .da-up label.btn{cursor:pointer}
+.da-up select{border:1px solid var(--line);background:var(--bg);border-radius:5px;padding:7px 9px;max-width:100%}
 .da-hist{margin:8px 0 0;padding-left:20px;font-size:13px;display:flex;flex-direction:column;gap:4px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* --- application installable : connexion, synchronisation, utilisateurs --- */
@@ -310,7 +337,7 @@ body.authmode .side{display:none} body.authmode .app{grid-template-columns:minma
 .authwrap{min-height:80vh;display:flex;align-items:center;justify-content:center}
 .authbox{width:min(420px,100%);display:flex;flex-direction:column;gap:12px;padding:22px}
 .authbox h2{margin:0;font-family:var(--f-display);font-size:26px}
-.authbrand{color:var(--navy);padding:0 0 6px}
+.authbrand{display:flex;flex-direction:column;gap:4px;padding:0 0 6px}.authbrand img{height:60px;width:auto;max-width:100%}.authbrand small{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
 .syncbox{margin-top:18px;padding:12px 8px 0;border-top:1px solid rgba(255,255,255,.15);display:flex;flex-direction:column;gap:8px;font-size:13px}
 .syncst{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border:0;color:inherit;border-radius:5px;padding:6px 9px;cursor:pointer;text-align:left;font-size:13px}
 .sdot{width:9px;height:9px;border-radius:50%;background:#8a96a4;flex:none}
@@ -330,9 +357,8 @@ body.authmode .side{display:none} body.authmode .app{grid-template-columns:minma
 <body>
 <div class="app">
   <aside class="side">
-    <div class="brand">
-      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect x="1" y="9" width="20" height="14" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M21 13h6l4 5v5h-10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="8" cy="25" r="3" fill="var(--accent)"/><circle cx="26" cy="25" r="3" fill="var(--accent)"/></svg>
-      <div><b>ToTrans Flotte</b><small>Gestion de flotte</small></div>
+    <div class="brand sbrand">
+      <span class="brandlogo"><img data-logo alt="ToTrans S.A.R.L"></span><small>Gestion de flotte</small>
     </div>
     <nav class="nav" id="nav"></nav>
     <div class="syncbox" id="syncbox"></div>
@@ -347,6 +373,8 @@ body.authmode .side{display:none} body.authmode .app{grid-template-columns:minma
 <script src="supabase.js"></script>
 <script src="xlsx.full.min.js"></script>
 <script>
+const LOGO="data:image/png;base64,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";
+document.querySelectorAll("img[data-logo]").forEach(i=>i.src=LOGO);
 "use strict";
 /* ======================================================================
    CONSTANTES MÉTIER (identiques au classeur Gestion_Flotte_v2)
@@ -417,7 +445,7 @@ const ENT={
   {k:"obs",l:"Observations",t:"area"}]},
  missions:{nom:"Missions",un:"mission",sheet:"MISSIONS & MOUVEMENTS",key:"num",fields:[
   {s:"Mission"},
-  {k:"num",l:"N° mission",t:"text",req:1,uniq:1,lockEdit:1,def:"nextMission"},{k:"activite",l:"Type d'activité",t:"sel",o:"activites"},
+  {k:"num",l:"N° mission",t:"text",req:1,uniq:1,lockEdit:1,def:"nextMission"},{k:"dossier",l:"N° dossier de transit",t:"free",o:"@dossiers",hint:"Sert à la situation par dossier transmise à la comptabilité."},{k:"activite",l:"Type d'activité",t:"sel",o:"activites"},
   {k:"veh",l:"Véhicule",t:"sel",o:"@vehicules",req:1},{k:"chauffeur",l:"Chauffeur",t:"sel",o:"@chauffeurs"},
   {k:"client",l:"Client",t:"text"},{k:"cargo",l:"Type de cargaison",t:"free",o:"cargaisons"},
   {k:"charg",l:"Lieu de chargement",t:"text"},{k:"dest",l:"Destination",t:"text"},{k:"poids",l:"Poids / volume (t ou m³)",t:"num"},
@@ -433,10 +461,18 @@ const ENT={
   {k:"etat",l:"État du conteneur",t:"sel",o:"etatsConteneur"},{k:"obs",l:"Observations",t:"area"}]},
  chauffeurs:{nom:"Chauffeurs",un:"chauffeur",sheet:"CHAUFFEURS",key:"nom",fields:[
   {k:"nom",l:"Nom et prénom",t:"text",req:1,uniq:1,lockEdit:1},{k:"mat",l:"Matricule",t:"text"},{k:"tel",l:"Téléphone",t:"text"},
-  {k:"statut",l:"Statut du chauffeur",t:"sel",o:"statutsChauffeur",def:"ACTIF"},
+  {k:"statut",l:"Statut du chauffeur",t:"sel",o:"statutsChauffeur",def:"ACTIF"},{k:"cni",l:"N° CNI / passeport",t:"text"},
   {s:"Permis de conduire"},
   {k:"permis",l:"Type de permis",t:"sel",o:"permis"},{k:"npermis",l:"N° du permis",t:"text"},
-  {k:"demi",l:"Date d'émission",t:"date"},{k:"exp",l:"Date d'expiration",t:"date"},{k:"obs",l:"Observations",t:"area"}]},
+  {k:"demi",l:"Date d'émission",t:"date"},{k:"exp",l:"Date d'expiration",t:"date"},
+  {s:"Garant du chauffeur"},
+  {k:"g_nom",l:"Nom et prénom du garant",t:"text"},{k:"g_tel",l:"Téléphone du garant",t:"text"},{k:"g_lien",l:"Lien avec le chauffeur",t:"free",o:"liensGarant"},
+  {k:"g_naiss",l:"Date de naissance",t:"date"},{k:"g_lieun",l:"Lieu de naissance",t:"text"},{k:"g_prof",l:"Profession",t:"text"},
+  {k:"g_adr",l:"Adresse du garant",t:"text",full:1},{k:"g_cni",l:"N° CNI / passeport du garant",t:"text"},
+  {s:"Engagement du garant"},
+  {k:"g_date",l:"Date de l'engagement",t:"date"},{k:"g_fait",l:"Fait à",t:"text",def:"Conakry"},{k:"g_ref",l:"Référence",t:"text",hint:"Attribuée à la première impression (TOTRANS/LOG/GAR/…)."},
+  {k:"g_tnom",l:"Signataire pour TOTRANS",t:"text"},{k:"g_tfonc",l:"Fonction du signataire",t:"text"},
+  {k:"obs",l:"Observations",t:"area"}]},
  pannes:{nom:"Pannes",un:"panne",sheet:"PANNES",key:"veh",fields:[
   {s:"Déclaration"},
   {k:"veh",l:"Véhicule",t:"sel",o:"@vehicules",req:1},{k:"date",l:"Date de panne",t:"date",req:1,def:"today"},{k:"heure",l:"Heure",t:"time"},
@@ -687,19 +723,19 @@ const PRESETS={
   "Administrateur":{admin:true,droits:allRights("w")},
 };
 function vAuth(){
-  const box=inner=>`<div class="authwrap"><div class="panel authbox"><div class="brand authbrand"><svg width="40" height="40" viewBox="0 0 34 34" aria-hidden="true"><rect x="1" y="9" width="20" height="14" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M21 13h6l4 5v5h-10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="8" cy="25" r="3" fill="var(--accent)"/><circle cx="26" cy="25" r="3" fill="var(--accent)"/></svg><div><b>ToTrans Flotte</b><small>Gestion de flotte</small></div></div>${inner}</div></div>`;
+  const box=inner=>`<div class="authwrap"><div class="panel authbox"><div class="authbrand"><span class="brandlogo"><img src="${LOGO}" alt="ToTrans S.A.R.L"></span><small>Gestion de flotte</small></div>${inner}</div></div>`;
   if(AUTHVIEW==="config")return box(`<h2>Installation à terminer</h2><p class="muted">L'adresse de la base Supabase n'est pas encore renseignée dans <b>config.js</b>. Suivez le guide d'installation, étape 3.</p>`);
   if(AUTHVIEW==="signup")return box(`<h2>Créer un compte</h2><form id="authF" class="fg" style="grid-template-columns:1fr" novalidate>
     <div class="f"><label for="a_nom">Nom et prénom</label><input id="a_nom" autocomplete="name" required></div>
     <div class="f"><label for="a_mail">Adresse e-mail</label><input id="a_mail" type="email" autocomplete="email" required></div>
-    <div class="f"><label for="a_pw">Mot de passe (8 caractères minimum)</label><input id="a_pw" type="password" autocomplete="new-password" minlength="8" required></div>
+    <div class="f"><label for="a_pw">Mot de passe (8 caractères minimum)</label><div class="pwbox"><input id="a_pw" type="password" autocomplete="new-password" minlength="8" required><button class="pwt" type="button" data-pwt aria-label="Afficher le mot de passe" aria-pressed="false">👁 Afficher</button></div></div>
     <p class="anom" id="authErr" hidden></p><button class="btn pri" type="submit">Créer mon compte</button></form>
     <p class="muted" style="font-size:13px">Après la création, un administrateur doit activer votre compte et vous attribuer des droits.</p>
     <button class="btn" data-auth="login">J'ai déjà un compte</button>`);
   if(AUTHVIEW==="sent")return box(`<h2>Compte créé</h2><p>Si un e-mail de confirmation vous a été envoyé, cliquez sur le lien qu'il contient. Ensuite, un administrateur doit activer votre compte.</p><button class="btn pri" data-auth="login">Se connecter</button>`);
   return box(`<h2>Connexion</h2><form id="authF" class="fg" style="grid-template-columns:1fr" novalidate>
     <div class="f"><label for="a_mail">Adresse e-mail</label><input id="a_mail" type="email" autocomplete="email" required></div>
-    <div class="f"><label for="a_pw">Mot de passe</label><input id="a_pw" type="password" autocomplete="current-password" required></div>
+    <div class="f"><label for="a_pw">Mot de passe</label><div class="pwbox"><input id="a_pw" type="password" autocomplete="current-password" required><button class="pwt" type="button" data-pwt aria-label="Afficher le mot de passe" aria-pressed="false">👁 Afficher</button></div></div>
     <p class="anom" id="authErr" hidden></p><button class="btn pri" type="submit">Se connecter</button></form>
     ${navigator.onLine?"":`<p class="anom">Pas de connexion Internet : la première connexion sur un appareil demande Internet. Ensuite, l'application fonctionne hors connexion.</p>`}
     <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-auth="signup">Créer un compte</button><button class="btn" data-auth="reset">Mot de passe oublié</button></div>`);
@@ -709,6 +745,8 @@ function vPending(){
     <p>Bonjour ${esc(ME?ME.nom||ME.email:"")}. Votre compte est créé mais un administrateur doit encore l'activer et vous attribuer des droits.</p>
     <div style="display:flex;gap:8px"><button class="btn pri" id="pendRefresh">Vérifier à nouveau</button><button class="btn" id="logoutB2">Se déconnecter</button></div></div></div>`;
 }
+document.addEventListener("click",e=>{const b=e.target.closest("[data-pwt]");if(!b)return;const i=b.parentElement.querySelector("input");const on=i.type==="password";
+  i.type=on?"text":"password";b.textContent=on?"🙈 Masquer":"👁 Afficher";b.setAttribute("aria-pressed",on);b.setAttribute("aria-label",on?"Masquer le mot de passe":"Afficher le mot de passe");i.focus()});
 document.addEventListener("submit",async e=>{
   if(e.target.id!=="authF")return;e.preventDefault();
   const err=$("#authErr");const show=m=>{err.textContent=m;err.hidden=false};err.hidden=true;
@@ -1024,7 +1062,7 @@ const LIST_R={
   cols:[c_("Immatriculation",v=>plate(v.immat)),c_("N°",v=>esc(v.camion)),c_("Type",v=>esc(v.type)),c_("Chauffeur",v=>esc(v.chauffeur||"—")),c_("Localisation",v=>esc(v.loc||"—")),
    c_("Statut technique",v=>pill(cv(v).statut)+(cv(v).mineure?` <span class="pill amb" title="Panne mineure ouverte">mineure</span>`:"")),c_("Situation",v=>pill(cv(v).situation)),
    c_("Mission",v=>esc(cv(v).mission)+(cv(v).dest?` <span class="muted">→ ${esc(cv(v).dest)}</span>`:"")),c_("Conteneur",v=>esc(cv(v).sitcont)+(cv(v).ncont?`<br><span class="muted">${esc(cv(v).ncont)}</span>`:"")),
-   c_("Jours immob.",v=>cv(v).jours,"n"),c_("Documents",v=>pill(cv(v).docs)),c_("Entretien",v=>pill(cv(v).entretien)),c_("Km",v=>fN(v.km),"n"),
+   c_("Jours immob.",v=>cv(v).jours,"n"),c_("Documents",v=>pill(cv(v).docs)+(scansVeh(v.immat).length?` <span class="muted" title="Documents scannés">📎 ${scansVeh(v.immat).length}</span>`:"")),c_("Entretien",v=>pill(cv(v).entretien)),c_("Km",v=>fN(v.km),"n"),
    c_("Anomalies",v=>cv(v).anom.length?`<span class="anom">${esc(cv(v).anom.join(" · "))}</span>`:"","w")],
   click:v=>{FICHE=v.immat;go("fiche")}},
  indispo:{col:"vehicules",title:"Camions en panne ou au garage",noAdd:1,base:v=>cv(v).statut!==ST_OK,
@@ -1042,7 +1080,7 @@ const LIST_R={
    c_("Demandeur",r=>esc(r.demandeur_nom||nameOf(r.demandeur))),c_("Pièces",r=>(r.pieces||[]).length?"📎 "+(r.pieces||[]).length:"","n")]},
  missions:{col:"missions",title:"Missions & mouvements",sub:"Quel camion, où, avec qui, pour quelle mission, depuis quand. Pour une mission EN COURS, renseigner la phase.",
   filters:[["statut","Statut",LOCK.statutsMission,m=>m.statut]],sort:(a,b)=>String(b.dep||"").localeCompare(String(a.dep||"")),
-  cols:[c_("N° mission",m=>`<b>${esc(m.num)}</b>`),c_("Camion",m=>plate(m.veh)),c_("Chauffeur",m=>esc(m.chauffeur)),c_("Client",m=>esc(m.client)),c_("Trajet",m=>esc(m.charg)+(m.dest?" → "+esc(m.dest):"")),
+  cols:[c_("N° mission",m=>`<b>${esc(m.num)}</b>`),c_("Dossier",m=>esc(m.dossier)),c_("Camion",m=>plate(m.veh)),c_("Chauffeur",m=>esc(m.chauffeur)),c_("Client",m=>esc(m.client)),c_("Trajet",m=>esc(m.charg)+(m.dest?" → "+esc(m.dest):"")),
    c_("Départ",m=>fD(m.dep),"d"),c_("Retour prévu",m=>fD(m.prev),"d"),c_("Retour réel",m=>fD(m.reel),"d"),c_("Statut",m=>pill(m.statut)),c_("Phase",m=>esc(m.phase)),
    c_("Conteneurs",m=>C.mis[m.id].nbcont||"","n"),c_("Durée (j)",m=>C.mis[m.id].duree,"n"),c_("Retard (j)",m=>C.mis[m.id].retard,"n"),c_("Contrôles",m=>C.mis[m.id].ctrl.length?`<span class="anom">${esc(C.mis[m.id].ctrl.join(" · "))}</span>`:"","w")]},
  conteneurs:{col:"conteneurs",title:"Conteneurs",sub:"Une ligne par conteneur et par transport. Saisir la date de débarquement pour libérer le camion.",
@@ -1051,10 +1089,13 @@ const LIST_R={
    c_("Destination",k=>esc(C.co[k.id].dest)),c_("Chargé / vide",k=>esc(k.chv)),c_("Situation",k=>pill(k.sit)),c_("Chargement",k=>fDT(k.dchg),"d"),c_("Débarquement",k=>fDT(k.ddeb),"d"),
    c_("Jours plateau",k=>C.co[k.id].duree!==""?fN(C.co[k.id].duree,1):"","n"),c_("État",k=>pill(k.etat)),c_("Contrôles",k=>C.co[k.id].ctrl.length?`<span class="anom">${esc(C.co[k.id].ctrl.join(" · "))}</span>`:"","w")]},
  chauffeurs:{col:"chauffeurs",title:"Chauffeurs",sub:"Personnel de conduite et permis. Le véhicule affecté vient de la fiche du camion.",
-  filters:[["alerte","Permis",["🟢 Permis valide","🟠 Expire prochainement","🔴 Permis expiré","⚫ Permis non renseigné"],h=>C.ch[h.id].alerte]],sort:(a,b)=>String(a.nom).localeCompare(String(b.nom)),
+  filters:[["alerte","Permis",["🟢 Permis valide","🟠 Expire prochainement","🔴 Permis expiré","⚫ Permis non renseigné"],h=>C.ch[h.id].alerte],["garant","Garant",["Engagement signé","Engagement à faire signer","Sans garant"],h=>garEtat(h)]],sort:(a,b)=>String(a.nom).localeCompare(String(b.nom)),
   cols:[c_("Nom et prénom",h=>`<b>${esc(h.nom)}</b>`),c_("Matricule",h=>esc(h.mat)),c_("Téléphone",h=>esc(h.tel)),c_("Statut",h=>pill(h.statut)),c_("Permis",h=>esc(h.permis)),c_("N° permis",h=>esc(h.npermis)),
    c_("Expiration",h=>fD(h.exp),"d"),c_("Jours restants",h=>C.ch[h.id].jours,"n"),c_("Alerte permis",h=>pill(C.ch[h.id].alerte)),c_("Camion affecté",h=>C.ch[h.id].veh==="Non affecté"?'<span class="muted">Non affecté</span>':plate(C.ch[h.id].veh)),
-   c_("Missions",h=>C.ch[h.id].nbmis,"n"),c_("Accidents",h=>C.ch[h.id].nbacc,"n")]},
+   c_("Missions",h=>C.ch[h.id].nbmis,"n"),c_("Accidents",h=>C.ch[h.id].nbacc,"n"),
+   c_("Garant",h=>h.g_nom?esc(h.g_nom)+(h.g_tel?`<br><span class="muted">${esc(h.g_tel)}</span>`:""):'<span class="muted">—</span>'),
+   c_("Engagement",h=>{const e=garEtat(h);return e==="Engagement signé"?pill("Signé","ok"):e==="Engagement à faire signer"?pill("À faire signer","warn"):""}),
+   c_("Scans",h=>(h.scans||[]).length?"📎 "+h.scans.length:"","n")]},
  pannes:{col:"pannes",title:"Pannes",sub:"Gravité MINEURE : le camion reste opérationnel. GRAVE : il passe automatiquement EN PANNE – IMMOBILISÉ jusqu'au statut RÉPARÉE.",
   filters:[["ouv","Afficher",["En cours","Réparées"],p=>p.statut==="RÉPARÉE"?"Réparées":"En cours"],["statut","Statut",LOCK.statutsPanne,p=>p.statut]],sort:(a,b)=>String(b.date||"").localeCompare(String(a.date||"")),
   cols:[c_("Date",p=>fD(p.date),"d"),c_("Camion",p=>plate(p.veh)),c_("Gravité",p=>p.type===PT_GR?pill("GRAVE","bad"):p.type===PT_MIN?pill("MINEURE","amb"):""),c_("Organe",p=>esc(p.classif)),c_("Catégorie",p=>esc(catPanne(p))),
@@ -1257,7 +1298,8 @@ function vFiche(){
   ${H("Maintenance","maintenances",hma,[c_("Entrée",m=>fD(m.entree),"d"),c_("Origine",m=>esc(m.origine)),c_("Type",m=>esc(m.type)),c_("Garage",m=>esc(m.garage)),c_("Coût total",m=>fM(c.ma[m.id].total),"n"),c_("Statut",m=>pill(m.statut))],"+ Entrée au garage")}
   ${H("Accidents","accidents",ha,[c_("Date",a=>fD(a.date),"d"),c_("Catégorie",a=>pill(a.cat===AC_HS?"IRRÉPARABLE / HS":"RÉPARABLE",a.cat===AC_HS?"hs":"acc")),c_("Lieu",a=>esc(a.lieu)),c_("Description",a=>esc(a.desc),"w"),c_("Coût",a=>fM(a.cout),"n"),c_("Dossier",a=>pill(a.statut))],"+ Accident")}
   ${H("Conteneurs","conteneurs",hc,[c_("N°",k=>esc(k.num)),c_("Type",k=>esc(k.tcont)),c_("Chargé / vide",k=>esc(k.chv)),c_("Situation",k=>pill(k.sit)),c_("Chargement",k=>fDT(k.dchg),"d"),c_("Débarquement",k=>fDT(k.ddeb),"d")],"+ Conteneur")}
-  ${H("Documents administratifs","documents",hd,[c_("Document",d=>esc(d.doc)),c_("N°",d=>esc(d.ndoc)),c_("Expiration",d=>fD(d.dexp),"d"),c_("Jours restants",d=>c.do[d.id].jours,"n"),c_("Statut",d=>pill(c.do[d.id].statut,["ok","amb","warn","bad","hs"][c.do[d.id].niv]))],"+ Document")}
+  ${scansPanel(im)}
+  ${H("Documents administratifs","documents",hd,[c_("Document",d=>esc(d.doc)+((d.scans||[]).length?` <span title="Scan joint">📎</span>`:"")),c_("N°",d=>esc(d.ndoc)),c_("Expiration",d=>fD(d.dexp),"d"),c_("Jours restants",d=>c.do[d.id].jours,"n"),c_("Statut",d=>pill(c.do[d.id].statut,["ok","amb","warn","bad","hs"][c.do[d.id].niv]))],"+ Document")}
   ${H("Entretien préventif","entretiens",hen,[c_("Entretien",e=>esc(e.type)),c_("Dernier",e=>fD(e.dder),"d"),c_("Km dernier",e=>fN(e.kder),"n"),c_("Km restants",e=>fN(c.en[e.id].krest),"n"),c_("Jours restants",e=>c.en[e.id].jrest,"n"),c_("Statut",e=>pill(c.en[e.id].statut))],"+ Entretien")}
   ${H("Carburant & dépenses","depenses",he,[c_("Date",d=>fD(d.date),"d"),c_("Mission",d=>esc(d.mission)),c_("Carburant (L)",d=>fN(d.qte),"n"),c_("Montant carburant",d=>fM(c.de[d.id].carb),"n"),c_("Total",d=>fM(c.de[d.id].total),"n",{sum:d=>c.de[d.id].total})],"+ Dépense")}`;
 }
@@ -1309,6 +1351,7 @@ function opts(src){
   if(src.startsWith("!"))return LOCK[src.slice(1)];
   if(src==="@vehicules")return S.vehicules.map(v=>v.immat).filter(Boolean).sort();
   if(src==="@chauffeurs")return S.chauffeurs.map(h=>h.nom).filter(Boolean).sort((a,b)=>a.localeCompare(b,"fr"));
+  if(src==="@dossiers")return dossiers();
   if(src==="@missions")return S.missions.map(m=>m.num).filter(Boolean).sort().reverse();
   if(src==="@docs")return P.documents.map(d=>d.nom);
   if(src==="@refsDA")return daRefs();
@@ -1345,6 +1388,8 @@ function openForm(col,row,preset){
   $("#ov").addEventListener("click",e=>{if(e.target.id==="ov"||e.target.closest("[data-close]"))closeForm()});
   const rb=$("#restB");if(rb)rb.onclick=()=>{const R0=RESTORE[col];Object.entries(R0.set).forEach(([k,v])=>{const el=frm.elements[k];if(el&&!el.disabled&&(R0.force.includes(k)||!el.value))el.value=v==="today"?TODAY:v});submitForm()};
   if(col==="achats")daDecorate(row);
+  if(SCANS[col])scansDecorate(col,row);
+  if(col==="chauffeurs")garDecorate(row);
   const dab=$("#daB");if(dab)dab.onclick=()=>{const p={objet:col==="pannes"?"Panne":"Maintenance",veh:row.veh,ref:daRefs(row.veh).find(x=>x.startsWith((col==="pannes"?"Panne du ":"Maintenance du ")+fD(col==="pannes"?row.date:row.entree)))||""};closeForm();openForm("achats",null,p)};
   const db=$("#delB");if(db)db.onclick=()=>{$("#fleft").innerHTML=`<span class="confirm">Supprimer définitivement ? <button class="btn dng sm" type="button" id="delY">Oui, supprimer</button><button class="btn sm" type="button" id="delN">Non</button></span>`;
     $("#delN").onclick=()=>openForm(col,row);$("#delY").onclick=async()=>{try{await delDoc(col,row.id);closeForm();toast("Supprimé")}catch(err){toast("Suppression impossible : "+(err.message||err.code))}}};
@@ -1399,6 +1444,7 @@ async function submitForm(extra,opt={}){
   E.fields.forEach(f=>{if(!f.k)return;const el=frm.elements[f.k];if(!el||el.disabled)return;let v=el.value.trim();
     if(f.t==="num")v=v===""?"":Number(v);if(v===""||v==null)delete data[f.k];else data[f.k]=v});
   if(extra)Object.entries(extra).forEach(([k,v])=>{if(v===undefined)delete data[k];else data[k]=v});
+  if(FORM.scans&&FORM.scanCol===col){if(FORM.scans.length)data.scans=FORM.scans;else delete data.scans}
   if(col==="achats"&&isNew){data.demandeur=ME.id;data.demandeur_nom=ME.nom||ME.email}
   frm.querySelectorAll(".f").forEach(d=>{d.classList.remove("err");const m=d.querySelector(".em");if(m)m.hidden=true});
   const errs=[];const bad=(k,m)=>errs.push([k,m]);
@@ -1491,9 +1537,9 @@ async function doExport(){
   const wb=XLSX.utils.book_new();const c=C;
   const sheets=[
     ["FLOTTE","vehicules",r=>({...pick(r,"vehicules"),"Téléphone chauffeur":cv(r).tel,"STATUT TECHNIQUE":cv(r).statut,"SITUATION DU CAMION":cv(r).situation,"Panne mineure":cv(r).mineure?"OUI":"NON","Mission en cours":cv(r).mission,"Destination ":cv(r).dest,"Situation conteneur":cv(r).sitcont,"N° conteneur à bord":cv(r).ncont,"Motif d'immobilisation":cv(r).motif,"Garage":cv(r).garage,"Pièce":cv(r).piece,"Immobilisé depuis le":fD(cv(r).depuis),"Jours d'immobilisation":cv(r).jours,"Documents":cv(r).docs,"Entretien préventif":cv(r).entretien,"Coût total cumulé":cv(r).ctot,"Anomalies":cv(r).anom.join(" · ")})],
-    ["MISSIONS","missions",r=>({...pick(r,"missions"),"Nb conteneurs":c.mis[r.id].nbcont,"Durée (jours)":c.mis[r.id].duree,"Jours de retard":c.mis[r.id].retard,"Contrôles":c.mis[r.id].ctrl.join(" · ")})],
+    ["MISSIONS","missions",r=>({...pick(r,"missions"),"N° dossier de transit":r.dossier||"","Nb conteneurs":c.mis[r.id].nbcont,"Durée (jours)":c.mis[r.id].duree,"Jours de retard":c.mis[r.id].retard,"Contrôles":c.mis[r.id].ctrl.join(" · ")})],
     ["CONTENEURS","conteneurs",r=>({...pick(r,"conteneurs"),"Client":c.co[r.id].client,"Destination":c.co[r.id].dest,"Jours sur le plateau":c.co[r.id].duree===""?"":Math.round(c.co[r.id].duree*10)/10,"Contrôles":c.co[r.id].ctrl.join(" · ")})],
-    ["CHAUFFEURS","chauffeurs",r=>({...pick(r,"chauffeurs"),"Véhicule affecté":c.ch[r.id].veh,"Jours avant expiration":c.ch[r.id].jours,"Alerte permis":c.ch[r.id].alerte,"Nb missions":c.ch[r.id].nbmis,"Accidents":c.ch[r.id].nbacc})],
+    ["CHAUFFEURS","chauffeurs",r=>({...pick(r,"chauffeurs"),"Véhicule affecté":c.ch[r.id].veh,"Jours avant expiration":c.ch[r.id].jours,"Alerte permis":c.ch[r.id].alerte,"Nb missions":c.ch[r.id].nbmis,"Accidents":c.ch[r.id].nbacc,"N° CNI / passeport":r.cni||"","Garant":r.g_nom||"","Tél. garant":r.g_tel||"","Lien":r.g_lien||"","CNI garant":r.g_cni||"","Adresse garant":r.g_adr||"","Réf. engagement":r.g_ref||"","Engagement":garEtat(r),"Documents scannés":(r.scans||[]).length})],
     ["PANNES","pannes",r=>({...pick(r,"pannes"),"Catégorie":catPanne(r),"Mission en cours":c.pn[r.id].mission,"Chauffeur":c.pn[r.id].chauffeur,"Jours d'immobilisation":c.pn[r.id].jours,"Retard réparation (j)":c.pn[r.id].retard,"Contrôles":c.pn[r.id].ctrl.join(" · ")})],
     ["MAINTENANCE","maintenances",r=>({...pick(r,"maintenances"),"Coût total":c.ma[r.id].total,"Durée au garage (j)":c.ma[r.id].duree,"Retard sortie (j)":c.ma[r.id].retard})],
     ["ACCIDENTS","accidents",r=>({...pick(r,"accidents"),"Mission":c.ac[r.id].mission,"Jours d'immobilisation":c.ac[r.id].jours})],
@@ -1530,13 +1576,14 @@ const CAT_MAP={"Mécanique":["Boîte de vitesses","Pont","Moteur","Pompe","Embra
 function catOfClassif(c){if(!c)return"";for(const[k,l] of Object.entries(CAT_MAP))if(l.includes(c))return k;
   if(/soud/i.test(c))return"Soudure";if(/[ée]lectri|[ée]clair|batter/i.test(c))return"Électricité";if(/carross|t[ôo]l/i.test(c))return"Tôlerie";return"Autre"}
 const catPanne=p=>p.categorie||catOfClassif(p.classif)||"Non classée";
-const RP={type:"situation",per:"mois",ref:TODAY,veh:""};
+const RP={type:"situation",per:"mois",ref:TODAY,veh:"",dos:""};
 const RP_TYPES=[
   ["situation","Situation journalière des engins",["vehicules"]],
   ["immob","Immobilisations",["vehicules"]],
   ["couts","Coûts par camion",["vehicules"]],
   ["voyages","Voyages par camion",["vehicules","missions"]],
   ["pannes","Pannes par catégorie",["vehicules","pannes"]],
+  ["dossier","Situation des missions par dossier de transit",["missions"]],
 ];
 const RP_PER=[["semaine","Semaine"],["mois","Mois"],["annee","Année"],["tout","Toutes les dates"]];
 let RP_SHEETS=[], RP_TITLE="";
@@ -1676,15 +1723,51 @@ function rpPannes(){
     {sheet:"Détail",note:"La catégorie vient du champ « Catégorie » de la panne ; s'il est vide, elle est déduite de l'organe (ex. Moteur → Mécanique, Éclairage → Électricité, Carrosserie → Tôlerie)."});
   return h;
 }
+/* --- 3. Situation par dossier de transit -------------------------------- */
+function dossiers(){return[...new Set(S.missions.map(m=>String(m.dossier||"").trim()).filter(Boolean))].sort((a,b)=>b.localeCompare(a,"fr",{numeric:true}))}
+function rpDossier(){
+  const all=S.missions.filter(m=>m.statut!=="ANNULÉE");const sans=all.filter(m=>!String(m.dossier||"").trim()).length;
+  const contOf=m=>S.conteneurs.filter(k=>k.mission&&k.mission===m.num);
+  const vOf=im=>C.vByImmat[im];
+  if(!RP.dos){
+    const rows=dossiers().map(d=>{const l=all.filter(m=>String(m.dossier||"").trim()===d);const ks=l.flatMap(contOf);
+      const deps=l.map(m=>m.dep).filter(Boolean).sort(),rets=l.map(m=>m.reel).filter(Boolean).sort();
+      return{d,l,n:l.length,fin:l.filter(m=>m.statut==="TERMINÉE").length,enc:l.filter(m=>m.statut==="EN COURS").length,pla:l.filter(m=>m.statut==="PLANIFIÉE").length,
+        nk:ks.length,poids:sum(l,m=>m.poids),cl:[...new Set(l.map(m=>m.client).filter(Boolean))].join(", "),deb:deps[0]||"",fin2:rets[rets.length-1]||"",nv:new Set(l.map(m=>m.veh)).size}}).filter(x=>x.n);
+    const ok=rows.filter(x=>x.fin===x.n).length;
+    const head=`<div class="tiles">${tile("Dossiers",rows.length,"","var(--navy)")}${tile("Prêts à facturer",ok,"toutes les missions terminées","var(--ok)")}${tile("En cours",rows.length-ok,"missions encore ouvertes","#d97a00")}${tile("Missions",sum(rows,x=>x.n),"","#2f6fd6")}${tile("Conteneurs",sum(rows,x=>x.nk),"","#4f8f5f")}</div>`;
+    return head+rpSec("Synthèse par dossier",rows,[c_("N° dossier",x=>`<b>${esc(x.d)}</b>`),c_("Client(s)",x=>esc(x.cl),"w"),c_("Missions",x=>x.n,"n",nb(x=>x.n)),c_("Terminées",x=>x.fin||"","n",nb(x=>x.fin)),
+      c_("En cours",x=>x.enc||"","n",nb(x=>x.enc)),c_("Planifiées",x=>x.pla||"","n",nb(x=>x.pla)),c_("Camions",x=>x.nv,"n"),c_("Conteneurs",x=>x.nk||"","n",nb(x=>x.nk)),c_("Poids / volume",x=>x.poids?fN(x.poids,2).replace(/,00$/,""):"","n",nb(x=>x.poids)),
+      c_("Premier départ",x=>fD(x.deb),"d"),c_("Dernier retour",x=>fD(x.fin2),"d"),c_("Facturation",x=>x.fin===x.n?pill("Prêt à facturer","ok"):pill("Missions en cours","warn"))],
+      {sheet:"Dossiers",empty:"Aucune mission n'a de N° de dossier de transit. Renseignez-le dans Missions.",note:(sans?`${sans} mission(s) sans N° de dossier ne figurent pas ici : renseignez le champ « N° dossier de transit » dans Missions. `:"")+"Choisissez un dossier dans la liste pour obtenir sa situation détaillée à transmettre à la comptabilité."});
+  }
+  const M=all.filter(m=>String(m.dossier||"").trim()===RP.dos).sort((a,b)=>String(a.dep||"").localeCompare(String(b.dep||""))||String(a.num).localeCompare(String(b.num),"fr",{numeric:true}));
+  const K=M.flatMap(m=>contOf(m).map(k=>({k,m})));
+  const fin=M.filter(m=>m.statut==="TERMINÉE").length;const cl=[...new Set(M.map(m=>m.client).filter(Boolean))].join(", ");
+  const deps=M.map(m=>m.dep).filter(Boolean).sort(),rets=M.map(m=>m.reel).filter(Boolean).sort();
+  const head=`<div class="tiles">${tile("Missions",M.length,"","var(--navy)")}${tile("Terminées",fin,"","var(--ok)")}${tile("En cours / planifiées",M.length-fin,"","#d97a00")}${tile("Camions",new Set(M.map(m=>m.veh)).size,"","#2f6fd6")}${tile("Conteneurs",K.length,"","#4f8f5f")}${tile("Poids / volume",fN(sum(M,m=>m.poids),2).replace(/,00$/,""),"t ou m³","#8e5bb0")}</div>
+    <div class="panel rp-info"><div class="fields"><div><span>N° dossier de transit</span><b>${esc(RP.dos)}</b></div><div><span>Client(s)</span><b>${esc(cl)||'<span class="muted">—</span>'}</b></div>
+      <div><span>Période</span><b>${deps.length?fD(deps[0]):"—"} → ${rets.length?fD(rets[rets.length-1]):"en cours"}</b></div><div><span>Facturation</span><b>${fin===M.length?pill("Prêt à facturer","ok"):pill(`${M.length-fin} mission(s) non terminée(s)`,"warn")}</b></div></div></div>`;
+  let h=head+rpSec("Missions du dossier",M,[c_("N° mission",m=>`<b>${esc(m.num)}</b>`),c_("Camion",m=>plate(m.veh)+(vOf(m.veh)?` <span class="muted">N° ${esc(vOf(m.veh).camion||"")}</span>`:"")),c_("Chauffeur",m=>esc(m.chauffeur)),
+    c_("Client",m=>esc(m.client)),c_("Trajet",m=>esc(m.charg)+(m.dest?" → "+esc(m.dest):""),"w"),c_("Cargaison",m=>esc(m.cargo)),c_("Poids / vol.",m=>has(m.poids)?fN(m.poids,2).replace(/,00$/,""):"","n",nb(m=>m.poids)),
+    c_("Conteneurs",m=>esc(contOf(m).map(k=>k.num).join(", ")),"w"),c_("Départ",m=>fD(m.dep),"d"),c_("Retour",m=>m.reel?fD(m.reel):m.prev?`<span class="muted">prévu ${fD(m.prev)}</span>`:"","d"),
+    c_("Durée (j)",m=>C.mis[m.id].duree,"n",nb(m=>C.mis[m.id].duree)),c_("Statut",m=>pill(m.statut))],{sheet:"Missions"});
+  h+=rpSec("Conteneurs transportés",K,[c_("N° conteneur",x=>`<b>${esc(x.k.num)}</b>`),c_("Type",x=>esc(x.k.tcont)),c_("Mission",x=>esc(x.m.num)),c_("Camion",x=>plate(x.k.veh)),c_("Chargé / vide",x=>esc(x.k.chv)),
+    c_("Chargement",x=>fDT(x.k.dchg),"d"),c_("Débarquement",x=>fDT(x.k.ddeb),"d"),c_("Situation",x=>pill(x.k.sit)),c_("État",x=>esc(x.k.etat))],{sheet:"Conteneurs",empty:"Aucun conteneur rattaché aux missions de ce dossier."});
+  h+=`<div class="rp-sigs"><div><b>Établi par (Exploitation)</b><span>Nom : ${esc(ME&&(ME.nom||ME.email)||"")}</span><span>Date :</span><span class="rp-sg">Signature</span></div>
+    <div><b>Transmis à la Comptabilité le</b><span>&nbsp;</span><span>&nbsp;</span><span class="rp-sg">Visa</span></div>
+    <div><b>Reçu par (Comptabilité)</b><span>Nom :</span><span>Date :</span><span class="rp-sg">Signature</span></div></div>`;
+  return h;
+}
 /* --- Page Rapports ----------------------------------------------------- */
 function vRapports(){
   const types=RP_TYPES.filter(t=>t[2].every(canR));if(!types.some(t=>t[0]===RP.type))RP.type=types[0][0];
-  const t=types.find(x=>x[0]===RP.type);const noPer=RP.type==="situation";const pr=rpPeriod();
+  const t=types.find(x=>x[0]===RP.type);const isDos=RP.type==="dossier";const noPer=RP.type==="situation"||isDos;const pr=rpPeriod();
   RP_SHEETS=[];
-  const body={situation:rpSituation,immob:rpImmob,couts:rpCouts,voyages:rpVoyages,pannes:rpPannes}[RP.type]();
+  const body={situation:rpSituation,immob:rpImmob,couts:rpCouts,voyages:rpVoyages,pannes:rpPannes,dossier:rpDossier}[RP.type]();
   const now=new Date();const who=ME&&(ME.nom||ME.email)||"";
   const perLab=noPer?`Situation au ${now.toLocaleDateString("fr-FR")} à ${now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}`:pr.lab;
-  RP_TITLE=`${t[1]} – ${noPer?fD(TODAY):pr.lab}${RP.veh?" – "+RP.veh:""}`;
+  RP_TITLE=isDos?`${RP.dos?"Situation du dossier "+RP.dos:"Situation des dossiers de transit"} – ${fD(TODAY)}`:`${t[1]} – ${noPer?fD(TODAY):pr.lab}${RP.veh?" – "+RP.veh:""}`;
   return`<div class="ph noprint"><div><h1>Rapports</h1><p>Choisissez un rapport et une période, puis « Imprimer / PDF » pour l'imprimer ou l'enregistrer en PDF. « Excel » télécharge les mêmes tableaux.</p></div>
     <div class="acts"><button class="btn pri" id="rpPrint">Imprimer / PDF</button><button class="btn" id="rpXls">Excel</button></div></div>
   <div class="tb noprint rp-ctl">
@@ -1692,11 +1775,11 @@ function vRapports(){
     ${noPer?"":`<select id="rpPer" aria-label="Période">${RP_PER.map(x=>`<option value="${x[0]}"${x[0]===RP.per?" selected":""}>${esc(x[1])}</option>`).join("")}</select>
     ${RP.per==="tout"?"":`<label class="rp-ref">${RP.per==="semaine"?"Semaine du":RP.per==="mois"?"Mois de":"Année de"} <input type="date" id="rpRef" value="${esc(RP.ref)}" aria-label="Date de référence"></label>
     <button class="btn sm" data-rpstep="-1" aria-label="Période précédente">‹</button><button class="btn sm" data-rpstep="1" aria-label="Période suivante">›</button>`}`}
-    <select id="rpVeh" aria-label="Camion"><option value="">Tous les camions</option>${S.vehicules.map(v=>v.immat).filter(Boolean).sort().map(im=>`<option${im===RP.veh?" selected":""}>${esc(im)}</option>`).join("")}</select>
+    ${isDos?`<select id="rpDos" aria-label="Dossier de transit"><option value="">Tous les dossiers (synthèse)</option>${dossiers().map(d=>`<option${d===RP.dos?" selected":""}>${esc(d)}</option>`).join("")}</select>`:`<select id="rpVeh" aria-label="Camion"><option value="">Tous les camions</option>${S.vehicules.map(v=>v.immat).filter(Boolean).sort().map(im=>`<option${im===RP.veh?" selected":""}>${esc(im)}</option>`).join("")}</select>`}
   </div>
   <div id="rpBody" class="rp">
-    <header class="rp-head"><div class="rp-brand">ToTrans · Gestion de flotte</div><h1>${esc(t[1])}</h1>
-      <p>${esc(perLab)}${RP.veh?` · Camion ${esc(RP.veh)}`:` · ${rpVeh().length} camions`} · Édité le ${now.toLocaleDateString("fr-FR")} à ${now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}${who?" par "+esc(who):""}</p></header>
+    <header class="rp-head"><div class="rp-top"><img class="rp-logo" src="${LOGO}" alt="ToTrans S.A.R.L"><div class="rp-brand">Gestion de flotte</div></div><h1>${esc(isDos?(RP.dos?"Situation du dossier de transit N° "+RP.dos:"Situation des missions par dossier de transit"):t[1])}</h1>
+      <p>${isDos?`Situation au ${now.toLocaleDateString("fr-FR")}${RP.dos?" · Destinataire : Comptabilité (facturation)":""}`:`${esc(perLab)}${RP.veh?` · Camion ${esc(RP.veh)}`:` · ${rpVeh().length} camions`}`} · Édité le ${now.toLocaleDateString("fr-FR")} à ${now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}${who?" par "+esc(who):""}</p></header>
     ${READY?body:`<div class="empty">Chargement des données…</div>`}
   </div>`;
 }
@@ -1705,7 +1788,7 @@ function rpStep(k){const d=new Date((dnum(RP.ref)??T)*864e5);
   RP.ref=isoOf(Math.round(d.getTime()/864e5));schedule(true)}
 function bindRapports(){
   const on=(id,f)=>{const e=$("#"+id);if(e)e.onchange=()=>{f(e.value);schedule(true)}};
-  on("rpType",v=>RP.type=v);on("rpPer",v=>RP.per=v);on("rpRef",v=>{if(v)RP.ref=v});on("rpVeh",v=>RP.veh=v);
+  on("rpType",v=>RP.type=v);on("rpPer",v=>RP.per=v);on("rpRef",v=>{if(v)RP.ref=v});on("rpVeh",v=>RP.veh=v);on("rpDos",v=>RP.dos=v);
   $("#view").querySelectorAll("[data-rpstep]").forEach(b=>b.onclick=()=>rpStep(+b.dataset.rpstep));
   const p=$("#rpPrint");if(p)p.onclick=rpPrint;const x=$("#rpXls");if(x)x.onclick=rpExcel;
 }
@@ -1851,6 +1934,129 @@ function daLinesClean(){ // lignes non vides, montants calculés
   return FORM.lignes.map(l=>({des:String(l.des||"").trim(),qte:n(l.qte),pu:n(l.pu),montant:daLigneMt(l)}))
     .filter(l=>l.des||l.montant).map(l=>{const o={des:l.des,montant:l.montant};if(l.qte!=="")o.qte=l.qte;if(l.pu!=="")o.pu=l.pu;return o});
 }
+/* --- Documents scannés (camions, chauffeurs, documents) ----------------- */
+const SCANS={
+  vehicules:{cats:["Carte grise","Assurance","Visite technique","Autorisation de transport / patente","Contrat ou facture d'achat","État de remise du véhicule","Photo du camion","Autre"]},
+  chauffeurs:{cats:["Engagement du garant signé","CNI / passeport du chauffeur","Permis de conduire","CNI / passeport du garant","État de remise du véhicule","Contrat de travail","Autre"]},
+  documents:{cats:[]},
+};
+const GAR_SIGNE="Engagement du garant signé";
+function garEtat(h){if((h.scans||[]).some(x=>x.cat===GAR_SIGNE))return"Engagement signé";return h.g_nom?"Engagement à faire signer":"Sans garant"}
+function scansVeh(im){const v=C.vByImmat[im];return[...((v&&v.scans)||[]),...S.documents.filter(d=>d.veh===im).flatMap(d=>(d.scans||[]).map(x=>({...x,cat:x.cat||d.doc})))]}
+async function openPath(path){
+  if(!navigator.onLine){toast("Ouvrir un document demande une connexion Internet");return}
+  const w=window.open("","_blank");
+  const{data,error}=await SB.storage.from("justificatifs").createSignedUrl(path,600);
+  if(error||!data){if(w)w.close();toast("Document introuvable");return}
+  if(w)w.location=data.signedUrl;else location.href=data.signedUrl;
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-openpath]");if(b){e.preventDefault();openPath(b.dataset.openpath)}});
+function scansPanel(im){
+  const L=scansVeh(im);const v=C.vByImmat[im];
+  return`<div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><h3 style="margin:0">Documents scannés <span class="muted">(${L.length})</span></h3>${canW("vehicules")&&v?`<button class="btn sm" data-edit-veh="${esc(v.id)}">+ Ajouter un scan</button>`:""}</div>
+    ${L.length?`<ul class="pj">${L.map(p=>`<li><b>${esc(p.cat||"Document")}</b> · <button type="button" class="linkb" data-openpath="${esc(p.path)}">${/pdf/.test(p.type)?"📄":"🖼️"} ${esc(p.nom)}</button> <span class="muted">${p.le?fD(p.le.slice(0,10)):""}</span></li>`).join("")}</ul>`:`<p class="muted" style="margin:0">Aucun document scanné. Ouvrez la fiche du camion (« Modifier ») ou une ligne de Documents administratifs pour joindre un scan.</p>`}</div>`;
+}
+function scansDecorate(col,row){
+  FORM.scans=[...((row&&row.scans)||[])];FORM.scanCol=col;if(!row&&!FORM.preId)FORM.preId=newId();
+  const cats=SCANS[col].cats;const can=canW(col);
+  const box=document.createElement("div");box.className="fg";
+  box.innerHTML=`<div class="fsec">Documents scannés${col==="documents"?" (copie du document)":""}</div><div class="full" id="scList"></div>
+    ${can?`<div class="full da-up">${cats.length?`<select id="scCat" aria-label="Type de document">${cats.map(c=>`<option>${esc(c)}</option>`).join("")}</select>`:""}<label class="btn"><input type="file" accept="image/*" capture="environment" data-sc hidden>📷 Scanner</label><label class="btn"><input type="file" accept="image/*,application/pdf" multiple data-sc hidden>📎 Joindre un fichier</label><span class="muted" id="scMsg"></span></div>`:""}`;
+  $("#frm").appendChild(box);scList();
+  if(col==="chauffeurs"&&$("#scCat")&&FORM.scans.some(x=>x.cat===GAR_SIGNE))$("#scCat").selectedIndex=1;
+  box.querySelectorAll("[data-sc]").forEach(i=>i.onchange=()=>{const f=[...i.files];i.value="";if(f.length)scUpload(f)});
+  box.addEventListener("click",e=>{const o=e.target.closest("[data-scopen]");if(o){openPath(FORM.scans[+o.dataset.scopen].path);return}
+    const d=e.target.closest("[data-scdel]");if(d)scDel(+d.dataset.scdel)});
+}
+function scList(){
+  const z=$("#scList");if(!z)return;const L=FORM.scans;const can=canW(FORM.col);
+  z.innerHTML=L.length?`<ul class="pj">${L.map((p,i)=>`<li>${p.cat?`<b>${esc(p.cat)}</b> · `:""}<button type="button" class="linkb" data-scopen="${i}">${/pdf/.test(p.type)?"📄":"🖼️"} ${esc(p.nom)}</button> <span class="muted">${fN((p.taille||0)/1024)} Ko · ${esc(nameOf(p.par)||"")} ${p.le?fD(p.le.slice(0,10)):""}</span>${can?` <button type="button" class="btn sm" data-scdel="${i}" aria-label="Retirer ${esc(p.nom)}">✕</button>`:""}</li>`).join("")}</ul>`:`<p class="muted" style="margin:0">Aucun document scanné.</p>`;
+}
+async function scPersist(){
+  const{col,id,isNew}=FORM;if(isNew)return;const row=S[col].find(r=>r.id===id);if(!row)return;
+  const{id:_,...rest}=row;const d={...rest};if(FORM.scans.length)d.scans=FORM.scans;else delete d.scans;await putDoc(col,id,d);
+}
+async function scUpload(files){
+  const msg=$("#scMsg");const say=t=>{if(msg)msg.textContent=t};
+  if(!navigator.onLine){say("Joindre un document demande une connexion Internet.");return}
+  const col=FORM.scanCol;const id=FORM.id||FORM.preId;const cat=$("#scCat")?$("#scCat").value:(col==="documents"?($("#f_doc")&&$("#f_doc").value)||"Document":"");let n=0;
+  for(const f of files){
+    say(`Envoi de ${f.name}…`);
+    const blob=/^image\//.test(f.type)?await shrinkImage(f):f;
+    if(blob.size>10*1024*1024){say(`${f.name} dépasse 10 Mo.`);continue}
+    const type=blob.type||f.type||"application/octet-stream";
+    const nom=blob===f?(f.name||"scan"):(f.name||"scan").replace(/\.[^.]+$/,"")+".jpg";
+    const path=`${col}/${id}/${Date.now()}-${nom.normalize("NFD").replace(/[^\w.\-]+/g,"_").slice(-60)}`;
+    const{error}=await SB.storage.from("justificatifs").upload(path,blob,{contentType:type,upsert:false});
+    if(error){say("Envoi impossible : "+(error.message||error)+". La mise à jour Supabase v10 a-t-elle été faite ?");return}
+    FORM.scans.push({path,nom,type,taille:blob.size,le:new Date().toISOString(),par:ME.id,cat});n++;
+  }
+  scList();
+  try{await scPersist()}catch(e){}
+  say(n?`${n} document(s) ajouté(s)${FORM.isNew?" : enregistrez la fiche pour les conserver.":"."}`:"");
+}
+async function scDel(i){
+  const p=FORM.scans[i];if(!p||!confirm(`Retirer « ${p.nom} » ?`))return;
+  FORM.scans.splice(i,1);scList();
+  try{await scPersist()}catch(e){}
+  try{await SB.storage.from("justificatifs").remove([p.path])}catch(e){}
+}
+/* --- Engagement du garant du chauffeur --------------------------------- */
+function nextGar(){const y=new Date().getFullYear();let mx=0;S.chauffeurs.forEach(h=>{const r=/GAR\/(\d+)\/(\d{4})/.exec(h.g_ref||"");if(r&&+r[2]===y)mx=Math.max(mx,+r[1])});return`TOTRANS/LOG/GAR/${String(mx+1).padStart(3,"0")}/${y}`}
+function formVals(){const o={};const frm=$("#frm");ENT[FORM.col].fields.forEach(f=>{if(!f.k)return;const el=frm.elements[f.k];if(el)o[f.k]=el.value.trim()});return o}
+function garDecorate(row){
+  const right=$("#saveB")?$("#saveB").parentElement:$("#modal footer>div:last-child");
+  const b=document.createElement("button");b.className="btn";b.type="button";b.id="garPrintB";b.textContent="🖨 Engagement du garant";
+  right.insertBefore(b,right.firstChild);
+  b.onclick=async()=>{
+    const h={...(row||{}),...formVals(),scans:FORM.scans||[]};Object.keys(h).forEach(k=>{if(h[k]==="")delete h[k]});
+    if(!h.nom){toast("Saisissez d'abord le nom du chauffeur");return}
+    if(!h.g_nom){toast("Renseignez d'abord le garant (section « Garant du chauffeur »)");const f=$("#f_g_nom");if(f)f.focus();return}
+    if(!h.g_ref){h.g_ref=nextGar();const f=$("#f_g_ref");if(f&&!f.disabled)f.value=h.g_ref;
+      if(row&&canW("chauffeurs")){const cur=S.chauffeurs.find(x=>x.id===row.id);if(cur){const{id:_,...rest}=cur;try{await putDoc("chauffeurs",row.id,{...rest,g_ref:h.g_ref})}catch(e){}}}}
+    printA4(garPrintHTML(h),`Engagement garant ${h.nom}`);
+  };
+}
+function garPrintHTML(h){
+  const B=(v,w=150)=>has(v)&&String(v).trim()?`<b class="gp-v">${esc(v)}</b>`:`<span class="gp-blank" style="min-width:${w}px"></span>`;
+  const d=h.g_date||TODAY;const [yy,mm,dd]=d.split("-");
+  const im=(C.ch[h.id]&&C.ch[h.id].veh!=="Non affecté")?C.ch[h.id].veh:((S.vehicules.find(v=>v.chauffeur===h.nom)||{}).immat||"");
+  const v=im?C.vByImmat[im]||S.vehicules.find(x=>x.immat===im):null;
+  const has2=c=>(h.scans||[]).some(x=>x.cat===c);
+  const box=c=>c?"☑":"☐";
+  return`<div class="dp gp">
+  <header class="gp-h"><img class="dp-logo" src="${LOGO}" alt="ToTrans S.A.R.L"><div class="gp-t"><h1>ENGAGEMENT DU GARANT DU CHAUFFEUR</h1><div class="gp-conf">Document confidentiel — Usage interne TOTRANS</div></div></header>
+  <div class="gp-dr"><div><b>Date :</b> ${esc(dd)} / ${esc(mm)} / ${esc(yy)}</div><div><b>Réf. :</b> ${esc(h.g_ref||"TOTRANS/LOG/GAR/____/"+yy)}</div></div>
+  <p>Je soussigné(e), M./Mme ${B(h.g_nom,300)},</p>
+  <p>Né(e) le ${B(h.g_naiss?fD(h.g_naiss):"",120)} à ${B(h.g_lieun,200)},</p>
+  <p>Profession : ${B(h.g_prof,180)} &nbsp; Tél. : ${B(h.g_tel,150)},</p>
+  <p>Adresse : ${B(h.g_adr,380)},</p>
+  <p>N° CNI/Passeport : ${B(h.g_cni,220)}, déclare me porter <b><u>garant(e)</u></b> du Chauffeur M./Mme ${B(h.nom,260)},</p>
+  <p>N° CNI : ${B(h.cni,180)} &nbsp; N° permis : ${B(h.npermis,180)}, employé(e) / mandaté(e) par <b>TOTRANS</b>.</p>
+  <h2>1. VÉHICULE CONFIÉ</h2>
+  <table class="gp-tb"><thead><tr><th>Immatriculation</th><th>Marque / Modèle</th><th>N° Parc</th><th>Kilométrage</th></tr></thead>
+    <tbody><tr><td>${esc(im)}</td><td>${esc(v?v.type||"":"")}</td><td>${esc(v?v.camion||"":"")}</td><td class="n">${v&&has(v.km)?fN(v.km)+" ":""}km</td></tr></tbody></table>
+  <p class="gp-i">Le véhicule, ainsi que ses clés, documents, équipements et accessoires, sont remis au Chauffeur pour l'exécution exclusive de ses missions professionnelles.</p>
+  <h2>2. ENGAGEMENT DU GARANT</h2>
+  <p>Je reconnais avoir été informé(e) des responsabilités attachées à la remise de ce véhicule et m'engage à :</p>
+  <ul class="gp-ul"><li>veiller à ce que le Chauffeur respecte les règles de conduite, de sécurité et les procédures internes de TOTRANS ;</li>
+    <li>collaborer avec TOTRANS en cas d'accident, panne grave, disparition, abandon, détournement ou utilisation non autorisée du véhicule ;</li>
+    <li>faciliter la prise de contact avec le Chauffeur et sa localisation lorsque cela est nécessaire ;</li>
+    <li>informer immédiatement TOTRANS de tout changement de mes coordonnées ;</li>
+    <li>collaborer à la récupération du véhicule, des clés, documents et équipements appartenant à TOTRANS en cas de non-restitution.</li></ul>
+  <p>Le Chauffeur s'engage pour sa part à <b>conserver le véhicule et ses équipements</b>, ne pas les prêter ni les utiliser à des fins non autorisées, <b>signaler immédiatement tout incident</b> et restituer le véhicule à la première demande de TOTRANS ou à la fin de sa mission.</p>
+  <p class="gp-i gp-q">Toute responsabilité financière éventuelle du Garant ne pourra être engagée qu'après établissement des faits et de sa responsabilité, conformément à la législation applicable.</p>
+  <h2>3. DÉCLARATION ET SIGNATURES</h2>
+  <p>Je certifie l'exactitude des informations fournies et reconnais avoir lu, compris et accepté le présent engagement avant la remise du véhicule au Chauffeur.</p>
+  <p>Fait à ${B(h.g_fait||"Conakry",160)}, le ${esc(dd)} / ${esc(mm)} / ${esc(yy)}</p>
+  <div class="gp-sigs">
+    <div><div class="gp-st">LE GARANT</div><div><b>Nom :</b> ${esc(h.g_nom||"")}</div><div class="gp-i">Lu et approuvé</div><div class="gp-sg">Signature + empreinte</div></div>
+    <div><div class="gp-st">LE CHAUFFEUR</div><div><b>Nom :</b> ${esc(h.nom||"")}</div><div class="gp-i">Lu et approuvé</div><div class="gp-sg">Signature + empreinte</div></div>
+    <div><div class="gp-st">POUR TOTRANS</div><div><b>Nom :</b> ${esc(h.g_tnom||"")}</div><div><b>Fonction :</b> ${esc(h.g_tfonc||"")}</div><div class="gp-sg">Signature + cachet</div></div>
+  </div>
+  <div class="gp-pj"><b>PIÈCES JOINTES OBLIGATOIRES</b><div>${box(has2("CNI / passeport du garant"))} Copie CNI/Passeport du Garant &nbsp;&nbsp; ${box(has2("CNI / passeport du chauffeur")&&has2("Permis de conduire"))} Copie CNI + permis de conduire du Chauffeur &nbsp;&nbsp; ${box(has2("État de remise du véhicule"))} État de remise du véhicule</div></div>
+  </div>`;
+}
 /* --- Habillage du formulaire DA ---------------------------------------- */
 function daDecorate(row){
   const r=row||{statut:"BROUILLON"};const acts=row?daActions(row):(canW("achats")?["save","submit"]:[]);
@@ -1879,10 +2085,18 @@ function daDecorate(row){
   const B={save:["btn","Enregistrer le brouillon"],submit:["btn pri","Soumettre à la logistique"],validate:["btn ok","Valider et transmettre à la DG / RAF"],approve:["btn ok","Approuver"],reject:["btn dng","Rejeter"]};
   if(daSt(r)==="SOUMISE")B.save=["btn","Enregistrer les corrections"];
   const right=$("#saveB")?$("#saveB").parentElement:$("#modal footer>div:last-child");
-  right.innerHTML=(row?`<button class="btn" type="button" id="daPrintB">🖨 Imprimer / PDF</button>`:"")+`<button class="btn" type="button" data-close>${acts.length?"Annuler":"Fermer"}</button>`+acts.filter(a=>a!=="delete").map(a=>`<button class="${B[a][0]}" type="button" data-da="${a}">${esc(B[a][1])}</button>`).join("");
+  const waKind={SOUMISE:"submit",VALIDÉE:"validate",APPROUVÉE:"approve",REJETÉE:"reject"}[daSt(r)];
+  right.innerHTML=(row&&waKind?`<button class="btn wa" type="button" id="daWaB">📲 Prévenir sur WhatsApp</button>`:"")+(row?`<button class="btn" type="button" id="daPrintB">🖨 Imprimer / PDF</button>`:"")+`<button class="btn" type="button" data-close>${acts.length?"Annuler":"Fermer"}</button>`+acts.filter(a=>a!=="delete").map(a=>`<button class="${B[a][0]}" type="button" data-da="${a}">${esc(B[a][1])}</button>`).join("");
   const db=$("#delB");if(db&&!acts.includes("delete"))db.remove();
   right.querySelectorAll("[data-da]").forEach(b=>b.onclick=()=>daAct(b.dataset.da,b));
   const pb=$("#daPrintB");if(pb)pb.onclick=()=>daPrint(S.achats.find(x=>x.id===row.id)||row);
+  const wb=$("#daWaB");if(wb)wb.onclick=()=>{const cur=S.achats.find(x=>x.id===row.id)||row;
+    $("#modal").innerHTML=`<div class="ov" id="ov"><div class="mod" role="dialog" aria-modal="true" aria-labelledby="mt" style="width:min(560px,100%)">
+    <header><h2 id="mt">Prévenir sur WhatsApp</h2><button class="btn sm" data-close aria-label="Fermer">✕</button></header>
+    <div class="bd"><p style="margin:0">${esc(cur.num||"")} · ${daPill(cur)}</p>${daNotifyHTML(cur,waKind)}</div>
+    <footer><button class="btn" type="button" id="daWaBack">← Retour à la demande</button><button class="btn pri" data-close>Terminé</button></footer></div></div>`;
+    $("#daWaBack").onclick=()=>openForm("achats",S.achats.find(x=>x.id===row.id)||row);
+    $("#ov").addEventListener("click",e=>{if(e.target.id==="ov"||e.target.closest("[data-close]"))closeForm()})};
   const rb=$("#restB");if(rb)rb.remove();
 }
 /* --- Bon de demande d'achat imprimable --------------------------------- */
@@ -1918,7 +2132,7 @@ function daPrintHTML(r){
     <div class="dp-sign">Signature et cachet</div></div>`;
   const fq=x=>has(x)?fN(x,2).replace(/,00$/,""):"";const L=daLignes(r);
   return`<div class="dp">
-  <header class="dp-h"><div><div class="dp-brand">ToTrans</div><div class="dp-sub">Gestion de flotte</div></div>
+  <header class="dp-h"><div><img class="dp-logo" src="${LOGO}" alt="ToTrans S.A.R.L"></div>
     <div class="dp-t"><h1>DEMANDE D'ACHAT</h1><div class="dp-num">N° ${esc(r.num||"")}</div></div>
     <div class="dp-st ${DA_TONE[st]||""}">${esc(DA_ST[st]||st)}</div></header>
   <table class="dp-kv"><tr><th>Date</th><td>${fD(r.date)}</td><th>Objet</th><td>${esc(r.objet||"")}${r.urgence==="Urgente"?' <b class="dp-urg">URGENT</b>':""}</td></tr>
@@ -1934,10 +2148,11 @@ function daPrintHTML(r){
   <div class="dp-sigs">${box("Demandeur",sub,"Agent",r.demandeur_nom)}${box("Vérification",log,"Responsable logistique")}${box("Approbation",dir,"Directeur général / RAF")}</div>
   <footer class="dp-f">Document édité le ${new Date().toLocaleString("fr-FR",{dateStyle:"short",timeStyle:"short"})} depuis ToTrans Flotte · ${esc(r.num||"")}</footer></div>`;
 }
-function daPrint(r){
+function daPrint(r){printA4(daPrintHTML(r),`Demande d'achat ${r.num||""}`)}
+function printA4(html,title){
   let z=$("#daPrint");if(!z){z=document.createElement("div");z.id="daPrint";document.body.appendChild(z)}
-  z.innerHTML=daPrintHTML(r);document.body.classList.add("print-da");
-  const t0=document.title;document.title=`Demande d'achat ${r.num||""}`;
+  z.innerHTML=html;document.body.classList.add("print-da");
+  const t0=document.title;document.title=String(title).replace(/[\/\\:*?"<>|]/g,"-");
   const back=()=>{document.body.classList.remove("print-da");document.title=t0;window.removeEventListener("afterprint",back)};
   window.addEventListener("afterprint",back);window.print();setTimeout(back,60000);
 }

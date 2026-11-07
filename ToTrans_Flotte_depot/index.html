@@ -148,13 +148,14 @@ table.t{border-collapse:collapse;width:100%;font-size:13.5px}
 .mod>header h2{margin:0;font-family:var(--f-display);font-size:24px;font-weight:700}
 .mod .bd{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
 .mod>footer{display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--line);background:var(--surface-2);border-radius:0 0 8px 8px}
+.mod>footer>div{flex-wrap:wrap}@media(max-width:640px){.mod>footer>div:last-child{width:100%;justify-content:flex-end}}
 .fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 14px}
 .fg .full{grid-column:1/-1}
 .fsec{grid-column:1/-1;font-family:var(--f-display);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px;color:var(--ink-2);border-bottom:1px solid var(--line);padding-bottom:3px;margin-top:6px}
 .f{display:flex;flex-direction:column;gap:3px;min-width:0}
 .f label{font-size:12.5px;font-weight:600;color:var(--ink-2)}
 .f label i{color:var(--bad);font-style:normal}
-.f input,.f select,.f textarea{border:1px solid var(--line);background:var(--bg);border-radius:5px;padding:7px 9px;width:100%;min-width:0}
+.f input,.f select,.f textarea,.dal-r input{border:1px solid var(--line);background:var(--bg);border-radius:5px;padding:7px 9px;width:100%;min-width:0}
 .f textarea{min-height:64px;resize:vertical}
 .f .hint{font-size:11.5px;color:var(--ink-3)}
 .f.err input,.f.err select{border-color:var(--bad);background:var(--bad-bg)}
@@ -253,12 +254,52 @@ table.t{border-collapse:collapse;width:100%;font-size:13.5px}
   .rt td.n{text-align:right}
 }
 
+/* bon de demande d'achat imprimable */
+#daPrint{display:none}
+.dp{color:#111;background:#fff;font-family:var(--f-body);font-size:12.5px;line-height:1.4}
+.dp-h{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;border-bottom:3px solid #1f3864;padding-bottom:10px;margin-bottom:14px}
+.dp-brand{font-family:var(--f-display);font-size:30px;font-weight:700;color:#1f3864;line-height:1}
+.dp-sub{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#555}
+.dp-t{text-align:center}.dp-t h1{margin:0;font-family:var(--f-display);font-size:26px;letter-spacing:.06em}
+.dp-num{font-family:var(--f-mono);font-size:15px;font-weight:600;margin-top:2px}
+.dp-st{justify-self:end;border:2px solid #555;border-radius:4px;padding:4px 10px;font-weight:700;text-transform:uppercase;font-size:11.5px}
+.dp-st.ok{border-color:#17663a;color:#17663a}.dp-st.bad{border-color:#9c1020;color:#9c1020}.dp-st.warn{border-color:#8a4b00;color:#8a4b00}.dp-st.info{border-color:#1f4f9a;color:#1f4f9a}
+.dp table{width:100%;border-collapse:collapse}
+.dp-kv th,.dp-kv td,.dp-l th,.dp-l td{border:1px solid #9aa5b1;padding:6px 8px;text-align:left;vertical-align:top}
+.dp-kv th{background:#eef1f5;width:16%;font-weight:600}
+.dp-l{margin-top:14px}.dp-l thead th{background:#1f3864;color:#fff}.dp-l td{height:auto}
+.dp-l .n{text-align:right;white-space:nowrap}.dp-l tfoot td{height:auto;font-weight:700;background:#fff6d6}
+.dp-lettres{margin:10px 0}.dp-urg{color:#9c1020}.dp-m{color:#555}
+.dp-bloc{border:1px solid #9aa5b1;padding:6px 8px;margin-top:8px}.dp-lab{font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#3d4955;margin-bottom:2px}
+.dp-sigs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.dp-sig{border:1px solid #9aa5b1;padding:8px;display:flex;flex-direction:column;gap:3px;min-height:190px}
+.dp-sig-t{font-weight:700;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #9aa5b1;padding-bottom:3px}
+.dp-sig-r{font-size:11px;color:#555}.dp-sig span{color:#555}
+.dp-com{font-style:italic;font-size:11.5px}
+.dp-sign{margin-top:auto;border-top:1px dashed #9aa5b1;padding-top:3px;font-size:10.5px;color:#777;min-height:60px}
+.dp-f{margin-top:14px;font-size:10px;color:#777;text-align:center}
+@page da{size:A4 portrait;margin:12mm}
+@media print{
+  body.print-da .app,body.print-da #modal,body.print-da #toast{display:none!important}
+  body.print-da #daPrint{display:block;page:da}
+  body.print-da{background:#fff}
+}
 /* demandes d'achat */
 .btn.wa{background:#1f8f4e;border-color:#1f8f4e;color:#fff}
 .wa-list{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
 .pj{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
 .linkb{border:0;background:none;padding:0;color:var(--info);font-weight:600;cursor:pointer;text-align:left;text-decoration:underline}
 .da-up{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.dal-h,.dal-r{display:grid;grid-template-columns:28px 1fr 80px 120px 120px 34px;gap:6px;align-items:center}
+.dal-h{font-size:12.5px;font-weight:600;color:var(--muted,#667);padding:0 0 4px}.dal-h .n,.dal-r .n{text-align:right}
+.dal-r{padding:5px 0;border-top:1px solid var(--line,#e3e6ea)}.dal-r input:disabled{opacity:.85}
+.dal-sec{margin-top:6px}#daLinesErr{color:var(--dng,#b42318);font-size:12.5px}
+.dal-r .dal-i{font-size:12.5px;color:var(--muted,#667);text-align:center}
+.dal-t{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--line,#e3e6ea)}
+.dal-t b{font-size:15px}
+@media(max-width:640px){.dal-h{display:none}.dal-r{grid-template-columns:62px 1fr 1.25fr 34px}.dal-r input{padding:7px 6px}
+ .dal-r .dal-i{display:none}.dal-r [data-l="des"]{grid-column:1/-1}
+ .dal-r input::placeholder{color:var(--muted,#889)}}
 .da-up label.btn{cursor:pointer}
 .da-hist{margin:8px 0 0;padding-left:20px;font-size:13px;display:flex;flex-direction:column;gap:4px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -450,9 +491,7 @@ const ENT={
   {k:"ref",l:"Panne / maintenance concernée",t:"sel",o:"@refsDA"},
   {s:"Achat"},
   {k:"fournisseur",l:"Fournisseur",t:"free",o:"fournisseurs"},
-  {k:"designation",l:"Désignation (pièces, travaux, carburant)",t:"area"},
-  {k:"qte",l:"Quantité (litres pour le carburant)",t:"num"},{k:"pu",l:"Prix unitaire",t:"num",money:1},
-  {k:"montant",l:"Montant total",t:"num",money:1,req:1,hint:"Calculé : quantité × prix unitaire. Modifiable."},
+  {k:"montant",l:"Montant total",t:"num",money:1,req:1,hint:"Somme des lignes ci-dessus (calcul automatique)."},
   {k:"obs",l:"Justification",t:"area"}]},
 };
 const COLS=Object.keys(ENT);
@@ -1334,7 +1373,6 @@ function autoFill(col,t){
   if(col==="pannes"&&t.name==="veh"){const v=C.vByImmat[t.value];if(v&&v.loc)set("lieu",v.loc)}
   if(col==="achats"&&t.name==="veh"){const el=$("#f_ref");if(el){const cur=el.value;el.innerHTML=`<option value=""></option>`+daRefs(t.value).map(x=>`<option${x===cur?" selected":""}>${esc(x)}</option>`).join("")}}
   if(col==="achats"&&t.name==="ref"&&t.value){const m=/^(Panne|Maintenance) du [^·]+· ([^·]+?)(?: ·|$)/.exec(t.value);if(m){$("#f_objet").value=m[1];$("#f_veh").value=m[2].trim()}}
-  if(col==="achats"&&(t.name==="qte"||t.name==="pu")){const q=Number($("#f_qte").value),u=Number($("#f_pu").value);if(q>0&&u>0)$("#f_montant").value=Math.round(q*u)}
   if(col==="pannes"&&t.name==="classif"){const el=$("#f_categorie");if(el)el.value=catOfClassif(t.value)}
 }
 function calcSummary(col,r){
@@ -1464,7 +1502,9 @@ async function doExport(){
     ["ENTRETIEN PRÉVENTIF","entretiens",r=>({...pick(r,"entretiens"),"Prochaine échéance (km)":c.en[r.id].ekm,"Prochaine échéance (date)":c.en[r.id].ej!==""?fD(isoOf(c.en[r.id].ej)):"","Km restants":c.en[r.id].krest,"Jours restants":c.en[r.id].jrest,"Statut":c.en[r.id].statut})],
   ];
   sheets.forEach(([name,col,f])=>{const ws=XLSX.utils.json_to_sheet(S[col].map(f),{header:Object.values(XL[col])});XLSX.utils.book_append_sheet(wb,ws,name.slice(0,31))});
-  if(S.achats.length)XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.achats.map(r=>({"N° DA":r.num,"Date":fD(r.date),"Objet":r.objet,"Urgence":r.urgence||"","Camion":r.veh||"","Panne / maintenance":r.ref||"","Fournisseur":r.fournisseur||"","Désignation":r.designation||"","Quantité":r.qte??"","Prix unitaire":r.pu??"","Montant":r.montant??"","Statut":DA_ST[daSt(r)],"Demandeur":r.demandeur_nom||nameOf(r.demandeur),"Dernier commentaire":r.commentaire||"","Pièces jointes":(r.pieces||[]).length,"Justification":r.obs||""}))),"DEMANDES D'ACHAT");
+  if(S.achats.length)XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(S.achats.map(r=>({"N° DA":r.num,"Date":fD(r.date),"Objet":r.objet,"Urgence":r.urgence||"","Camion":r.veh||"","Panne / maintenance":r.ref||"","Fournisseur":r.fournisseur||"","Nb lignes":daLignes(r).length,"Désignation":daLignes(r).map(l=>l.des).join(" ; ")||r.designation||"","Montant total":r.montant??"","Statut":DA_ST[daSt(r)],"Demandeur":r.demandeur_nom||nameOf(r.demandeur),"Dernier commentaire":r.commentaire||"","Pièces jointes":(r.pieces||[]).length,"Justification":r.obs||""}))),"DEMANDES D'ACHAT");
+  const LDA=S.achats.flatMap(r=>daLignes(r).map((l,i)=>({"N° DA":r.num,"Date":fD(r.date),"Camion":r.veh||"","Fournisseur":r.fournisseur||"","Ligne":i+1,"Désignation":l.des||"","Quantité":l.qte??"","Prix unitaire":l.pu??"","Montant":l.montant??"","Statut":DA_ST[daSt(r)]})));
+  if(LDA.length)XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(LDA),"LIGNES DA");
   const al=C.alerts.flatMap(a=>a.rows.map(r=>({"Niveau":a.u?"URGENT":"À TRAITER","Rubrique":a.lab,"Camion / chauffeur":r.veh||r.immat||r.nom||"","Détail":r.doc||r.num||r.type||r.classif||""})));
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(al),"ALERTES");
   const out=XLSX.write(wb,{type:"array",bookType:"xlsx"});
@@ -1776,6 +1816,41 @@ async function openPiece(i){
   if(error||!data){if(w)w.close();toast("Pièce introuvable");return}
   if(w)w.location=data.signedUrl;else location.href=data.signedUrl;
 }
+/* --- Lignes d'une DA ---------------------------------------------------- */
+function daLignes(r){ // lignes d'un enregistrement (ancien format : une seule ligne)
+  if(r&&Array.isArray(r.lignes)&&r.lignes.length)return r.lignes;
+  if(r&&(has(r.designation)||has(r.qte)||has(r.pu)||has(r.montant)))return[{des:r.designation||"",qte:r.qte??"",pu:r.pu??"",montant:r.montant??""}];
+  return[];
+}
+function daLignesInit(row){const L=daLignes(row).map(l=>({...l}));return L.length?L:[{des:"",qte:"",pu:"",montant:""}]}
+function daLigneMt(l){const q=Number(l.qte),u=Number(l.pu);return has(l.montant)&&l.montant!==""?Number(l.montant):(q>0&&u>0?Math.round(q*u):0)}
+function daLinesTotal(){return FORM.lignes.reduce((t,l)=>t+(Number(daLigneMt(l))||0),0)}
+function daLinesRender(){
+  const z=$("#daLines");if(!z)return;const ed=FORM.linesEdit;const dev=P.seuils.devise||"GNF";
+  const v=x=>x===""||x==null?"":esc(String(x));
+  z.innerHTML=`<div class="dal-h"><span class="dal-i">#</span><span>Désignation</span><span class="n">Qté</span><span class="n">Prix unitaire</span><span class="n">Montant</span><span></span></div>`+
+    FORM.lignes.map((l,i)=>`<div class="dal-r" data-i="${i}"><span class="dal-i">${i+1}</span>
+      <input data-l="des" value="${v(l.des)}" placeholder="Désignation (pièce, travaux, carburant)" aria-label="Désignation ligne ${i+1}" ${ed?"":"disabled"}>
+      <input data-l="qte" class="n" type="number" step="any" min="0" inputmode="decimal" value="${v(l.qte)}" placeholder="Qté" aria-label="Quantité ligne ${i+1}" ${ed?"":"disabled"}>
+      <input data-l="pu" class="n" type="number" step="any" min="0" inputmode="decimal" value="${v(l.pu)}" placeholder="Prix unit." aria-label="Prix unitaire ligne ${i+1}" ${ed?"":"disabled"}>
+      <input data-l="montant" class="n" type="number" step="any" min="0" inputmode="decimal" value="${v(l.montant)}" placeholder="Montant" aria-label="Montant ligne ${i+1}" ${ed?"":"disabled"}>
+      ${ed&&FORM.lignes.length>1?`<button class="btn sm" type="button" data-ldel="${i}" aria-label="Supprimer la ligne ${i+1}">✕</button>`:"<span></span>"}</div>`).join("")+
+    `<div class="dal-t">${ed?`<button class="btn sm" type="button" id="dalAdd">+ Ajouter une ligne</button>`:"<span></span>"}<span>Total : <b id="dalTot">${fM(daLinesTotal())} ${esc(dev)}</b></span></div>`;
+  const sync=()=>{const t=daLinesTotal();$("#dalTot").textContent=fM(t)+" "+dev;const m=$("#f_montant");if(m&&ed)m.value=t||""};
+  z.querySelectorAll(".dal-r input").forEach(inp=>inp.oninput=()=>{const i=+inp.closest(".dal-r").dataset.i,k=inp.dataset.l;const l=FORM.lignes[i];
+    if(l._auto==null){const q=Number(l.qte),u=Number(l.pu);l._auto=!has(l.montant)||l.montant===""||(q>0&&u>0&&Number(l.montant)===Math.round(q*u))}
+    l[k]=inp.value;
+    if(k==="qte"||k==="pu"){if(l._auto){const q=Number(l.qte),u=Number(l.pu);l.montant=q>0&&u>0?Math.round(q*u):"";inp.closest(".dal-r").querySelector('[data-l="montant"]').value=l.montant}}
+    if(k==="montant")l._auto=inp.value==="";$("#daLinesErr").hidden=true;sync()});
+  z.querySelectorAll("[data-ldel]").forEach(b=>b.onclick=()=>{FORM.lignes.splice(+b.dataset.ldel,1);daLinesRender();sync()});
+  const ad=$("#dalAdd");if(ad)ad.onclick=()=>{FORM.lignes.push({des:"",qte:"",pu:"",montant:""});daLinesRender();sync();const r=z.querySelectorAll(".dal-r");r[r.length-1].querySelector("input").focus()};
+  sync();
+}
+function daLinesClean(){ // lignes non vides, montants calculés
+  const n=x=>x===""||x==null?"":Number(x);
+  return FORM.lignes.map(l=>({des:String(l.des||"").trim(),qte:n(l.qte),pu:n(l.pu),montant:daLigneMt(l)}))
+    .filter(l=>l.des||l.montant).map(l=>{const o={des:l.des,montant:l.montant};if(l.qte!=="")o.qte=l.qte;if(l.pu!=="")o.pu=l.pu;return o});
+}
 /* --- Habillage du formulaire DA ---------------------------------------- */
 function daDecorate(row){
   const r=row||{statut:"BROUILLON"};const acts=row?daActions(row):(canW("achats")?["save","submit"]:[]);
@@ -1790,25 +1865,92 @@ function daDecorate(row){
     <div class="fsec">Pièces justificatives (facture, devis, bon)</div>
     <div class="full" id="daPieces">${piecesHTML()}</div>
     ${canUp?`<div class="full da-up"><label class="btn"><input type="file" accept="image/*" capture="environment" data-up hidden>📷 Scanner</label><label class="btn"><input type="file" accept="image/*,application/pdf" multiple data-up hidden>📎 Joindre un fichier</label><span class="muted" id="daUpMsg"></span></div>`:""}`;
+  // champs modifiables seulement à l'étape où l'utilisateur peut corriger
+  const edit=acts.includes("save");if(!edit)$("#frm").querySelectorAll("input,select,textarea").forEach(el=>el.disabled=true);
+  FORM.lignes=daLignesInit(row);FORM.linesEdit=edit;
+  const mf=$("#frm").querySelector('.f[data-k="montant"]');
+  mf.insertAdjacentHTML("beforebegin",`<div class="full dal-sec"><label style="font-size:13px;font-weight:600">Lignes de la demande (pièces, travaux, carburant) <i>*</i></label></div><div class="full" id="daLines"></div><div class="full" id="daLinesErr" hidden></div>`);
+  daLinesRender();
+  const mt=$("#f_montant");if(mt){mt.readOnly=true;mt.tabIndex=-1}
   $("#frm").appendChild(box);
   box.querySelectorAll("[data-up]").forEach(i=>i.onchange=()=>{const f=[...i.files];i.value="";if(f.length)daUpload(f)});
   box.addEventListener("click",e=>{const b=e.target.closest("[data-pj]");if(b)openPiece(+b.dataset.pj)});
-  // champs modifiables seulement à l'étape où l'utilisateur peut corriger
-  const edit=acts.includes("save");$("#frm").querySelectorAll(".fg:first-of-type input,.fg:first-of-type select,.fg:first-of-type textarea").forEach(el=>{if(!edit)el.disabled=true});
   // boutons du circuit
   const B={save:["btn","Enregistrer le brouillon"],submit:["btn pri","Soumettre à la logistique"],validate:["btn ok","Valider et transmettre à la DG / RAF"],approve:["btn ok","Approuver"],reject:["btn dng","Rejeter"]};
   if(daSt(r)==="SOUMISE")B.save=["btn","Enregistrer les corrections"];
   const right=$("#saveB")?$("#saveB").parentElement:$("#modal footer>div:last-child");
-  right.innerHTML=`<button class="btn" type="button" data-close>${acts.length?"Annuler":"Fermer"}</button>`+acts.filter(a=>a!=="delete").map(a=>`<button class="${B[a][0]}" type="button" data-da="${a}">${esc(B[a][1])}</button>`).join("");
+  right.innerHTML=(row?`<button class="btn" type="button" id="daPrintB">🖨 Imprimer / PDF</button>`:"")+`<button class="btn" type="button" data-close>${acts.length?"Annuler":"Fermer"}</button>`+acts.filter(a=>a!=="delete").map(a=>`<button class="${B[a][0]}" type="button" data-da="${a}">${esc(B[a][1])}</button>`).join("");
   const db=$("#delB");if(db&&!acts.includes("delete"))db.remove();
   right.querySelectorAll("[data-da]").forEach(b=>b.onclick=()=>daAct(b.dataset.da,b));
+  const pb=$("#daPrintB");if(pb)pb.onclick=()=>daPrint(S.achats.find(x=>x.id===row.id)||row);
   const rb=$("#restB");if(rb)rb.remove();
 }
+/* --- Bon de demande d'achat imprimable --------------------------------- */
+function enLettres(n){
+  n=Math.round(Number(n)||0);if(n===0)return"zéro";
+  const U=["","un","deux","trois","quatre","cinq","six","sept","huit","neuf","dix","onze","douze","treize","quatorze","quinze","seize","dix-sept","dix-huit","dix-neuf"];
+  const D=["","dix","vingt","trente","quarante","cinquante","soixante","soixante","quatre-vingt","quatre-vingt"];
+  const cent=x=>{ // 0..999
+    let s="";const c=Math.floor(x/100),r=x%100;
+    if(c)s=(c>1?U[c]+" cent":"cent")+(c>1&&r===0?"s":"");
+    if(r){let t;const d=Math.floor(r/10),u=r%10;
+      if(r<20)t=U[r];
+      else if(d===7||d===9)t=D[d]+(d===7&&u===1?" et ":"-")+U[10+u];
+      else t=D[d]+(u===1&&d<8?" et un":u?"-"+U[u]:(d===8?"s":""));
+      s+=(s?" ":"")+t}
+    return s};
+  const parts=[[1e9,"milliard"],[1e6,"million"],[1e3,"mille"]];let s="",x=n;
+  for(const[v,l]of parts){const q=Math.floor(x/v);x%=v;if(!q)continue;
+    if(l==="mille")s+=(q===1?"mille":cent(q).replace(/s$/,"")+" mille")+" ";
+    else s+=cent(q)+" "+l+(q>1?"s":"")+" "}
+  s+=cent(x);return s.trim().replace(/\s+/g," ");
+}
+function daPrintHTML(r){
+  const dev=P.seuils.devise||"GNF";const st=daSt(r);const H=r.hist||[];
+  const last=a=>[...H].reverse().find(h=>h.a===a);
+  const sub=H.find(h=>h.a==="SOUMISE")||H[0];
+  const log=[...H].reverse().find(h=>h.de==="SOUMISE");const dir=[...H].reverse().find(h=>h.de==="VALIDÉE");
+  const dt=h=>h&&h.le?new Date(h.le).toLocaleString("fr-FR",{dateStyle:"short",timeStyle:"short"}):"";
+  const dec=h=>!h?"":h.a==="REJETÉE"?"REJETÉE":h.a==="VALIDÉE"?"VALIDÉE":h.a==="APPROUVÉE"?"APPROUVÉE":h.a;
+  const box=(t,h,role,nomDef)=>`<div class="dp-sig"><div class="dp-sig-t">${esc(t)}</div><div class="dp-sig-r">${esc(role)}</div>
+    <div><span>Nom :</span> <b>${esc(h?h.nom:nomDef||"")}</b></div><div><span>Date :</span> ${esc(dt(h))}</div>
+    ${t!=="Demandeur"?`<div><span>Décision :</span> <b>${esc(dec(h))}</b></div>`:""}${h&&h.com?`<div class="dp-com">« ${esc(h.com)} »</div>`:""}
+    <div class="dp-sign">Signature et cachet</div></div>`;
+  const fq=x=>has(x)?fN(x,2).replace(/,00$/,""):"";const L=daLignes(r);
+  return`<div class="dp">
+  <header class="dp-h"><div><div class="dp-brand">ToTrans</div><div class="dp-sub">Gestion de flotte</div></div>
+    <div class="dp-t"><h1>DEMANDE D'ACHAT</h1><div class="dp-num">N° ${esc(r.num||"")}</div></div>
+    <div class="dp-st ${DA_TONE[st]||""}">${esc(DA_ST[st]||st)}</div></header>
+  <table class="dp-kv"><tr><th>Date</th><td>${fD(r.date)}</td><th>Objet</th><td>${esc(r.objet||"")}${r.urgence==="Urgente"?' <b class="dp-urg">URGENT</b>':""}</td></tr>
+    <tr><th>Camion</th><td>${esc(r.veh||"—")}${r.veh&&C.vByImmat[r.veh]?` <span class="dp-m">(N° ${esc(C.vByImmat[r.veh].camion||"")})</span>`:""}</td><th>Panne / maintenance</th><td>${esc(r.ref||"—")}</td></tr>
+    <tr><th>Fournisseur</th><td colspan="3">${esc(r.fournisseur||"—")}</td></tr>
+    <tr><th>Demandeur</th><td colspan="3">${esc(r.demandeur_nom||nameOf(r.demandeur)||"")}</td></tr></table>
+  <table class="dp-l"><thead><tr><th class="n" style="width:28px">N°</th><th>Désignation</th><th class="n">Quantité</th><th class="n">Prix unitaire</th><th class="n">Montant (${esc(dev)})</th></tr></thead>
+    <tbody>${(L.length?L:[{}]).map((l,i)=>`<tr><td class="n">${L.length?i+1:""}</td><td>${esc(l.des||"").replace(/\n/g,"<br>")}</td><td class="n">${fq(l.qte)}</td><td class="n">${has(l.pu)?fM(l.pu):""}</td><td class="n">${has(l.montant)?fM(l.montant):""}</td></tr>`).join("")}</tbody>
+    <tfoot><tr><td colspan="4">MONTANT TOTAL</td><td class="n">${fM(r.montant)} ${esc(dev)}</td></tr></tfoot></table>
+  <p class="dp-lettres">Arrêtée la présente demande à la somme de : <b>${esc(enLettres(r.montant))} ${esc(dev==="GNF"?"francs guinéens":dev)}</b>.</p>
+  ${r.obs?`<div class="dp-bloc"><div class="dp-lab">Justification</div>${esc(r.obs).replace(/\n/g,"<br>")}</div>`:""}
+  <div class="dp-bloc"><div class="dp-lab">Pièces justificatives jointes (${(r.pieces||[]).length})</div>${(r.pieces||[]).length?(r.pieces||[]).map(p=>esc(p.nom)).join(" · "):"Aucune"}</div>
+  <div class="dp-sigs">${box("Demandeur",sub,"Agent",r.demandeur_nom)}${box("Vérification",log,"Responsable logistique")}${box("Approbation",dir,"Directeur général / RAF")}</div>
+  <footer class="dp-f">Document édité le ${new Date().toLocaleString("fr-FR",{dateStyle:"short",timeStyle:"short"})} depuis ToTrans Flotte · ${esc(r.num||"")}</footer></div>`;
+}
+function daPrint(r){
+  let z=$("#daPrint");if(!z){z=document.createElement("div");z.id="daPrint";document.body.appendChild(z)}
+  z.innerHTML=daPrintHTML(r);document.body.classList.add("print-da");
+  const t0=document.title;document.title=`Demande d'achat ${r.num||""}`;
+  const back=()=>{document.body.classList.remove("print-da");document.title=t0;window.removeEventListener("afterprint",back)};
+  window.addEventListener("afterprint",back);window.print();setTimeout(back,60000);
+}
+
 async function daAct(a,btn){
   const frm=$("#frm");const com=frm.elements.commentaire?frm.elements.commentaire.value.trim():"";
   if(a==="reject"&&!com){const d=frm.querySelector('.f[data-k="commentaire"]');d.classList.add("err");const e=d.querySelector(".em");e.textContent="Indiquez le motif du rejet.";e.hidden=false;frm.elements.commentaire.focus();return}
   const st={save:null,submit:"SOUMISE",validate:"VALIDÉE",approve:"APPROUVÉE",reject:"REJETÉE"}[a];
   const extra={pieces:FORM.pieces};if(st)extra.statut=st;extra.commentaire=com||undefined;
+  if(FORM.linesEdit&&a!=="reject"){const L=daLinesClean();const er=$("#daLinesErr");er.hidden=true;
+    const badL=L.find(l=>!l.des)||L.find(l=>!(l.montant>0));
+    if(!L.length||badL){er.textContent=!L.length?"Ajoutez au moins une ligne (désignation et montant).":!badL.des?"Chaque ligne doit avoir une désignation.":"Chaque ligne doit avoir un montant (ou quantité × prix unitaire).";er.hidden=false;er.scrollIntoView({block:"center"});return}
+    extra.lignes=L;extra.designation=L.map(l=>l.des).join(" ; ");extra.montant=L.reduce((t,l)=>t+l.montant,0);extra.qte=undefined;extra.pu=undefined}
   const ok=await submitForm(extra,{keepOpen:true});if(!ok)return;
   const id=FORM.id||FORM.lastId;const r=S.achats.find(x=>x.id===id)||{};
   if(a==="save"){closeForm();toast("Enregistré");return}
@@ -1817,7 +1959,8 @@ async function daAct(a,btn){
   $("#modal").innerHTML=`<div class="ov" id="ov"><div class="mod" role="dialog" aria-modal="true" aria-labelledby="mt" style="width:min(560px,100%)">
     <header><h2 id="mt">${esc(t)}</h2><button class="btn sm" data-close aria-label="Fermer">✕</button></header>
     <div class="bd"><p style="margin:0">${esc(r.num||"")} · ${daPill(r)}</p>${daNotifyHTML(r,kind)}</div>
-    <footer><span></span><button class="btn pri" data-close>Terminé</button></footer></div></div>`;
+    <footer><button class="btn" type="button" id="daPrint2">🖨 Imprimer / PDF</button><button class="btn pri" data-close>Terminé</button></footer></div></div>`;
+  $("#daPrint2").onclick=()=>daPrint(S.achats.find(x=>x.id===id)||r);
   $("#ov").addEventListener("click",e=>{if(e.target.id==="ov"||e.target.closest("[data-close]"))closeForm()});
 }
 

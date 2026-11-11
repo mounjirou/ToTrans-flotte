@@ -208,6 +208,12 @@ table.t{border-collapse:collapse;width:100%;font-size:13.5px}
 }
 /* rapports */
 .rp{display:flex;flex-direction:column;gap:16px}
+.posq{grid-column:1/-1}.posq h3{margin:0 0 8px}
+.posf{display:grid;grid-template-columns:minmax(200px,2fr) minmax(160px,1fr) minmax(120px,1fr) auto;gap:10px;align-items:end}
+.posf label{display:flex;flex-direction:column;gap:3px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.posf input,.posf select{border:1px solid var(--line);background:var(--bg);border-radius:5px;padding:7px 9px;font-weight:400;color:var(--ink);min-width:0}
+.posf #posMsg{grid-column:1/-1;font-size:12.5px}
+@media(max-width:700px){.posf{grid-template-columns:1fr}}
 .ficheq{border:1px solid var(--line);background:var(--surface);border-radius:5px;padding:7px 10px;min-width:0;width:240px;max-width:100%}
 .rp-ctl label.rp-ref{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;color:var(--ink-2)}
 .rp-ctl input[type=date]{border:1px solid var(--line);background:var(--surface);border-radius:5px;padding:6px 8px}
@@ -410,6 +416,7 @@ const LOCK={
   naturesDA:["Mécanique","Tôlerie","Soudure","Électricité"],
   validiteDoc:["Date d'expiration","Permanente (sans expiration)"],
   modesPaiement:["Chèque","Virement","Espèces"],
+  chargements:["Plateau vide","Conteneur vide","Chargé"],
 };
 const DEFAULT_PARAMS={
   seuils:{permisJours:60,docSurveiller:60,docProche:30,entretienKm:1000,entretienJours:15,devise:"GNF"},
@@ -454,8 +461,9 @@ const ENT={
   {k:"immat",l:"Immatriculation",t:"text",req:1,uniq:1,lockEdit:1},{k:"camion",l:"N° de parc (N° camion)",t:"text",req:1,uniq:1,hint:"Unique : relié à l'immatriculation partout dans l'application."},
   {k:"type",l:"Type de véhicule",t:"sel",o:"typesVehicule",req:1},{k:"proprio",l:"Propriétaire",t:"sel",o:"proprietaires",req:1},
   {s:"Affectation et position"},
-  {k:"chauffeur",l:"Chauffeur affecté",t:"sel",o:"@chauffeurs",req:1},{k:"loc",l:"Localisation actuelle",t:"sel",o:"localisations",req:1},
-  {k:"km",l:"Kilométrage",t:"num",req:1},{k:"maj",l:"Dernière mise à jour",t:"date",req:1,def:"today"},
+  {k:"chauffeur",l:"Chauffeur affecté",t:"sel",o:"@chauffeurs",req:1},{k:"loc",l:"Localisation actuelle",t:"free",o:"@lieux",req:1,hint:"Choisir dans la liste (parcs, garages, clients) ou taper le nom du site ou du client."},
+  {k:"charge",l:"Statut du chargement",t:"sel",o:"!chargements"},
+  {k:"km",l:"Kilométrage",t:"num",hint:"Facultatif."},{k:"maj",l:"Dernière mise à jour",t:"date",req:1,def:"today"},
   {k:"obs",l:"Observations",t:"area"}]},
  missions:{nom:"Missions",un:"mission",sheet:"MISSIONS & MOUVEMENTS",key:"num",fields:[
   {s:"Mission"},
@@ -973,7 +981,7 @@ function compute(){
     const ch=chByNom[v.chauffeur];x.tel=ch?ch.tel||"":"";x.permexp=!!(v.chauffeur&&ch&&c.ch[ch.id].jours!==""&&c.ch[ch.id].jours<0);
     const a=[];if(!v.loc)a.push("Sans localisation");if(!v.chauffeur)a.push("Sans chauffeur");if(x.chmulti)a.push("Chauffeur affecté à plusieurs camions");
     if(x.nbconf)a.push("Missions simultanées (véhicule ou chauffeur)");if(x.statut!==ST_OK&&x.mission!=="—")a.push("Mission en cours alors que le camion est immobilisé");
-    if(x.permexp)a.push("Permis du chauffeur expiré");if(!v.camion||!v.type||!v.proprio||!has(v.km)||!v.maj)a.push("Données obligatoires manquantes");
+    if(x.permexp)a.push("Permis du chauffeur expiré");if(!v.camion||!v.type||!v.proprio||!v.maj)a.push("Données obligatoires manquantes");
     if(x.docmiss.length)a.push(x.docmiss.length+" document(s) obligatoire(s) non enregistré(s)");
     if(v.camion&&V.some(w=>w!==v&&nrm(w.camion)===nrm(v.camion)))a.push("N° de parc "+v.camion+" utilisé par un autre camion");
     x.anom=a;x.incoh=x.chmulti||x.nbconf>0||x.permexp||(x.statut!==ST_OK&&x.mission!=="—");
@@ -1090,8 +1098,8 @@ function renderBanner(){
 const c_=(l,v,f,o={})=>({l,v,f,...o});
 const LIST_R={
  flotte:{col:"vehicules",title:"Flotte",sub:"Registre des camions et situation en temps réel. Le statut technique et la situation sont calculés à partir des pannes, maintenances, accidents et missions : on ne les saisit jamais.",
-  filters:[["dispo","Disponibilité",["Disponibles","En panne ou au garage"],v=>cv(v).statut===ST_OK?"Disponibles":"En panne ou au garage"],["statut","Statut technique",STATUTS,v=>cv(v).statut],["situation","Situation",SITUATIONS,v=>cv(v).situation]],
-  cols:[c_("Immatriculation",v=>plate(v.immat,false)),c_("N° de parc",v=>`<b>${esc(v.camion)}</b>`),c_("Type",v=>esc(v.type)),c_("Chauffeur",v=>esc(v.chauffeur||"—")),c_("Localisation",v=>esc(v.loc||"—")),
+  filters:[["dispo","Disponibilité",["Disponibles","En panne ou au garage"],v=>cv(v).statut===ST_OK?"Disponibles":"En panne ou au garage"],["statut","Statut technique",STATUTS,v=>cv(v).statut],["situation","Situation",SITUATIONS,v=>cv(v).situation],["charge","Chargement",LOCK.chargements,v=>v.charge||""]],
+  cols:[c_("Immatriculation",v=>plate(v.immat,false)),c_("N° de parc",v=>`<b>${esc(v.camion)}</b>`),c_("Type",v=>esc(v.type)),c_("Chauffeur",v=>esc(v.chauffeur||"—")),c_("Localisation",v=>esc(v.loc||"—")),c_("Chargement",v=>v.charge?pill(v.charge,v.charge==="Chargé"?"info":"mute"):""),
    c_("Statut technique",v=>pill(cv(v).statut)+(cv(v).mineure?` <span class="pill amb" title="Panne mineure ouverte">mineure</span>`:"")),c_("Situation",v=>pill(cv(v).situation)),
    c_("Mission",v=>esc(cv(v).mission)+(cv(v).dest?` <span class="muted">→ ${esc(cv(v).dest)}</span>`:"")),c_("Conteneur",v=>esc(cv(v).sitcont)+(cv(v).ncont?`<br><span class="muted">${esc(cv(v).ncont)}</span>`:"")),
    c_("Jours immob.",v=>cv(v).jours,"n"),c_("Documents",v=>pill(cv(v).docs)+(scansVeh(v.immat).length?` <span class="muted" title="Documents scannés">📎 ${scansVeh(v.immat).length}</span>`:"")),c_("Entretien",v=>pill(cv(v).entretien)),c_("Km",v=>fN(v.km),"n"),
@@ -1328,8 +1336,13 @@ function vFiche(){
   return`<div class="ph"><div><h1>Fiche camion</h1><p>Situation actuelle et tout l'historique du camion, saisies les plus récentes en premier.</p></div><div class="acts">${sel}${canW("vehicules")?`<button class="btn pri" data-edit-veh="${esc(v.id)}">Modifier le camion</button>`:""}</div></div>
   <div class="panel"><div class="fiche-h">${plate(im,false)}<span style="font-family:var(--f-display);font-size:22px;font-weight:700">${esc(v.camion)} · ${esc(v.type)}</span>${pill(x.statut)}${pill(x.situation)}${x.mineure?pill("Panne mineure ouverte","amb"):""}</div>
     ${x.anom.length?`<p class="anom" style="margin:10px 0 0"><b>Anomalies :</b> ${esc(x.anom.join(" · "))}</p>`:""}</div>
+  ${canW("vehicules")?`<div class="panel posq full2"><h3>Mettre à jour la position</h3><form class="posf" id="posF" data-vid="${esc(v.id)}">
+      <label>Localisation actuelle<input name="loc" list="dl_poslieux" value="${esc(v.loc||"")}" placeholder="Parc, garage, client…" required><datalist id="dl_poslieux">${opts("@lieux").map(x=>`<option value="${esc(x)}">`).join("")}</datalist></label>
+      <label>Statut du chargement<select name="charge"><option value=""></option>${LOCK.chargements.map(c=>`<option${c===v.charge?" selected":""}>${esc(c)}</option>`).join("")}</select></label>
+      <label>Kilométrage (facultatif)<input name="km" type="number" min="0" step="any" inputmode="decimal" value="${esc(v.km??"")}"></label>
+      <button class="btn pri" type="submit">Enregistrer</button><span class="muted" id="posMsg">${v.maj?"Dernière mise à jour : "+fD(v.maj):""}</span></form></div>`:""}
   <div class="g2">
-    <div class="panel"><h3>Identification</h3><div class="fields">${F("Propriétaire",esc(v.proprio))}${F("Chauffeur",esc(v.chauffeur))}${F("Téléphone",esc(x.tel))}${F("Localisation",esc(v.loc))}${F("Kilométrage",fN(v.km)+(has(v.km)?" km":""))}${F("Dernière mise à jour",fD(v.maj))}${F("Observations",esc(v.obs))}</div></div>
+    <div class="panel"><h3>Identification</h3><div class="fields">${F("Propriétaire",esc(v.proprio))}${F("Chauffeur",esc(v.chauffeur))}${F("Téléphone",esc(x.tel))}${F("Localisation actuelle",esc(v.loc))}${F("Statut du chargement",v.charge?pill(v.charge,v.charge==="Chargé"?"info":"mute"):"")}${F("Kilométrage",has(v.km)?fN(v.km)+" km":"")}${F("Dernière mise à jour",fD(v.maj))}${F("Observations",esc(v.obs))}</div></div>
     <div class="panel"><h3>Situation actuelle</h3><div class="fields">${F("Mission en cours",esc(x.mission!=="—"?x.mission:""))}${F("Destination",esc(x.dest))}${F("Situation conteneur",esc(x.sitcont))}${F("N° conteneur",esc(x.ncont))}${F("Motif d'immobilisation",esc(x.motif))}${F("Garage",esc(x.garage))}${F("Pièce",esc(x.piece))}${F("Immobilisé depuis",x.depuis?fD(x.depuis)+" ("+x.jours+" j)":"")}${F("Documents",pill(x.docs))}${F("Entretien préventif",pill(x.entretien))}${F("Coût total cumulé",fM(x.ctot)+" "+esc(P.seuils.devise))}</div></div>
   </div>
   ${(()=>{const y=TODAY.slice(0,4),mo=TODAY.slice(0,7);const ok=hm.filter(m=>m.statut==="TERMINÉE");
@@ -1408,6 +1421,7 @@ function opts(src){
   if(src==="@docs")return P.documents.map(d=>d.nom);
   if(src==="@refsDA")return daRefs();
   if(src==="@entretiens")return P.entretiens.map(e=>e.type);
+  if(src==="@lieux"){const g=new Set([...(P.listes.localisations||[]),...(P.listes.garages||[])]);S.vehicules.forEach(v=>{if(v.loc)g.add(v.loc)});S.missions.forEach(m=>{[m.client,m.charg,m.dest].forEach(x=>{if(x)g.add(x)})});return[...g].map(x=>String(x).trim()).filter(Boolean).filter((x,i,a)=>a.indexOf(x)===i).sort((a,b)=>a.localeCompare(b,"fr"))}
   if(src==="garages"){const g=new Set(P.listes.garages||[]);["pannes","maintenances","accidents"].forEach(c=>S[c].forEach(r=>{if(r.garage)g.add(r.garage)}));return[...g].sort((a,b)=>a.localeCompare(b,"fr"))}
   return P.listes[src]||[];
 }
@@ -1525,6 +1539,7 @@ async function submitForm(extra,opt={}){
     const nid=id||FORM.preId||newId();FORM.lastId=nid;
     await putDoc(col,nid,data);
     if(opt.keepOpen)return true;
+    if(col==="vehicules"&&data.loc&&isAdmin()&&!(P.listes.localisations||[]).includes(data.loc)){const np=structuredClone(P);np.listes.localisations=[...(np.listes.localisations||[]),data.loc];await saveParams(np)}
     if(data.garage&&isAdmin()&&!(P.listes.garages||[]).includes(data.garage)){const np=structuredClone(P);np.listes.garages=[...(np.listes.garages||[]),data.garage];await saveParams(np)}
     // saisie unique : un kilométrage de dépense plus élevé met à jour la fiche du camion
     if(col==="depenses"&&has(data.km)&&canW("vehicules")){const v=C.vByImmat[data.veh]||S.vehicules.find(x=>x.immat===data.veh);
@@ -1600,7 +1615,7 @@ async function doExport(){
   if(!window.XLSX){toast("Module Excel non chargé");return}
   const wb=XLSX.utils.book_new();const c=C;
   const sheets=[
-    ["FLOTTE","vehicules",r=>({...pick(r,"vehicules"),"Téléphone chauffeur":cv(r).tel,"STATUT TECHNIQUE":cv(r).statut,"SITUATION DU CAMION":cv(r).situation,"Panne mineure":cv(r).mineure?"OUI":"NON","Mission en cours":cv(r).mission,"Destination ":cv(r).dest,"Situation conteneur":cv(r).sitcont,"N° conteneur à bord":cv(r).ncont,"Motif d'immobilisation":cv(r).motif,"Garage":cv(r).garage,"Pièce":cv(r).piece,"Immobilisé depuis le":fD(cv(r).depuis),"Jours d'immobilisation":cv(r).jours,"Documents":cv(r).docs,"Entretien préventif":cv(r).entretien,"Coût total cumulé":cv(r).ctot,"Anomalies":cv(r).anom.join(" · ")})],
+    ["FLOTTE","vehicules",r=>({...pick(r,"vehicules"),"Statut du chargement":r.charge||"","Téléphone chauffeur":cv(r).tel,"STATUT TECHNIQUE":cv(r).statut,"SITUATION DU CAMION":cv(r).situation,"Panne mineure":cv(r).mineure?"OUI":"NON","Mission en cours":cv(r).mission,"Destination ":cv(r).dest,"Situation conteneur":cv(r).sitcont,"N° conteneur à bord":cv(r).ncont,"Motif d'immobilisation":cv(r).motif,"Garage":cv(r).garage,"Pièce":cv(r).piece,"Immobilisé depuis le":fD(cv(r).depuis),"Jours d'immobilisation":cv(r).jours,"Documents":cv(r).docs,"Entretien préventif":cv(r).entretien,"Coût total cumulé":cv(r).ctot,"Anomalies":cv(r).anom.join(" · ")})],
     ["MISSIONS","missions",r=>({...pick(r,"missions"),"N° dossier de transit":r.dossier||"","Nb conteneurs":c.mis[r.id].nbcont,"Durée (jours)":c.mis[r.id].duree,"Jours de retard":c.mis[r.id].retard,"Contrôles":c.mis[r.id].ctrl.join(" · ")})],
     ["CONTENEURS","conteneurs",r=>({...pick(r,"conteneurs"),"Client":c.co[r.id].client,"Destination":c.co[r.id].dest,"Jours sur le plateau":c.co[r.id].duree===""?"":Math.round(c.co[r.id].duree*10)/10,"Contrôles":c.co[r.id].ctrl.join(" · ")})],
     ["CHAUFFEURS","chauffeurs",r=>({...pick(r,"chauffeurs"),"Véhicule affecté":c.ch[r.id].veh,"Jours avant expiration":c.ch[r.id].jours,"Alerte permis":c.ch[r.id].alerte,"Nb missions":c.ch[r.id].nbmis,"Accidents":c.ch[r.id].nbacc,"N° CNI / passeport":r.cni||"","Garant":r.g_nom||"","Tél. garant":r.g_tel||"","Lien":r.g_lien||"","CNI garant":r.g_cni||"","Adresse garant":r.g_adr||"","Réf. engagement":r.g_ref||"","Engagement":garEtat(r),"Documents scannés":(r.scans||[]).length})],
@@ -1686,7 +1701,7 @@ function rpSituation(){
   const rep=`<div class="rp-grid">${rpSec("Répartition par situation",sits,[c_("Situation",x=>pill(x.s)),c_("Camions",x=>x.n,"n",nb(x=>x.n))],{count:false,sheet:"Par situation"})}
     ${rpSec("Répartition par localisation",locs,[c_("Localisation",x=>esc(x.l)),c_("Camions",x=>x.n,"n",nb(x=>x.n)),c_("dont opérationnels",x=>x.ok,"n",nb(x=>x.ok))],{count:false,sheet:"Par localisation"})}</div>`;
   const base=[c_("N°",v=>esc(v.camion)),c_("Immatriculation",v=>plate(v.immat)),c_("Chauffeur",v=>esc(v.chauffeur||"—")),c_("Téléphone",v=>esc(cv(v).tel))];
-  const t1=rpSec("Camions opérationnels",ok,[...base,c_("Localisation",v=>esc(v.loc||"—")),c_("Situation",v=>pill(cv(v).situation)),
+  const t1=rpSec("Camions opérationnels",ok,[...base,c_("Localisation",v=>esc(v.loc||"—")),c_("Chargement",v=>esc(v.charge||"")),c_("Situation",v=>pill(cv(v).situation)),
     c_("Mission / destination",v=>cv(v).mission!=="—"?esc(cv(v).mission)+(cv(v).dest?" → "+esc(cv(v).dest):""):""),c_("Conteneur",v=>cv(v).ncont?esc(cv(v).ncont)+` <span class="muted">${esc(cv(v).sitcont)}</span>`:""),
     c_("Observation",v=>[cv(v).mineure?"Panne mineure ouverte":"",v.obs||""].filter(Boolean).map(esc).join(" · "),"w")],{sheet:"Opérationnels"});
   const t2=rpSec("Camions indisponibles",ko.slice().sort((a,b)=>(num(cv(b).jours)-num(cv(a).jours))),[...base,c_("Localisation",v=>esc(v.loc||"—")),c_("Statut technique",v=>pill(cv(v).statut)),
@@ -2340,6 +2355,14 @@ function bindView(){
   const q=$("#q");if(q)q.oninput=()=>{FILT[R].q=q.value;renderTable()};
   v.querySelectorAll("select[data-f]").forEach(s=>s.onchange=()=>{FILT[R][s.dataset.f]=s.value;renderTable()});
   const fs=$("#ficheSel");if(fs)fs.onchange=()=>{FICHE=fs.value;schedule(true)};
+  const pf=$("#posF");if(pf)pf.onsubmit=async e=>{e.preventDefault();const v=S.vehicules.find(x=>x.id===pf.dataset.vid);if(!v)return;
+    const loc=pf.elements.loc.value.trim(),charge=pf.elements.charge.value,kmv=pf.elements.km.value.trim();const msg=$("#posMsg");
+    if(!loc){msg.textContent="Indiquez la localisation.";pf.elements.loc.focus();return}
+    if(kmv!==""&&(!isFinite(Number(kmv))||Number(kmv)<0)){msg.textContent="Kilométrage : saisir un nombre positif, ou laisser vide.";return}
+    const{id,...rest}=v;const d={...rest,loc,maj:TODAY};if(charge)d.charge=charge;else delete d.charge;if(kmv!=="")d.km=Number(kmv);else delete d.km;
+    const b=pf.querySelector("button");b.disabled=true;
+    try{await putDoc("vehicules",id,d);if(isAdmin()&&!(P.listes.localisations||[]).includes(loc)){const np=structuredClone(P);np.listes.localisations=[...(np.listes.localisations||[]),loc];await saveParams(np)}toast("Position enregistrée")}
+    catch(err){b.disabled=false;msg.textContent="Enregistrement impossible, réessayez."}};
   const fq=$("#ficheQ");if(fq){const goV=ex=>{const r=vehResolve(fq.value,ex);if(r){FICHE=r;schedule(true)}};fq.oninput=()=>goV(true);fq.onchange=()=>goV(false);fq.onkeydown=e=>{if(e.key==="Enter")goV(false)}}
   if(R==="parametres")renderParamsDraft();
   if(R==="rapports")bindRapports();
